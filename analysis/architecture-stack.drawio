@@ -1,0 +1,51 @@
+<mxfile host="app.diagrams.net" modified="2026-05-23T11:20:00.000Z" agent="GPT-5.3-Codex" version="24.7.17" type="device">
+  <diagram id="architecture-1" name="Architecture Stack">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="client" value="Client Browser&#xa;(Organizer / Viewer)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="80" y="220" width="230" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="nextjs" value="Frontend&#xa;React + Next.js&#xa;(App Router, UI, pages)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="390" y="200" width="290" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="express" value="Backend API&#xa;Node.js + Express.js&#xa;(REST endpoints, validation, auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="760" y="200" width="320" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="prisma" value="Data Access Layer&#xa;Prisma ORM&#xa;(schema, migrations, typed queries)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="200" width="320" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="postgres" value="Database&#xa;PostgreSQL&#xa;(teams, players, goals, rounds, matches)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="420" width="320" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a1" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="client" target="nextjs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a2" value="REST JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="nextjs" target="express">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a3" value="Prisma Client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="express" target="prisma">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a4" value="SQL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=2;" edge="1" parent="1" source="prisma" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="note1" value="Optional: Next.js server actions can call Express API or share business contracts" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="70" width="420" height="80" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

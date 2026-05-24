@@ -1,0 +1,51 @@
+<mxfile host="app.diagrams.net" modified="2026-05-24T13:24:00.000Z" agent="GPT-5.3-Codex" version="24.7.17" type="device">
+  <diagram id="uml-1" name="UML Class Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="Team" value="Team&#xa;-------------------------&#xa;+ id: UUID&#xa;+ name: string&#xa;+ country: string&#xa;+ coach: string" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="120" width="240" height="140" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="Player" value="Player&#xa;-------------------------&#xa;+ id: UUID&#xa;+ teamId: UUID&#xa;+ firstName: string&#xa;+ lastName: string&#xa;+ shirtNumber: int&#xa;+ position: string&#xa;+ status: PlayerStatus (available/unavailable)&#xa;-------------------------&#xa;+ setStatus(status)" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="330" width="250" height="180" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="Round" value="Round&#xa;-------------------------&#xa;+ id: UUID&#xa;+ name: string&#xa;+ orderNumber: int" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="70" width="250" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="Match" value="Match&#xa;-------------------------&#xa;+ id: UUID&#xa;+ roundId: UUID&#xa;+ homeTeamId: UUID&#xa;+ awayTeamId: UUID&#xa;+ refereeId: UUID&#xa;+ homeScore: int&#xa;+ awayScore: int&#xa;+ matchDate: datetime&#xa;+ status: MatchStatus" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="260" width="290" height="230" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="Goal" value="Goal&#xa;-------------------------&#xa;+ id: UUID&#xa;+ matchId: UUID&#xa;+ playerId: UUID&#xa;+ teamId: UUID&#xa;+ minute: int" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#d0e0e3;strokeColor=#3c78d8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="560" width="290" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r2" value="1 .. *" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;" edge="1" parent="1" source="Round" target="Match">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r3" value="homeTeam/awayTeam" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;strokeWidth=2;" edge="1" parent="1" source="Match" target="Team">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r4" value="1 .. *" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;" edge="1" parent="1" source="Team" target="Player">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r5" value="1 .. *" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;" edge="1" parent="1" source="Match" target="Goal">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r6" value="1 .. *" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;" edge="1" parent="1" source="Player" target="Goal">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
