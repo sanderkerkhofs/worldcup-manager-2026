@@ -1,48 +1,51 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { AuthSession } from '@types';
-import { clearSession, loadSession, saveSession } from './session';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { AuthUser } from '../types';
+import { clearSession, readStoredToken, readStoredUser, storeSession } from './session';
 
 type SessionContextValue = {
-    session: AuthSession | null;
-    ready: boolean;
-    persist: (nextSession: AuthSession) => void;
-    signOut: () => void;
+  token: string | null;
+  user: AuthUser | null;
+  isAuthenticated: boolean;
+  setSession: (token: string, user: AuthUser) => void;
+  logout: () => void;
 };
 
-const SessionContext = createContext<SessionContextValue | null>(null);
+const SessionContext = createContext<SessionContextValue | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-    const [session, setSession] = useState<AuthSession | null>(null);
-    const [ready, setReady] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
-    useEffect(() => {
-        setSession(loadSession());
-        setReady(true);
-    }, []);
+  useEffect(() => {
+    setToken(readStoredToken());
+    setUser(readStoredUser());
+  }, []);
 
-    function persist(nextSession: AuthSession) {
-        saveSession(nextSession);
-        setSession(nextSession);
-    }
+  const value = useMemo<SessionContextValue>(() => ({
+    token,
+    user,
+    isAuthenticated: Boolean(token && user),
+    setSession: (nextToken: string, nextUser: AuthUser) => {
+      storeSession(nextToken, nextUser);
+      setToken(nextToken);
+      setUser(nextUser);
+    },
+    logout: () => {
+      clearSession();
+      setToken(null);
+      setUser(null);
+    },
+  }), [token, user]);
 
-    function signOut() {
-        clearSession();
-        setSession(null);
-    }
-
-    return (
-        <SessionContext.Provider value={{ session, ready, persist, signOut }}>
-            {children}
-        </SessionContext.Provider>
-    );
+  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 
 export function useSession() {
-    const context = useContext(SessionContext);
+  const context = useContext(SessionContext);
 
-    if (!context) {
-        throw new Error('useSession must be used inside a SessionProvider.');
-    }
+  if (!context) {
+    throw new Error('useSession must be used inside SessionProvider.');
+  }
 
-    return context;
+  return context;
 }

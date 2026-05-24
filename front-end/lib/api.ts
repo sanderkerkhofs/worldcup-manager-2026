@@ -1,76 +1,42 @@
-import { ApiEnvelope } from '@types';
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 
-function readStoredToken(): string | null {
-    if (typeof window === 'undefined') {
-        return null;
-    }
+export class ApiError extends Error {
+  public readonly status: number;
 
-    return window.localStorage.getItem('tm-token');
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
 }
 
-async function parseError(response: Response): Promise<string> {
-    try {
-        const body = await response.json();
-        return body.error ?? body.message ?? 'Request failed.';
-    } catch {
-        return 'Request failed.';
-    }
+async function request<T>(method: HttpMethod, path: string, token?: string | null, body?: unknown): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new ApiError(payload?.error ?? 'Request failed', response.status);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return (await response.json()) as T;
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-    const headers = new Headers(init?.headers);
-    headers.set('Content-Type', 'application/json');
-
-    const token = readStoredToken();
-    if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-    }
-
-    const response = await fetch(`${apiBaseUrl}${path}`, {
-        ...init,
-        headers,
-    });
-
-    if (!response.ok) {
-        throw new Error(await parseError(response));
-    }
-
-    if (response.status === 204) {
-        return undefined as T;
-    }
-
-    const body = (await response.json()) as ApiEnvelope<T> | T;
-    if (body && typeof body === 'object' && 'data' in body) {
-        return (body as ApiEnvelope<T>).data;
-    }
-
-    return body as T;
-}
-
-export function getApiBaseUrl(): string {
-    return apiBaseUrl;
-}
-
-export function apiGet<T>(path: string): Promise<T> {
-    return request<T>(path, { method: 'GET' });
-}
-
-export function apiPost<T>(path: string, body: unknown): Promise<T> {
-    return request<T>(path, {
-        method: 'POST',
-        body: JSON.stringify(body),
-    });
-}
-
-export function apiPut<T>(path: string, body: unknown): Promise<T> {
-    return request<T>(path, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-    });
-}
-
-export function apiDelete<T>(path: string): Promise<T> {
-    return request<T>(path, { method: 'DELETE' });
-}
+export const api = {
+  get: <T>(path: string, token?: string | null) => request<T>('GET', path, token),
+  post: <T>(path: string, body?: unknown, token?: string | null) => request<T>('POST', path, token, body),
+  put: <T>(path: string, body?: unknown, token?: string | null) => request<T>('PUT', path, token, body),
+  patch: <T>(path: string, body?: unknown, token?: string | null) => request<T>('PATCH', path, token, body),
+  del: <T>(path: string, token?: string | null) => request<T>('DELETE', path, token),
+};

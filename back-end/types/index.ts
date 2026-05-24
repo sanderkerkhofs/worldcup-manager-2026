@@ -1,114 +1,193 @@
-export type UserRole = 'ADMIN' | 'ORGANIZER' | 'REFEREE' | 'VIEWER';
+export type UserRole = 'ADMIN' | 'COACH' | 'REFEREE' | 'GUEST';
 
-export type MatchStatus = 'SCHEDULED' | 'COMPLETED';
+export type MatchStatus = 'NOT_STARTED' | 'ACTIVE' | 'COMPLETED';
+
+export type PlayerStatus = 'AVAILABLE' | 'UNAVAILABLE';
+
+export type CompetitionMetadata = {
+  name: string;
+  year: number;
+  hostCountry: string;
+  format: string;
+};
 
 export type AuthUser = {
-    id: string;
-    username: string;
-    role: UserRole;
+  id: string;
+  username: string;
+  role: UserRole;
+  countryShortName: string | null;
+  countryFlag: string | null;
+  teamId: string | null;
 };
 
 export type RegisterDto = {
-    username: string;
-    password: string;
-    role?: UserRole;
+  username: string;
+  password: string;
+  role?: 'GUEST';
 };
 
 export type LoginDto = {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 };
-
-export type TournamentCreateDto = {
-    name: string;
-    year: number;
-    format: string;
-};
-
-export type TournamentUpdateDto = Partial<TournamentCreateDto>;
 
 export type TeamCreateDto = {
-    name: string;
-    country: string;
-    coach: string;
+  name: string;
+  country: string;
+  countryShortName: string;
+  countryFlag: string;
+  coach: string;
+};
+
+export type TeamUpdateDto = Partial<TeamCreateDto>;
+
+export type PlayerCreateDto = {
+  teamId: string;
+  firstName: string;
+  lastName: string;
+  shirtNumber: number;
+  position: string;
+  status?: PlayerStatus;
+};
+
+export type PlayerUpdateDto = Partial<Omit<PlayerCreateDto, 'teamId'>>;
+
+export type PlayerStatusDto = {
+  status: PlayerStatus;
 };
 
 export type RoundCreateDto = {
-    tournamentId: string;
-    name: string;
-    orderNumber: number;
+  name: string;
+  orderNumber: number;
 };
 
 export type MatchCreateDto = {
-    tournamentId: string;
-    roundId: string;
-    homeTeamId: string;
-    awayTeamId: string;
-    matchDate: string;
-    refereeId?: string;
+  roundId: string;
+  homeTeamId: string;
+  awayTeamId: string;
+  matchDate: string;
+  refereeId?: string | null;
+};
+
+export type GoalInputDto = {
+  playerId: string;
+  teamId: string;
+  minute: number;
+};
+
+export type MatchStatusDto = {
+  status: MatchStatus;
 };
 
 export type MatchResultDto = {
-    homeScore: number;
-    awayScore: number;
-    status?: MatchStatus;
+  homeScore?: number;
+  awayScore?: number;
+  status?: MatchStatus;
+  goals?: GoalInputDto[];
 };
 
-export type RegisterTeamDto = {
-    teamId: string;
+export type RoundSimulationResponse = {
+  round: RoundResponse;
+  matches: MatchResponse[];
+  goalsCreated: number;
 };
 
-export type TournamentResponse = {
-    id: string;
-    name: string;
-    year: number;
-    format: string;
-    createdAt: string;
-    updatedAt: string;
+export type UserResponse = {
+  id: string;
+  username: string;
+  role: UserRole;
+  countryShortName: string | null;
+  countryFlag: string | null;
+  teamId: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type TeamResponse = {
-    id: string;
-    name: string;
-    country: string;
-    coach: string;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  name: string;
+  country: string;
+  countryShortName: string;
+  countryFlag: string;
+  coach: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PlayerResponse = {
+  id: string;
+  teamId: string;
+  firstName: string;
+  lastName: string;
+  shirtNumber: number;
+  position: string;
+  status: PlayerStatus;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type RoundResponse = {
-    id: string;
-    tournamentId: string;
-    name: string;
-    orderNumber: number;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  name: string;
+  orderNumber: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GoalResponse = {
+  id: string;
+  matchId: string;
+  playerId: string;
+  teamId: string;
+  minute: number;
+  createdAt: string;
 };
 
 export type MatchResponse = {
-    id: string;
-    tournamentId: string;
-    roundId: string;
-    homeTeamId: string;
-    awayTeamId: string;
-    refereeId: string | null;
-    homeScore: number | null;
-    awayScore: number | null;
-    matchDate: string;
-    status: MatchStatus;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  roundId: string;
+  homeTeamId: string | null;
+  awayTeamId: string | null;
+  refereeId: string | null;
+  refereeName: string | null;
+  refereeCountryFlag?: string | null;
+  homeCoach: string | null;
+  awayCoach: string | null;
+  homeScore: number | null;
+  awayScore: number | null;
+  matchDate: string;
+  status: MatchStatus;
+  createdAt: string;
+  updatedAt: string;
 };
 
-export type StandingsRow = {
-    teamId: string;
-    teamName: string;
-    played: number;
-    won: number;
-    drawn: number;
-    lost: number;
-    goalsFor: number;
-    goalsAgainst: number;
-    goalDifference: number;
-    points: number;
+export type StandingRow = {
+  teamId: string;
+  teamName: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number;
+};
+
+export type TopScorerRow = {
+  playerId: string;
+  playerName: string;
+  teamId: string;
+  teamName: string;
+  teamCountryFlag: string;
+  goals: number;
+};
+
+export type CompetitionOverviewResponse = {
+  competition: CompetitionMetadata;
+  teams: TeamResponse[];
+  rounds: RoundResponse[];
+  matches: MatchResponse[];
+  standings: StandingRow[];
+  topScorers: TopScorerRow[];
 };

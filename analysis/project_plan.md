@@ -28,14 +28,6 @@ Build a full-stack web app named worldcup-manager-2026 that manages one fixed Wo
 - View competition bracket progress
 - Role-based views for admin, coach, referee, and guest
 
-### Out of Scope (Phase 2)
-
-- Group-stage league logic and points table standings
-- Live score integration from external APIs
-- Public ticketing or payment
-- Native mobile app
-- Real-time chat
-
 ## 4. Core Domain Model
 
 Main entities:

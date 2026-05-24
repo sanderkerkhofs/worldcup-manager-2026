@@ -58,18 +58,18 @@ Insert order:
 
 The following users are created:
 
-| username | password    | role      |
-| -------- | ----------- | --------- |
-| admin    | admin123    | ADMIN     |
-| greetjej | greetjej123 | ORGANIZER |
-| elkes    | elkes123    | VIEWER    |
-| johanp   | elkes123    | VIEWER    |
-| referee1 | referee123  | REFEREE   |
-| referee2 | referee123  | REFEREE   |
-| referee3 | referee123  | REFEREE   |
-| referee4 | referee123  | REFEREE   |
-| referee5 | referee123  | REFEREE   |
-| referee6 | referee123  | REFEREE   |
+| username          | password   | role    |
+| ----------------- | ---------- | ------- |
+| admin             | admin123   | ADMIN   |
+| belgium_coach     | coach123   | COACH   |
+| belgium_referee   | referee123 | REFEREE |
+| Michael_Oliver    | referee123 | REFEREE |
+| Anthony_Taylor    | referee123 | REFEREE |
+| Francois_Letexier | referee123 | REFEREE |
+| Clement_Turpin    | referee123 | REFEREE |
+| Felix_Zwayer      | referee123 | REFEREE |
+| Ismail_Elfath     | referee123 | REFEREE |
+| Tori_Penso        | referee123 | REFEREE |
 
 Notes:
 

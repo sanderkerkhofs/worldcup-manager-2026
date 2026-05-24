@@ -6,6 +6,7 @@ export type RequestUser = {
     id: string;
     username: string;
     role: string;
+    teamId: string | null;
 };
 
 export function authenticateToken(req: Request, _res: Response, next: NextFunction): void {
@@ -23,6 +24,7 @@ export function authenticateToken(req: Request, _res: Response, next: NextFuncti
         id: payload.sub,
         username: payload.username,
         role: payload.role,
+        teamId: payload.teamId,
     };
 
     next();

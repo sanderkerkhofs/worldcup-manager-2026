@@ -1,141 +1,177 @@
 import { prisma } from '../repository/prisma/client';
+import { competition, fixedRoundMatchCounts, fixedRounds, seededPlayersPerTeam } from './competition';
 import { hashPassword } from './password';
 
+const playerFirstNames = [
+  'Alex', 'Marco', 'Luis', 'Jamal', 'Tariq', 'Hugo', 'Noah', 'Mateo', 'Omar', 'Ethan',
+  'Luka', 'Sven', 'Youssef', 'Kenta', 'Rayan', 'Pablo', 'Leon', 'Adem', 'Nico', 'Samir',
+];
+
+const playerLastNames = [
+  'Silva', 'Garcia', 'Mendes', 'Khan', 'Lopez', 'Rossi', 'Hansen', 'Ibrahim', 'Costa', 'Santos',
+  'Okafor', 'Berg', 'Diaz', 'Sato', 'Haddad', 'Ferreira', 'Ivanov', 'Amin', 'Khalil', 'Moreira',
+];
+
+const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+
+const seededReferees = [
+  { username: 'Michael_Oliver', countryShortName: 'ENG' },
+  { username: 'Anthony_Taylor', countryShortName: 'ENG' },
+  { username: 'Francois_Letexier', countryShortName: 'FRA' },
+  { username: 'Clement_Turpin', countryShortName: 'FRA' },
+  { username: 'Felix_Zwayer', countryShortName: 'GER' },
+  { username: 'Ismail_Elfath', countryShortName: 'USA' },
+  { username: 'Tori_Penso', countryShortName: 'USA' },
+  { username: 'belgium_referee', countryShortName: 'BEL' },
+] as const;
+
 async function main() {
-	await prisma.match.deleteMany();
-	await prisma.round.deleteMany();
-	await prisma.tournamentTeam.deleteMany();
-	await prisma.tournament.deleteMany();
-	await prisma.team.deleteMany();
-	await prisma.user.deleteMany();
+  await prisma.goal.deleteMany();
+  await prisma.match.deleteMany();
+  await prisma.player.deleteMany();
+  await prisma.round.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.team.deleteMany();
 
-	const [adminHash, organizerHash, viewerHash, refereeHash] = await Promise.all([
-		hashPassword('admin123'),
-		hashPassword('greetjej123'),
-		hashPassword('elkes123'),
-		hashPassword('referee123'),
-	]);
+  const [adminHash, coachHash, refereeHash] = await Promise.all([
+    hashPassword('admin123'),
+    hashPassword('coach123'),
+    hashPassword('referee123'),
+  ]);
 
-	await prisma.user.createMany({
-		data: [
-			// Keep these required users unchanged.
-			{ username: 'admin', passwordHash: adminHash, role: 'ADMIN' },
-			{ username: 'greetjej', passwordHash: organizerHash, role: 'ORGANIZER' },
-			{ username: 'elkes', passwordHash: viewerHash, role: 'VIEWER' },
-			{ username: 'johanp', passwordHash: viewerHash, role: 'VIEWER' },
-			// Additional referees for assignment-based authorization checks.
-			{ username: 'referee1', passwordHash: refereeHash, role: 'REFEREE' },
-			{ username: 'referee2', passwordHash: refereeHash, role: 'REFEREE' },
-			{ username: 'referee3', passwordHash: refereeHash, role: 'REFEREE' },
-			{ username: 'referee4', passwordHash: refereeHash, role: 'REFEREE' },
-			{ username: 'referee5', passwordHash: refereeHash, role: 'REFEREE' },
-			{ username: 'referee6', passwordHash: refereeHash, role: 'REFEREE' },
-		],
-	});
+  await prisma.user.createMany({
+    data: [
+      { username: 'admin', passwordHash: adminHash, role: 'ADMIN' },
+      { username: 'belgium_coach', passwordHash: coachHash, role: 'COACH', countryShortName: 'BEL' },
+      ...seededReferees.map((referee) => ({
+        username: referee.username,
+        passwordHash: refereeHash,
+        role: 'REFEREE' as const,
+        countryShortName: referee.countryShortName,
+      })),
+    ],
+  });
 
-	const referees = await prisma.user.findMany({
-		where: { role: 'REFEREE' },
-		orderBy: { username: 'asc' },
-	});
+  const refereeUsers = await prisma.user.findMany({
+    where: { role: 'REFEREE' },
+    orderBy: { username: 'asc' },
+  });
 
-	const teams = await prisma.team.createManyAndReturn({
-		data: [
-			{ name: 'Argentina', country: 'Argentina', coach: 'Star: Lionel Messi' },
-			{ name: 'Brazil', country: 'Brazil', coach: 'Star: Vinicius Junior' },
-			{ name: 'France', country: 'France', coach: 'Star: Kylian Mbappe' },
-			{ name: 'Germany', country: 'Germany', coach: 'Star: Jamal Musiala' },
-			{ name: 'Spain', country: 'Spain', coach: 'Star: Rodri' },
-			{ name: 'England', country: 'England', coach: 'Star: Harry Kane' },
-			{ name: 'Netherlands', country: 'Netherlands', coach: 'Star: Virgil van Dijk' },
-			{ name: 'Portugal', country: 'Portugal', coach: 'Star: Cristiano Ronaldo' },
-			{ name: 'Belgium', country: 'Belgium', coach: 'Star: Kevin De Bruyne' },
-			{ name: 'Italy', country: 'Italy', coach: 'Star: Gianluigi Donnarumma' },
-			{ name: 'Croatia', country: 'Croatia', coach: 'Star: Luka Modric' },
-			{ name: 'Uruguay', country: 'Uruguay', coach: 'Star: Federico Valverde' },
-			{ name: 'Colombia', country: 'Colombia', coach: 'Star: Luis Diaz' },
-			{ name: 'United States', country: 'United States', coach: 'Star: Christian Pulisic' },
-			{ name: 'Mexico', country: 'Mexico', coach: 'Star: Santiago Gimenez' },
-			{ name: 'Canada', country: 'Canada', coach: 'Star: Alphonso Davies' },
-			{ name: 'Japan', country: 'Japan', coach: 'Star: Takefusa Kubo' },
-			{ name: 'South Korea', country: 'South Korea', coach: 'Star: Son Heung-min' },
-			{ name: 'Australia', country: 'Australia', coach: 'Star: Mathew Leckie' },
-			{ name: 'Morocco', country: 'Morocco', coach: 'Star: Achraf Hakimi' },
-			{ name: 'Senegal', country: 'Senegal', coach: 'Star: Sadio Mane' },
-			{ name: 'Nigeria', country: 'Nigeria', coach: 'Star: Victor Osimhen' },
-			{ name: 'Egypt', country: 'Egypt', coach: 'Star: Mohamed Salah' },
-			{ name: 'Cameroon', country: 'Cameroon', coach: 'Star: Andre Onana' },
-			{ name: 'Ghana', country: 'Ghana', coach: 'Star: Mohammed Kudus' },
-			{ name: 'Algeria', country: 'Algeria', coach: 'Star: Riyad Mahrez' },
-			{ name: 'Switzerland', country: 'Switzerland', coach: 'Star: Granit Xhaka' },
-			{ name: 'Denmark', country: 'Denmark', coach: 'Star: Christian Eriksen' },
-			{ name: 'Poland', country: 'Poland', coach: 'Star: Robert Lewandowski' },
-			{ name: 'Serbia', country: 'Serbia', coach: 'Star: Aleksandar Mitrovic' },
-			{ name: 'Austria', country: 'Austria', coach: 'Star: David Alaba' },
-			{ name: 'Turkey', country: 'Turkey', coach: 'Star: Hakan Calhanoglu' },
-		],
-	});
+  const teamSeedData = [
+    { name: 'Argentina', country: 'Argentina', countryShortName: 'ARG', countryFlag: '🇦🇷', coach: 'Lionel Scaloni' },
+    { name: 'Brazil', country: 'Brazil', countryShortName: 'BRA', countryFlag: '🇧🇷', coach: 'Dorival Junior' },
+    { name: 'France', country: 'France', countryShortName: 'FRA', countryFlag: '🇫🇷', coach: 'Didier Deschamps' },
+    { name: 'Germany', country: 'Germany', countryShortName: 'GER', countryFlag: '🇩🇪', coach: 'Julian Nagelsmann' },
+    { name: 'Spain', country: 'Spain', countryShortName: 'ESP', countryFlag: '🇪🇸', coach: 'Luis de la Fuente' },
+    { name: 'England', country: 'England', countryShortName: 'ENG', countryFlag: '🏴', coach: 'Gareth Southgate' },
+    { name: 'Netherlands', country: 'Netherlands', countryShortName: 'NED', countryFlag: '🇳🇱', coach: 'Ronald Koeman' },
+    { name: 'Portugal', country: 'Portugal', countryShortName: 'POR', countryFlag: '🇵🇹', coach: 'Roberto Martinez' },
+    { name: 'Belgium', country: 'Belgium', countryShortName: 'BEL', countryFlag: '🇧🇪', coach: 'Domenico Tedesco' },
+    { name: 'Italy', country: 'Italy', countryShortName: 'ITA', countryFlag: '🇮🇹', coach: 'Luciano Spalletti' },
+    { name: 'Croatia', country: 'Croatia', countryShortName: 'CRO', countryFlag: '🇭🇷', coach: 'Zlatko Dalic' },
+    { name: 'Uruguay', country: 'Uruguay', countryShortName: 'URU', countryFlag: '🇺🇾', coach: 'Marcelo Bielsa' },
+    { name: 'Colombia', country: 'Colombia', countryShortName: 'COL', countryFlag: '🇨🇴', coach: 'Nestor Lorenzo' },
+    { name: 'United States', country: 'United States', countryShortName: 'USA', countryFlag: '🇺🇸', coach: 'Gregg Berhalter' },
+    { name: 'Mexico', country: 'Mexico', countryShortName: 'MEX', countryFlag: '🇲🇽', coach: 'Javier Aguirre' },
+    { name: 'Canada', country: 'Canada', countryShortName: 'CAN', countryFlag: '🇨🇦', coach: 'Jesse Marsch' },
+    { name: 'Japan', country: 'Japan', countryShortName: 'JPN', countryFlag: '🇯🇵', coach: 'Hajime Moriyasu' },
+    { name: 'South Korea', country: 'South Korea', countryShortName: 'KOR', countryFlag: '🇰🇷', coach: 'Jurgen Klinsmann' },
+    { name: 'Australia', country: 'Australia', countryShortName: 'AUS', countryFlag: '🇦🇺', coach: 'Graham Arnold' },
+    { name: 'Morocco', country: 'Morocco', countryShortName: 'MAR', countryFlag: '🇲🇦', coach: 'Walid Regragui' },
+    { name: 'Senegal', country: 'Senegal', countryShortName: 'SEN', countryFlag: '🇸🇳', coach: 'Aliou Cisse' },
+    { name: 'Nigeria', country: 'Nigeria', countryShortName: 'NGA', countryFlag: '🇳🇬', coach: 'Jose Peseiro' },
+    { name: 'Egypt', country: 'Egypt', countryShortName: 'EGY', countryFlag: '🇪🇬', coach: 'Rui Vitoria' },
+    { name: 'Cameroon', country: 'Cameroon', countryShortName: 'CMR', countryFlag: '🇨🇲', coach: 'Rigobert Song' },
+    { name: 'Ghana', country: 'Ghana', countryShortName: 'GHA', countryFlag: '🇬🇭', coach: 'Otto Addo' },
+    { name: 'Algeria', country: 'Algeria', countryShortName: 'ALG', countryFlag: '🇩🇿', coach: 'Djamel Belmadi' },
+    { name: 'Switzerland', country: 'Switzerland', countryShortName: 'SUI', countryFlag: '🇨🇭', coach: 'Murat Yakin' },
+    { name: 'Denmark', country: 'Denmark', countryShortName: 'DEN', countryFlag: '🇩🇰', coach: 'Kasper Hjulmand' },
+    { name: 'Poland', country: 'Poland', countryShortName: 'POL', countryFlag: '🇵🇱', coach: 'Michal Probierz' },
+    { name: 'Serbia', country: 'Serbia', countryShortName: 'SRB', countryFlag: '🇷🇸', coach: 'Dragan Stojkovic' },
+    { name: 'Austria', country: 'Austria', countryShortName: 'AUT', countryFlag: '🇦🇹', coach: 'Ralf Rangnick' },
+    { name: 'Turkey', country: 'Turkey', countryShortName: 'TUR', countryFlag: '🇹🇷', coach: 'Vincenzo Montella' },
+  ];
 
-	const tournament = await prisma.tournament.create({
-		data: {
-			name: 'worldcup-manager-2026',
-			year: 2026,
-			format: 'Knockout',
-		},
-	});
+  const shuffledTeams = [...teamSeedData].sort(() => Math.random() - 0.5).slice(0, 16);
 
-	const rounds = await prisma.round.createManyAndReturn({
-		data: [
-			{ tournamentId: tournament.id, name: '16th Final', orderNumber: 1 },
-			{ tournamentId: tournament.id, name: 'Round of 16', orderNumber: 2 },
-			{ tournamentId: tournament.id, name: 'Quarterfinals', orderNumber: 3 },
-			{ tournamentId: tournament.id, name: 'Semifinals', orderNumber: 4 },
-			{ tournamentId: tournament.id, name: 'Final', orderNumber: 5 },
-		],
-	});
+  const teams = await prisma.team.createManyAndReturn({ data: shuffledTeams });
 
-	await prisma.tournamentTeam.createMany({
-		data: teams.map((team) => ({
-			tournamentId: tournament.id,
-			teamId: team.id,
-		})),
-	});
+  for (const team of teams) {
+    await prisma.user.create({
+      data: {
+        username: team.coach.replace(/\s+/g, '_'),
+        passwordHash: coachHash,
+        role: 'COACH',
+        countryShortName: team.countryShortName,
+        teamId: team.id,
+      },
+    });
+  }
 
-	const sixteenthFinalRound = rounds.find((round) => round.name === '16th Final');
-	if (!sixteenthFinalRound) {
-		throw new Error('16th Final round is missing from seed setup.');
-	}
+  for (const team of teams) {
+    await prisma.player.createMany({
+      data: Array.from({ length: seededPlayersPerTeam }, (_unused, index) => ({
+        teamId: team.id,
+        firstName: playerFirstNames[(index + team.name.length) % playerFirstNames.length],
+        lastName: playerLastNames[(index + team.country.length) % playerLastNames.length],
+        shirtNumber: index + 1,
+        position: positions[index % positions.length],
+        status: index < 12 ? 'AVAILABLE' : 'UNAVAILABLE',
+      })),
+    });
+  }
 
-	const seededMatches = Array.from({ length: 16 }, (_unused, index) => {
-		const homeTeam = teams[index * 2];
-		const awayTeam = teams[index * 2 + 1];
-		const referee = referees[index % referees.length];
-		const isCompleted = index < 4;
-		const matchDay = 10 + Math.floor(index / 2);
-		const matchHour = index % 2 === 0 ? 14 : 18;
+  const rounds = await prisma.round.createManyAndReturn({
+    data: fixedRounds.map((round) => ({
+      name: round.name,
+      orderNumber: round.orderNumber,
+    })),
+  });
 
-		return {
-			tournamentId: tournament.id,
-			roundId: sixteenthFinalRound.id,
-			homeTeamId: homeTeam.id,
-			awayTeamId: awayTeam.id,
-			refereeId: referee?.id,
-			matchDate: new Date(Date.UTC(2026, 5, matchDay, matchHour, 0, 0)),
-			status: isCompleted ? 'COMPLETED' : 'SCHEDULED',
-			homeScore: isCompleted ? 2 : null,
-			awayScore: isCompleted ? 1 : null,
-		};
-	});
+  const orderedRounds = [...rounds].sort((left, right) => left.orderNumber - right.orderNumber);
+  const allMatches = [] as Array<{
+    roundId: string;
+    homeTeamId: string | null;
+    awayTeamId: string | null;
+    refereeId: string | null;
+    matchDate: Date;
+    status: 'NOT_STARTED';
+    homeScore: null;
+    awayScore: null;
+  }>;
 
-	await prisma.match.createMany({ data: seededMatches });
+  for (const round of orderedRounds) {
+    const roundMatchCount = fixedRoundMatchCounts[round.orderNumber - 1] ?? 0;
 
-	console.log('Database seeded with worldcup-manager-2026, 32 teams, 16th Final matches, and multiple referees.');
+    for (let index = 0; index < roundMatchCount; index += 1) {
+      const referee = refereeUsers[(index + round.orderNumber) % refereeUsers.length];
+      const hasKnownTeams = round.orderNumber === 1;
+      const homeTeam = hasKnownTeams ? teams[index * 2] : null;
+      const awayTeam = hasKnownTeams ? teams[index * 2 + 1] : null;
+
+      allMatches.push({
+        roundId: round.id,
+        homeTeamId: homeTeam?.id ?? null,
+        awayTeamId: awayTeam?.id ?? null,
+        refereeId: referee?.id ?? null,
+        matchDate: new Date(Date.UTC(2026, 5, 10 + round.orderNumber * 2 + index, index % 2 === 0 ? 14 : 18, 0, 0)),
+        status: 'NOT_STARTED',
+        homeScore: null,
+        awayScore: null,
+      });
+    }
+  }
+
+  await prisma.match.createMany({ data: allMatches });
+
+  console.log(`Database seeded with ${competition.name}, 16 teams, 4 rounds, 15 players per team, and multiple referees.`);
 }
 
 main()
-	.catch((error) => {
-		console.error(error);
-		process.exitCode = 1;
-	})
-	.finally(async () => {
-		await prisma.$disconnect();
-	});
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

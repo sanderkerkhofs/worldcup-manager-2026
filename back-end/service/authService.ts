@@ -1,73 +1,77 @@
-import { UserRole as PrismaUserRole } from '@prisma/client';
+import { prisma } from '../repository/prisma/client';
 import { comparePassword, hashPassword } from '../util/password';
 import { signAccessToken } from '../util/jwt';
-import { ValidationError, UnauthorizedError } from '../util/errors';
+import { ValidationError, NotFoundError, UnauthorizedError } from '../util/errors';
+import { User } from '../model/user';
 import { AuthUser, LoginDto, RegisterDto } from '../types';
-import { createUser, findUserByUsername } from '../repository/userRepository';
+import { getCountryFlagFromShortName } from '../util/country';
 
-function normalizeRole(role?: string): PrismaUserRole {
-    if (!role) {
-        return PrismaUserRole.VIEWER;
-    }
-
-    if (role === 'ADMIN' || role === 'ORGANIZER' || role === 'REFEREE' || role === 'VIEWER') {
-        return role as PrismaUserRole;
-    }
-
-    throw new ValidationError(`Unsupported role: ${role}.`);
+function toPublicUser(user: User): AuthUser {
+  return {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+    countryShortName: user.countryShortName,
+    countryFlag: getCountryFlagFromShortName(user.countryShortName),
+    teamId: user.teamId,
+  };
 }
 
-export async function registerUser(input: RegisterDto): Promise<{ user: AuthUser; token: string; }> {
-    if (input.username.trim().length < 3) {
-        throw new ValidationError('Username must contain at least 3 characters.');
-    }
+function toAuthResponse(user: User) {
+  const token = signAccessToken({
+    sub: user.id,
+    username: user.username,
+    role: user.role,
+    teamId: user.teamId,
+  });
 
-    if (input.password.length < 6) {
-        throw new ValidationError('Password must contain at least 6 characters.');
-    }
-
-    const existingUser = await findUserByUsername(input.username.trim());
-
-    if (existingUser) {
-        throw new ValidationError('A user with this username already exists.');
-    }
-
-    const passwordHash = await hashPassword(input.password);
-    const user = await createUser({
-        username: input.username.trim(),
-        passwordHash,
-        role: normalizeRole(input.role),
-    });
-
-    const authUser = user.toAuthUser();
-    const token = signAccessToken({
-        sub: authUser.id,
-        username: authUser.username,
-        role: authUser.role,
-    });
-
-    return { user: authUser, token };
+  return { user: toPublicUser(user), token };
 }
 
-export async function loginUser(input: LoginDto): Promise<{ user: AuthUser; token: string; }> {
-    const user = await findUserByUsername(input.username.trim());
+export async function registerGuestUser(input: RegisterDto) {
+  if (input.role && input.role !== 'GUEST') {
+    throw new ValidationError('Public registration can only create guest accounts.');
+  }
 
-    if (!user) {
-        throw new UnauthorizedError('Incorrect username or password.');
-    }
+  const existingUser = await prisma.user.findUnique({ where: { username: input.username } });
 
-    const passwordMatches = await comparePassword(input.password, user.passwordHash);
+  if (existingUser) {
+    throw new ValidationError('Username is already taken.');
+  }
 
-    if (!passwordMatches) {
-        throw new UnauthorizedError('Incorrect username or password.');
-    }
+  const user = await prisma.user.create({
+    data: {
+      username: input.username.trim(),
+      passwordHash: await hashPassword(input.password),
+      role: 'GUEST',
+    },
+  });
 
-    const authUser = user.toAuthUser();
-    const token = signAccessToken({
-        sub: authUser.id,
-        username: authUser.username,
-        role: authUser.role,
-    });
+  return toAuthResponse(User.from(user));
+}
 
-    return { user: authUser, token };
+export async function loginUser(input: LoginDto) {
+  const user = await prisma.user.findUnique({ where: { username: input.username } });
+
+  if (!user) {
+    throw new UnauthorizedError('Invalid username or password.');
+  }
+
+  const isPasswordValid = await comparePassword(input.password, user.passwordHash);
+
+  if (!isPasswordValid) {
+    throw new UnauthorizedError('Invalid username or password.');
+  }
+
+  return toAuthResponse(User.from(user));
+}
+
+export async function getCurrentUser(userId: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new NotFoundError('User was not found.');
+  }
+
+  return toPublicUser(User.from(user));
 }

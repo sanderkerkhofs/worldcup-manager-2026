@@ -106,14 +106,6 @@ This checklist translates the additional school requirements into implementation
 
 Provide predefined users visible on home/welcome page for lecturer testing:
 
-| username | password    | role                             |
-| -------- | ----------- | -------------------------------- |
-| greetjej | greetjej123 | lecturer (or project equivalent) |
-| elkes    | elkes123    | student (or project equivalent)  |
-| johanp   | johanp123   | guest (or project equivalent)    |
-| referee  | referee123  | referee                          |
-| admin    | admin123    | admin                            |
-
 If username/password does not match validation rules, show adjusted values in bold red on welcome page as requested.
 
 ## 11. Internationalization (i18n)

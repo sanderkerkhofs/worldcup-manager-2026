@@ -1,37 +1,59 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { LoginForm } from '../components/LoginForm';
-import { register, login } from '../services/authService';
 import { useSession } from '../lib/useSession';
-import { useT } from '../lib/i18n';
+import { login } from '../services/authService';
 
 export default function LoginPage() {
-    const t = useT();
-    const router = useRouter();
-    const { persist } = useSession();
-    const [mode, setMode] = useState<'login' | 'register'>('login');
-    const [error, setError] = useState<string | null>(null);
+  const { setSession } = useSession();
+  const router = useRouter();
 
-    async function handleAuth(input: Parameters<typeof login>[0]) {
-        try {
-            const session = mode === 'login' ? await login(input) : await register(input as Parameters<typeof register>[0]);
-            persist(session);
-            await router.push('/tournaments');
-        } catch (caughtError) {
-            setError(caughtError instanceof Error ? caughtError.message : 'Authentication failed.');
-        }
-    }
-
-    return (
-        <div className="auth-layout">
-            <section className="auth-panel">
-                <h2>{t('auth.title')}</h2>
-                <div className="toggle-row">
-                    <button className={mode === 'login' ? 'toggle active' : 'toggle'} onClick={() => setMode('login')} type="button">{t('auth.login')}</button>
-                    <button className={mode === 'register' ? 'toggle active' : 'toggle'} onClick={() => setMode('register')} type="button">{t('auth.register')}</button>
-                </div>
-                <LoginForm mode={mode} onSubmit={handleAuth} error={error} />
-            </section>
+  return (
+    <section className="authSection authSectionWide">
+      <div className="authCard">
+        <h2>Predefined Access</h2>
+        <p className="muted">Use one of these credentials for role-based testing. Guest pages are public and do not require login.</p>
+        <div className="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>admin</td>
+                <td>admin123</td>
+                <td>admin</td>
+              </tr>
+              <tr>
+                <td>belgium_coach</td>
+                <td>coach123</td>
+                <td>coach</td>
+              </tr>
+              <tr>
+                <td>belgium_referee</td>
+                <td>referee123</td>
+                <td>referee</td>
+              </tr>
+              <tr>
+                <td>-</td>
+                <td>-</td>
+                <td>guest (no login needed)</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    );
+      </div>
+
+      <LoginForm
+        onSubmit={async (username, password) => {
+          const response = await login(username, password);
+          setSession(response.token, response.user);
+          await router.push('/');
+        }}
+      />
+    </section>
+  );
 }

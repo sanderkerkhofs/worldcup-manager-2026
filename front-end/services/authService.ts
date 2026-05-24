@@ -1,14 +1,22 @@
-import { apiPost, apiGet } from '@lib/api';
-import { AuthSession, LoginInput, RegisterInput } from '@types';
+import { api } from '../lib/api';
+import { AuthResponse, AuthUser } from '../types';
 
-export async function login(input: LoginInput): Promise<AuthSession> {
-    return apiPost<AuthSession>('/auth/login', input);
+export async function login(username: string, password: string): Promise<AuthResponse> {
+  return api.post<AuthResponse>('/api/auth/login', { username, password });
 }
 
-export async function register(input: RegisterInput): Promise<AuthSession> {
-    return apiPost<AuthSession>('/auth/register', input);
+export async function register(username: string, password: string): Promise<AuthResponse> {
+  return api.post<AuthResponse>('/api/auth/register', { username, password });
 }
 
-export async function readCurrentUser() {
-    return apiGet<AuthSession['user']>('/auth/me');
+export async function me(token: string): Promise<AuthUser> {
+  return api.get<AuthUser>('/api/auth/me', token);
+}
+
+export async function listUsers(token: string): Promise<AuthUser[]> {
+  return api.get<AuthUser[]>('/api/users', token);
+}
+
+export async function deleteUser(userId: string, token: string): Promise<void> {
+  return api.del<void>(`/api/users/${userId}`, token);
 }

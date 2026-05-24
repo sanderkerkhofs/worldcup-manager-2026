@@ -1,60 +1,92 @@
-import { Tournament } from '../model/tournament';
+import { Team } from '../model/team';
+import { Player } from '../model/player';
 import { Match } from '../model/match';
 
-describe('Tournament domain validation', () => {
-    it('creates a valid tournament', () => {
-        const tournament = new Tournament({
-            id: 'tournament-1',
-            name: 'Campus Cup',
-            year: 2026,
-            format: 'League',
-        });
-
-        expect(tournament.name).toBe('Campus Cup');
-        expect(tournament.year).toBe(2026);
+describe('Team domain validation', () => {
+  it('creates a valid team', () => {
+    const team = new Team({
+      id: 'team-1',
+      name: 'Argentina',
+      country: 'Argentina',
+      countryShortName: 'ARG',
+      countryFlag: '🇦🇷',
+      coach: 'Lionel Scaloni',
     });
 
-    it('rejects an empty tournament name', () => {
-        expect(() => new Tournament({
-            id: 'tournament-2',
-            name: '   ',
-            year: 2026,
-            format: 'League',
-        })).toThrow('Tournament name is required.');
+    expect(team.name).toBe('Argentina');
+    expect(team.country).toBe('Argentina');
+  });
+
+  it('rejects an empty team name', () => {
+    expect(() => new Team({
+      id: 'team-2',
+      name: '   ',
+      country: 'Argentina',
+      countryShortName: 'ARG',
+      countryFlag: '🇦🇷',
+      coach: 'Coach',
+    })).toThrow('Team name is required.');
+  });
+});
+
+describe('Player domain validation', () => {
+  it('creates a valid player', () => {
+    const player = new Player({
+      id: 'player-1',
+      teamId: 'team-1',
+      firstName: 'Lionel',
+      lastName: 'Messi',
+      shirtNumber: 10,
+      position: 'Forward',
+      status: 'AVAILABLE',
     });
+
+    expect(player.shirtNumber).toBe(10);
+    expect(player.status).toBe('AVAILABLE');
+  });
+
+  it('rejects an invalid shirt number', () => {
+    expect(() => new Player({
+      id: 'player-2',
+      teamId: 'team-1',
+      firstName: 'Test',
+      lastName: 'Player',
+      shirtNumber: 0,
+      position: 'Midfielder',
+      status: 'AVAILABLE',
+    })).toThrow('Shirt number must be a positive integer.');
+  });
 });
 
 describe('Match domain validation', () => {
-    it('creates a valid match', () => {
-        const match = new Match({
-            id: 'match-1',
-            tournamentId: 'tournament-1',
-            roundId: 'round-1',
-            homeTeamId: 'team-1',
-            awayTeamId: 'team-2',
-            refereeId: null,
-            homeScore: null,
-            awayScore: null,
-            matchDate: new Date('2026-05-10T18:00:00.000Z'),
-            status: 'SCHEDULED',
-        });
-
-        expect(match.homeTeamId).toBe('team-1');
-        expect(match.status).toBe('SCHEDULED');
+  it('creates a valid match', () => {
+    const match = new Match({
+      id: 'match-1',
+      roundId: 'round-1',
+      homeTeamId: 'team-1',
+      awayTeamId: 'team-2',
+      refereeId: null,
+      homeScore: null,
+      awayScore: null,
+      matchDate: new Date('2026-05-10T18:00:00.000Z'),
+      status: 'NOT_STARTED',
     });
 
-    it('rejects matches where the same team plays itself', () => {
-        expect(() => new Match({
-            id: 'match-2',
-            tournamentId: 'tournament-1',
-            roundId: 'round-1',
-            homeTeamId: 'team-1',
-            awayTeamId: 'team-1',
-            refereeId: null,
-            homeScore: null,
-            awayScore: null,
-            matchDate: new Date('2026-05-10T18:00:00.000Z'),
-            status: 'SCHEDULED',
-        })).toThrow('Home team and away team must be different.');
-    });
+    expect(match.homeTeamId).toBe('team-1');
+    expect(match.status).toBe('NOT_STARTED');
+  });
+
+  it('rejects matches where the same team plays itself', () => {
+    expect(() => new Match({
+      id: 'match-2',
+      roundId: 'round-1',
+      homeTeamId: 'team-1',
+      awayTeamId: 'team-1',
+      refereeId: null,
+      homeScore: null,
+      awayScore: null,
+      matchDate: new Date('2026-05-10T18:00:00.000Z'),
+      status: 'NOT_STARTED',
+    })).toThrow('Home team and away team must be different.');
+  });
 });

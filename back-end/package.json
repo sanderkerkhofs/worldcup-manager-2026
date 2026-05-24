@@ -10,7 +10,7 @@
     },
     "scripts": {
         "db:generate": "prisma generate",
-        "db:seed": "ts-node util/seed.ts",
+        "db:seed": "prisma db push --force-reset && ts-node util/seed.ts",
         "test": "jest",
         "start": "nodemon -L app.ts --delay 3"
     },

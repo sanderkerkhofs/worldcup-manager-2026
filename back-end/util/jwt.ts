@@ -5,6 +5,7 @@ export type JwtPayload = {
     sub: string;
     username: string;
     role: string;
+    teamId: string | null;
 };
 
 export function signAccessToken(payload: JwtPayload): string {

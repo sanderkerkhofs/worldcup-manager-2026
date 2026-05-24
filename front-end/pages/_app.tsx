@@ -1,17 +1,14 @@
 import type { AppProps } from 'next/app';
-import '../styles/globals.css';
-import { LocaleProvider } from '../lib/i18n';
 import { SessionProvider } from '../lib/useSession';
 import { Layout } from '../components/Layout';
+import '../styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
-    return (
-        <SessionProvider>
-            <LocaleProvider>
-                <Layout>
-                    <Component {...pageProps} />
-                </Layout>
-            </LocaleProvider>
-        </SessionProvider>
-    );
+  return (
+    <SessionProvider>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </SessionProvider>
+  );
 }
