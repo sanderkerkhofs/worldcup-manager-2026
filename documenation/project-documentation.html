@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tournament Manager Documentation</title>
+    <style>
+      :root {
+        --bg: #f4f6f8;
+        --card: #ffffff;
+        --ink: #1f2933;
+        --muted: #52606d;
+        --accent: #0d7c66;
+        --line: #d9e2ec;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--ink);
+        background: linear-gradient(180deg, #eef2f5 0%, #f7f9fb 100%);
+      }
+
+      .wrap {
+        width: min(1100px, 94vw);
+        margin: 2rem auto;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 1.5rem;
+      }
+
+      h1, h2, h3 {
+        margin: 0.2rem 0 0.6rem;
+        line-height: 1.2;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        margin-top: 1.4rem;
+        font-size: 1.35rem;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 0.35rem;
+      }
+
+      h3 {
+        margin-top: 1rem;
+        font-size: 1.05rem;
+      }
+
+      p {
+        margin: 0.4rem 0 0.8rem;
+        color: var(--muted);
+      }
+
+      ul {
+        margin: 0.35rem 0 0.8rem 1.2rem;
+      }
+
+      li {
+        margin: 0.2rem 0;
+      }
+
+      code {
+        background: #eef2f7;
+        border: 1px solid #dce6ef;
+        padding: 0.08rem 0.3rem;
+        border-radius: 6px;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 0.92em;
+      }
+
+      pre {
+        margin: 0.6rem 0 1rem;
+        background: #101820;
+        color: #f4f7fa;
+        border-radius: 10px;
+        padding: 0.8rem;
+        overflow-x: auto;
+      }
+
+      pre code {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        color: inherit;
+      }
+
+      .badge {
+        display: inline-block;
+        border: 1px solid #b7f0da;
+        background: #e8fbf3;
+        color: #0f6b57;
+        border-radius: 999px;
+        padding: 0.15rem 0.55rem;
+        font-size: 0.82rem;
+        margin-bottom: 0.6rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.5rem 0 1rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        padding: 0.5rem 0.45rem;
+        vertical-align: top;
+      }
+
+      th {
+        color: #243b53;
+        background: #f8fafc;
+      }
+
+      .small {
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      @media (max-width: 700px) {
+        .wrap {
+          padding: 1rem;
+        }
+
+        h1 {
+          font-size: 1.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <span class="badge">Project Documentation</span>
+      <h1>Tournament Manager</h1>
+      <p>
+        Tournament Manager is a full-stack learning project for managing a football knockout tournament,
+        with role-based workflows for admin, coach, and referee users.
+      </p>
+
+      <h2>1. Technology Stack</h2>
+      <h3>Backend</h3>
+      <ul>
+        <li>Node.js + Express + TypeScript</li>
+        <li>Prisma ORM + PostgreSQL</li>
+        <li>JWT authentication and role-based authorization</li>
+        <li>Swagger/OpenAPI documentation</li>
+      </ul>
+
+      <h3>Frontend</h3>
+      <ul>
+        <li>Next.js (Pages Router) + React + TypeScript</li>
+        <li>SWR for API data fetching</li>
+      </ul>
+
+      <h2>2. Project Structure</h2>
+      <ul>
+        <li><code>analysis/</code>: planning and school deliverables</li>
+        <li><code>back-end/</code>: API, services, models, Prisma, seed scripts</li>
+        <li><code>front-end/</code>: pages, components, client services, styles</li>
+        <li><code>docker-compose.yml</code>: local PostgreSQL setup</li>
+      </ul>
+
+      <h2>3. Core Domain</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Entity</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>User</td><td>System account with role ADMIN, COACH, REFEREE, or GUEST.</td></tr>
+          <tr><td>Team</td><td>National team with country metadata and assigned coach.</td></tr>
+          <tr><td>Player</td><td>Team player with availability state.</td></tr>
+          <tr><td>Round</td><td>Tournament stage (ordered by round number).</td></tr>
+          <tr><td>Match</td><td>Fixture between teams with score, referee, and status.</td></tr>
+          <tr><td>Goal</td><td>Scoring event linked to match, player, and minute.</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Match statuses:</strong> <code>NOT_STARTED</code>, <code>IN_PROGRESS</code>, <code>COMPLETED</code></p>
+
+      <h2>4. Role-Based Access</h2>
+      <ul>
+        <li><strong>ADMIN</strong>: manages users, initiates/simulates rounds, edits matches.</li>
+        <li><strong>COACH</strong>: updates own team player availability.</li>
+        <li><strong>REFEREE</strong>: updates assigned matches and goals.</li>
+        <li><strong>GUEST</strong>: public access to non-protected views.</li>
+      </ul>
+
+      <h2>5. Main Workflows</h2>
+      <h3>Competition progression</h3>
+      <ol>
+        <li>Admin initiates a round.</li>
+        <li>Matches move to <code>IN_PROGRESS</code>.</li>
+        <li>Referee/Admin updates score and goals.</li>
+        <li>Matches are completed and next-round progression can occur.</li>
+      </ol>
+
+      <h3>Match editing validation</h3>
+      <ul>
+        <li>Match teams must be known for active editing.</li>
+        <li>Knockout matches cannot end in a draw.</li>
+        <li>Only available players can be selected as scorers.</li>
+      </ul>
+
+      <h2>6. API Summary</h2>
+      <p class="small">Base URL: <code>http://localhost:3000</code></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Key Endpoints</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Auth</td>
+            <td><code>POST /api/auth/register</code>, <code>POST /api/auth/login</code>, <code>GET /api/auth/me</code></td>
+          </tr>
+          <tr>
+            <td>Competition</td>
+            <td><code>GET /api/competition/overview</code>, <code>GET /api/competition/rounds</code>, <code>POST /api/competition/rounds/:roundId/initiate</code>, <code>POST /api/competition/rounds/:roundId/simulate</code></td>
+          </tr>
+          <tr>
+            <td>Teams</td>
+            <td><code>GET /api/teams</code>, <code>GET /api/teams/:teamId</code>, <code>GET /api/teams/:teamId/players</code>, admin CRUD</td>
+          </tr>
+          <tr>
+            <td>Players</td>
+            <td><code>GET /api/players</code>, <code>GET /api/players/:playerId</code>, admin CRUD, <code>PATCH /api/players/:playerId/status</code></td>
+          </tr>
+          <tr>
+            <td>Matches</td>
+            <td><code>GET /api/matches</code>, <code>GET /api/matches/:matchId</code>, status/result/goals updates</td>
+          </tr>
+          <tr>
+            <td>Users</td>
+            <td><code>GET /api/users</code>, <code>DELETE /api/users/:userId</code> (admin only)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Swagger UI: <code>http://localhost:3000/api-docs</code></p>
+
+      <h2>7. Local Setup</h2>
+      <h3>Start database</h3>
+      <pre><code>docker compose up -d postgres</code></pre>
+
+      <h3>Backend</h3>
+      <pre><code>cd back-end
+npm install
+npm run db:generate
+npm run db:seed
+npm start</code></pre>
+
+      <h3>Frontend</h3>
+      <pre><code>cd front-end
+npm install
+npm run dev</code></pre>
+
+      <h2>8. Seeded Example Accounts</h2>
+      <ul>
+        <li><code>admin</code> / <code>admin123</code></li>
+        <li><code>Domenico_Tedesco</code> / <code>coach123</code></li>
+        <li><code>Frank_De_Bleeckere</code> / <code>referee123</code></li>
+      </ul>
+
+      <h2>9. Quality Checks</h2>
+      <ul>
+        <li>Backend domain tests via Jest</li>
+        <li>Frontend production build validation via Next.js</li>
+        <li>Interactive API docs via Swagger</li>
+      </ul>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>01 - Architecture</title>
+    <style>
+      :root { --bg:#f4f6f8; --card:#fff; --ink:#1f2933; --muted:#52606d; --accent:#0d7c66; --line:#d9e2ec; }
+      *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef2f5 0%,#f7f9fb 100%)}
+      .wrap{width:min(1100px,94vw);margin:2rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+      h2{margin-top:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.35rem} p,li{color:var(--muted)} code{background:#eef2f7;border:1px solid #dce6ef;padding:.08rem .3rem;border-radius:6px}
+      a{color:var(--accent)} .nav{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="nav"><a href="index.html">Index</a> <a href="02-data-model-erd.html">Next: Data Model</a></nav>
+      <h1>01 - Architecture</h1>
+
+      <h2>1. High-Level Architecture</h2>
+      <ul>
+        <li><strong>Frontend (Next.js)</strong> renders pages and calls API endpoints.</li>
+        <li><strong>Backend (Express)</strong> exposes role-based endpoints and business rules.</li>
+        <li><strong>Database (PostgreSQL + Prisma)</strong> stores persistent competition data.</li>
+      </ul>
+
+      <h2>2. Layered Backend Design</h2>
+      <ul>
+        <li><strong>Controller layer:</strong> HTTP handling, auth/role checks, service delegation.</li>
+        <li><strong>Service layer:</strong> business workflows and knockout validation rules.</li>
+        <li><strong>Model layer:</strong> domain validation and safe mapping.</li>
+        <li><strong>Repository/Prisma layer:</strong> database access and persistence.</li>
+      </ul>
+      <p>This separation keeps logic testable and maintainable.</p>
+
+      <h2>3. Frontend Design</h2>
+      <ul>
+        <li><code>pages/</code>: route-level pages</li>
+        <li><code>components/</code>: reusable UI</li>
+        <li><code>services/</code>: API call wrappers</li>
+        <li><code>lib/</code>: session and utility helpers</li>
+        <li><code>styles/</code>: global CSS</li>
+      </ul>
+
+      <h2>4. Cross-Cutting Concerns</h2>
+      <h3>Authentication and Authorization</h3>
+      <ul>
+        <li>JWT issued on login.</li>
+        <li>Protected calls send token.</li>
+        <li>Backend middleware enforces roles.</li>
+      </ul>
+
+      <h3>Error Handling</h3>
+      <ul>
+        <li>Services throw typed errors.</li>
+        <li>Global error middleware formats responses consistently.</li>
+      </ul>
+
+      <h3>API Documentation</h3>
+      <p>Swagger is served at <code>/api-docs</code> and acts as live API contract.</p>
+
+      <h2>5. Request Lifecycle Example</h2>
+      <p>For <code>PATCH /api/matches/:matchId/status</code>:</p>
+      <ol>
+        <li>Request enters match controller.</li>
+        <li>JWT is validated.</li>
+        <li>Role check allows ADMIN or REFEREE.</li>
+        <li>Service validates business rules.</li>
+        <li>Prisma updates database.</li>
+        <li>Controller returns JSON response.</li>
+      </ol>
+
+      <h2>6. Why It Fits This Project</h2>
+      <ul>
+        <li>Strict knockout rules are centralized in services.</li>
+        <li>Role-based permissions are explicit and secure.</li>
+        <li>Typed frontend services simplify UI integration.</li>
+        <li>Prisma + seed script support repeatable demos/tests.</li>
+      </ul>
+    </main>
+  </body>
+</html>

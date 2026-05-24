@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>05 - Workflows and Sequences</title>
+    <style>
+      :root { --bg:#f4f6f8; --card:#fff; --ink:#1f2933; --muted:#52606d; --accent:#0d7c66; --line:#d9e2ec; }
+      *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef2f5 0%,#f7f9fb 100%)}
+      .wrap{width:min(1100px,94vw);margin:2rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+      h2{margin-top:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.35rem} p,li{color:var(--muted)} code{background:#eef2f7;border:1px solid #dce6ef;padding:.08rem .3rem;border-radius:6px}
+      pre{margin:.6rem 0 1rem;background:#101820;color:#f4f7fa;border-radius:10px;padding:.8rem;overflow-x:auto} a{color:var(--accent)} .nav{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="nav"><a href="index.html">Index</a> <a href="04-frontend-state-ui.html">Previous</a> <a href="06-learning-path.html">Next</a></nav>
+      <h1>05 - Workflows and Sequence Diagrams</h1>
+
+      <h2>1. Login Flow</h2>
+      <pre><code>User -> Frontend -> POST /api/auth/login -> Backend -> DB lookup (case-insensitive)
+Backend -> token + user payload -> Frontend stores session</code></pre>
+
+      <h2>2. Initiate Round (Admin)</h2>
+      <pre><code>Admin clicks initiate
+Frontend calls POST /api/competition/rounds/:id/initiate
+Backend validates previous round + team assignment
+Backend updates matches: NOT_STARTED -> IN_PROGRESS
+Backend returns updated round/matches</code></pre>
+
+      <h2>3. Referee Match Update</h2>
+      <pre><code>Referee edits status/score
+Frontend calls PATCH/PUT match endpoints
+Backend validates role + assignment + knockout rules
+DB updates match/goals
+Frontend receives updated match</code></pre>
+
+      <h2>4. Coach Availability</h2>
+      <pre><code>Coach toggles player status
+Frontend PATCH /api/players/:id/status
+Backend validates team scope
+DB updates availability
+Frontend updates player state</code></pre>
+
+      <h2>5. Bracket Progression</h2>
+      <ol>
+        <li>Round exists</li>
+        <li>Admin initiates round</li>
+        <li>Matches become <code>IN_PROGRESS</code></li>
+        <li>Results and goals are entered</li>
+        <li>Matches become <code>COMPLETED</code></li>
+        <li>System validates readiness for next stage</li>
+      </ol>
+    </main>
+  </body>
+</html>

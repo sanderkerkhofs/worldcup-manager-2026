@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>06 - Learning Path</title>
+    <style>
+      :root { --bg:#f4f6f8; --card:#fff; --ink:#1f2933; --muted:#52606d; --accent:#0d7c66; --line:#d9e2ec; }
+      *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef2f5 0%,#f7f9fb 100%)}
+      .wrap{width:min(1100px,94vw);margin:2rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+      h2{margin-top:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.35rem} p,li{color:var(--muted)} code{background:#eef2f7;border:1px solid #dce6ef;padding:.08rem .3rem;border-radius:6px}
+      a{color:var(--accent)} .nav{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="nav"><a href="index.html">Index</a> <a href="05-workflows-sequences.html">Previous</a></nav>
+      <h1>06 - Learning Path (How to Study This Project)</h1>
+
+      <h2>Phase 1 - Big Picture</h2>
+      <p>Read 01 and 02. Target: explain architecture + data model in 2-3 minutes.</p>
+
+      <h2>Phase 2 - Business Rules</h2>
+      <p>Read 03 and 05. Target: justify the key knockout validations.</p>
+
+      <h2>Phase 3 - UI Behavior</h2>
+      <p>Read 04. Target: trace one click from UI to API to DB update.</p>
+
+      <h2>Phase 4 - Demo Narratives</h2>
+      <ol>
+        <li>How round status moves NOT_STARTED -> IN_PROGRESS -> COMPLETED</li>
+        <li>How referee updates are safely constrained</li>
+        <li>How coach availability drives match operations</li>
+        <li>How role-based access is enforced</li>
+      </ol>
+
+      <h2>Phase 5 - Self-Check Questions</h2>
+      <ol>
+        <li>Why both controller and service validation?</li>
+        <li>Why store goals as events instead of only final score?</li>
+        <li>What prevents invalid knockout outcomes?</li>
+        <li>Why SWR over direct fetch in every component?</li>
+        <li>What breaks if IN_PROGRESS is skipped before result entry?</li>
+      </ol>
+
+      <h2>Phase 6 - Reflection Ideas</h2>
+      <ul>
+        <li>Add audit logging for critical role actions</li>
+        <li>Add optimistic UI updates in match editor</li>
+        <li>Add pagination for larger datasets</li>
+        <li>Add integration tests for role workflows</li>
+        <li>Define production deployment profile</li>
+      </ul>
+
+      <h2>Quick Revision Sheet</h2>
+      <ul>
+        <li>Architecture: layered backend + service-centric rules</li>
+        <li>Data model: User, Team, Player, Round, Match, Goal</li>
+        <li>Statuses: NOT_STARTED -> IN_PROGRESS -> COMPLETED</li>
+        <li>Security: JWT + role middleware + contextual checks</li>
+      </ul>
+    </main>
+  </body>
+</html>

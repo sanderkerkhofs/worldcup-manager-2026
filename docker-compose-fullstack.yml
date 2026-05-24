@@ -1,0 +1,56 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: tournament-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tournament_manager
+      POSTGRES_USER: tournament
+      POSTGRES_PASSWORD: tournament
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tournament -d tournament_manager"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: tournament-backend
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      APP_PORT: 3000
+      DATABASE_URL: postgresql://tournament:tournament@database:5432/tournament_manager?schema=public
+      JWT_SECRET: change-me-in-production
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:8080
+    ports:
+      - "3001:3000"
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+    container_name: tournament-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

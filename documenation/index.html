@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tournament Manager Study Docs</title>
+    <style>
+      :root {
+        --bg: #f4f6f8;
+        --card: #ffffff;
+        --ink: #1f2933;
+        --muted: #52606d;
+        --accent: #0d7c66;
+        --line: #d9e2ec;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--ink);
+        background: linear-gradient(180deg, #eef2f5 0%, #f7f9fb 100%);
+      }
+      .wrap {
+        width: min(1100px, 94vw);
+        margin: 2rem auto;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 1.5rem;
+      }
+      h1, h2 { line-height: 1.2; }
+      h2 { border-bottom: 1px solid var(--line); padding-bottom: 0.35rem; }
+      p { color: var(--muted); }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .badge {
+        display: inline-block;
+        border: 1px solid #b7f0da;
+        background: #e8fbf3;
+        color: #0f6b57;
+        border-radius: 999px;
+        padding: 0.15rem 0.55rem;
+        font-size: 0.82rem;
+        margin-bottom: 0.6rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 0.8rem;
+        margin-top: 1rem;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.9rem;
+        background: #fbfcfd;
+      }
+      ul { margin: 0.4rem 0 0.8rem 1.2rem; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <span class="badge">Multi-Page Learning Guide</span>
+      <h1>Tournament Manager Documentation</h1>
+      <p>Use this HTML index to navigate the full study documentation set.</p>
+
+      <h2>Read In Order</h2>
+      <div class="grid">
+        <article class="card">
+          <h3><a href="01-architecture.html">01 - Architecture</a></h3>
+          <p>System overview, layers, and request lifecycle.</p>
+        </article>
+        <article class="card">
+          <h3><a href="02-data-model-erd.html">02 - Data Model and ERD</a></h3>
+          <p>Entities, relationships, constraints, and ERP perspective.</p>
+        </article>
+        <article class="card">
+          <h3><a href="03-backend-api-rules.html">03 - Backend API and Rules</a></h3>
+          <p>Endpoints, security model, and validation rules.</p>
+        </article>
+        <article class="card">
+          <h3><a href="04-frontend-state-ui.html">04 - Frontend State and UI</a></h3>
+          <p>Session handling, SWR flow, role pages, and service mapping.</p>
+        </article>
+        <article class="card">
+          <h3><a href="05-workflows-sequences.html">05 - Workflows and Sequences</a></h3>
+          <p>Step-by-step process flows and sequence diagrams.</p>
+        </article>
+        <article class="card">
+          <h3><a href="06-learning-path.html">06 - Learning Path</a></h3>
+          <p>Study order, self-check questions, and demo narratives.</p>
+        </article>
+      </div>
+
+      <h2>Additional Existing Docs</h2>
+      <ul>
+        <li><a href="project-documentation.html">Original single-page HTML documentation</a></li>
+        <li><a href="project-documentation.md">Original single-page Markdown documentation</a></li>
+      </ul>
+    </main>
+  </body>
+</html>

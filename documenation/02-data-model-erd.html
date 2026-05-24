@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>02 - Data Model and ERD</title>
+    <style>
+      :root { --bg:#f4f6f8; --card:#fff; --ink:#1f2933; --muted:#52606d; --accent:#0d7c66; --line:#d9e2ec; }
+      *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef2f5 0%,#f7f9fb 100%)}
+      .wrap{width:min(1100px,94vw);margin:2rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+      h2{margin-top:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.35rem} p,li{color:var(--muted)} code{background:#eef2f7;border:1px solid #dce6ef;padding:.08rem .3rem;border-radius:6px}
+      pre{margin:.6rem 0 1rem;background:#101820;color:#f4f7fa;border-radius:10px;padding:.8rem;overflow-x:auto} a{color:var(--accent)} .nav{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="nav"><a href="index.html">Index</a> <a href="01-architecture.html">Previous</a> <a href="03-backend-api-rules.html">Next</a></nav>
+      <h1>02 - Data Model, ERD, and ERP Perspective</h1>
+
+      <h2>1. Core Entities</h2>
+      <ul>
+        <li><strong>User</strong>: account with role and optional team assignment.</li>
+        <li><strong>Team</strong>: national team metadata and coach info.</li>
+        <li><strong>Player</strong>: belongs to team, includes shirt number and status.</li>
+        <li><strong>Round</strong>: ordered tournament stage.</li>
+        <li><strong>Match</strong>: fixture linking teams, referee, score, status.</li>
+        <li><strong>Goal</strong>: scoring event linked to match/player/team.</li>
+      </ul>
+
+      <h2>2. Match Status Vocabulary</h2>
+      <ul>
+        <li><code>NOT_STARTED</code></li>
+        <li><code>IN_PROGRESS</code></li>
+        <li><code>COMPLETED</code></li>
+      </ul>
+
+      <h2>3. ERD (Mermaid Source)</h2>
+      <pre><code>erDiagram
+    TEAM ||--o{ PLAYER : has
+    ROUND ||--o{ MATCH : contains
+    TEAM ||--o{ MATCH : homeTeam
+    TEAM ||--o{ MATCH : awayTeam
+    USER ||--o{ MATCH : assignedReferee
+    USER o|--|| TEAM : coachUserOptional
+    MATCH ||--o{ GOAL : contains
+    PLAYER ||--o{ GOAL : scores
+    TEAM ||--o{ GOAL : creditedTo</code></pre>
+      <p>For the full field-level ERD, see <a href="02-data-model-erd.md">02-data-model-erd.md</a>.</p>
+
+      <h2>4. Important Constraints</h2>
+      <ul>
+        <li><code>User.username</code> unique</li>
+        <li><code>Team.name</code> unique</li>
+        <li><code>Round.orderNumber</code> unique</li>
+        <li><code>Player(teamId, shirtNumber)</code> unique</li>
+      </ul>
+
+      <h2>5. ERP Perspective</h2>
+      <ul>
+        <li><strong>Master data:</strong> teams, players, users</li>
+        <li><strong>Transactional data:</strong> matches and goals</li>
+        <li><strong>Process data:</strong> round initiation, simulation, completion</li>
+      </ul>
+
+      <h2>6. Why It Fits Knockout Tournaments</h2>
+      <ul>
+        <li>Round order enables deterministic progression.</li>
+        <li>Status lifecycle supports operational control.</li>
+        <li>Goal events keep scoring auditable and detailed.</li>
+        <li>Team/player split supports coach workflows cleanly.</li>
+      </ul>
+    </main>
+  </body>
+</html>

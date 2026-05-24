@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>03 - Backend API and Rules</title>
+    <style>
+      :root { --bg:#f4f6f8; --card:#fff; --ink:#1f2933; --muted:#52606d; --accent:#0d7c66; --line:#d9e2ec; }
+      *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef2f5 0%,#f7f9fb 100%)}
+      .wrap{width:min(1100px,94vw);margin:2rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+      h2{margin-top:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.35rem} p,li{color:var(--muted)} code{background:#eef2f7;border:1px solid #dce6ef;padding:.08rem .3rem;border-radius:6px}
+      a{color:var(--accent)} .nav{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="nav"><a href="index.html">Index</a> <a href="02-data-model-erd.html">Previous</a> <a href="04-frontend-state-ui.html">Next</a></nav>
+      <h1>03 - Backend API and Business Rules</h1>
+
+      <h2>1. API Areas</h2>
+      <h3>Auth</h3>
+      <ul>
+        <li><code>POST /api/auth/register</code></li>
+        <li><code>POST /api/auth/login</code></li>
+        <li><code>GET /api/auth/me</code></li>
+      </ul>
+
+      <h3>Competition</h3>
+      <ul>
+        <li><code>GET /api/competition/overview</code></li>
+        <li><code>GET /api/competition/rounds</code></li>
+        <li><code>POST /api/competition/rounds/:roundId/initiate</code> (ADMIN)</li>
+        <li><code>POST /api/competition/rounds/:roundId/simulate</code> (ADMIN)</li>
+      </ul>
+
+      <h3>Teams / Players / Matches / Users</h3>
+      <p>Domain management endpoints are available under <code>/api/teams</code>, <code>/api/players</code>, <code>/api/matches</code>, and <code>/api/users</code>.</p>
+
+      <h2>2. Key Business Rules</h2>
+      <h3>Round Initiation</h3>
+      <ul>
+        <li>Round must exist.</li>
+        <li>Previous round must be completed (except first round).</li>
+        <li>Matches must have both teams known.</li>
+        <li>Status moves from <code>NOT_STARTED</code> to <code>IN_PROGRESS</code>.</li>
+      </ul>
+
+      <h3>Round Simulation</h3>
+      <ul>
+        <li>Cannot run if NOT_STARTED matches remain.</li>
+        <li>Teams must be assigned.</li>
+        <li>Simulation creates non-draw outcomes with goals.</li>
+      </ul>
+
+      <h3>Match Update</h3>
+      <ul>
+        <li>Only ADMIN or assigned REFEREE can edit status/result/goals.</li>
+        <li><code>IN_PROGRESS</code>/<code>COMPLETED</code> require known teams.</li>
+        <li><code>COMPLETED</code> requires valid non-draw knockout score.</li>
+      </ul>
+
+      <h3>Goal Rules</h3>
+      <ul>
+        <li>Player must exist and be available.</li>
+        <li>Goal team must match player team.</li>
+        <li>Goal team must be one of match teams.</li>
+      </ul>
+
+      <h2>3. Security Model</h2>
+      <ul>
+        <li>JWT validation on protected routes.</li>
+        <li>Role middleware enforces permissions.</li>
+        <li>Service checks enforce context (assigned referee, team ownership).</li>
+      </ul>
+
+      <h2>4. Error Strategy</h2>
+      <p>Typed errors keep API responses consistent: ValidationError, NotFoundError, ForbiddenError, UnauthorizedError.</p>
+
+      <h2>5. Case-Insensitive Login</h2>
+      <p>Username lookup in login is case-insensitive, improving usability while preserving account uniqueness.</p>
+
+      <h2>6. API Contract</h2>
+      <p>Use Swagger at <code>/api-docs</code> for endpoint contracts and payload schemas.</p>
+    </main>
+  </body>
+</html>

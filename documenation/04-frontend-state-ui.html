@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>04 - Frontend State and UI</title>
+    <style>
+      :root { --bg:#f4f6f8; --card:#fff; --ink:#1f2933; --muted:#52606d; --accent:#0d7c66; --line:#d9e2ec; }
+      *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eef2f5 0%,#f7f9fb 100%)}
+      .wrap{width:min(1100px,94vw);margin:2rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+      h2{margin-top:1.3rem;border-bottom:1px solid var(--line);padding-bottom:.35rem} p,li{color:var(--muted)} code{background:#eef2f7;border:1px solid #dce6ef;padding:.08rem .3rem;border-radius:6px}
+      a{color:var(--accent)} .nav{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.8rem}
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <nav class="nav"><a href="index.html">Index</a> <a href="03-backend-api-rules.html">Previous</a> <a href="05-workflows-sequences.html">Next</a></nav>
+      <h1>04 - Frontend, State, and UI Responsibilities</h1>
+
+      <h2>1. Session and Auth State</h2>
+      <p><code>useSession</code> manages token, user object, auth state, and login/logout actions. Session is persisted and rehydrated from browser storage.</p>
+
+      <h2>2. Data Fetching Strategy</h2>
+      <p>SWR is used for caching, revalidation, and predictable async UI states (<code>isLoading</code>, <code>error</code>, <code>mutate</code>).</p>
+
+      <h2>3. Role-Based Pages</h2>
+      <ul>
+        <li><code>/admin</code>: user management and round access</li>
+        <li><code>/coach</code>: player availability updates</li>
+        <li><code>/referee</code>: assigned match workflow</li>
+        <li><code>/matches/[matchId]</code>: detailed match editing</li>
+        <li><code>/rounds/[roundId]</code>: round controls and list</li>
+      </ul>
+
+      <h2>4. UI Design Pattern</h2>
+      <ul>
+        <li><code>heroCard</code> for top-level context</li>
+        <li><code>panelCard</code> for operations</li>
+        <li><code>tableWrap</code> for responsive tables</li>
+      </ul>
+
+      <h2>5. Status Vocabulary</h2>
+      <ul>
+        <li><code>NOT_STARTED</code></li>
+        <li><code>IN_PROGRESS</code></li>
+        <li><code>COMPLETED</code></li>
+      </ul>
+      <p>Frontend and backend are aligned on this status model.</p>
+
+      <h2>6. Service Mapping Examples</h2>
+      <ul>
+        <li><code>getOverview()</code> -> <code>/api/competition/overview</code></li>
+        <li><code>updateMatchStatus()</code> -> <code>/api/matches/:matchId/status</code></li>
+        <li><code>updatePlayerStatus()</code> -> <code>/api/players/:playerId/status</code></li>
+        <li><code>simulateRound()</code> -> <code>/api/competition/rounds/:roundId/simulate</code></li>
+      </ul>
+
+      <h2>7. Debugging Path</h2>
+      <ol>
+        <li>Check page SWR key and state.</li>
+        <li>Check called frontend service method.</li>
+        <li>Check backend controller/service pair.</li>
+        <li>Validate domain rule expectations.</li>
+      </ol>
+    </main>
+  </body>
+</html>
