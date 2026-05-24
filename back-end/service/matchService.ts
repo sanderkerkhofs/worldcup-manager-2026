@@ -81,7 +81,7 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
   const match = await loadMatch(matchId);
   assertMatchAccess(actor, match.refereeId);
 
-  if ((status === 'ACTIVE' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
+  if ((status === 'IN_PROGRESS' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
     throw new ValidationError('This match is not available yet. Initiate the round first.');
   }
 
@@ -111,8 +111,8 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
     throw new ValidationError('This match is not available yet. Initiate the round first.');
   }
 
-  if (match.status !== 'ACTIVE') {
-    throw new ValidationError('Match must be ACTIVE before entering results.');
+  if (match.status !== 'IN_PROGRESS') {
+    throw new ValidationError('Match must be IN_PROGRESS before entering results.');
   }
 
   if (input.goals && input.goals.length > 0) {
@@ -172,8 +172,8 @@ export async function addGoal(matchId: string, input: GoalInputDto, actor: Reque
     throw new ValidationError('This match is not available yet. Initiate the round first.');
   }
 
-  if (match.status !== 'ACTIVE') {
-    throw new ValidationError('Match must be ACTIVE before adding goals.');
+  if (match.status !== 'IN_PROGRESS') {
+    throw new ValidationError('Match must be IN_PROGRESS before adding goals.');
   }
 
   await validateGoalInput(matchId, input);
@@ -200,8 +200,8 @@ export async function updateGoal(matchId: string, goalId: string, input: GoalInp
     throw new ValidationError('This match is not available yet. Initiate the round first.');
   }
 
-  if (match.status !== 'ACTIVE') {
-    throw new ValidationError('Match must be ACTIVE before editing goals.');
+  if (match.status !== 'IN_PROGRESS') {
+    throw new ValidationError('Match must be IN_PROGRESS before editing goals.');
   }
 
   const goal = await prisma.goal.findFirst({ where: { id: goalId, matchId } });

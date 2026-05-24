@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
+import { getMatchStatusLabel } from '../../lib/matchStatus';
 import { useSession } from '../../lib/useSession';
 import { addGoal, getMatch, getOverview, getPlayers, updateMatchResult, updateMatchStatus } from '../../services/competitionService';
 
@@ -87,7 +88,7 @@ export default function MatchEditorPage() {
           <p><strong>Home coach:</strong> {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.coach}` : 'TBD'}</p>
           <p><strong>Away coach:</strong> {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.coach}` : 'TBD'}</p>
           <p><strong>Current score:</strong> {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
-          <p><strong>Status:</strong> {match.status}</p>
+          <p><strong>Status:</strong> {getMatchStatusLabel(match.status)}</p>
           {!hasPlayableTeams && <p className="muted">Round not initiated yet for this match.</p>}
         </article>
 
@@ -100,7 +101,7 @@ export default function MatchEditorPage() {
               Match status
               <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!canEdit || !hasPlayableTeams}>
                 <option value="NOT_STARTED">NOT_STARTED</option>
-                <option value="ACTIVE">ACTIVE</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
                 <option value="COMPLETED">COMPLETED</option>
               </select>
             </label>
@@ -120,7 +121,7 @@ export default function MatchEditorPage() {
               onClick={async () => {
                 if (!token) return;
                 setMessage(null);
-                await updateMatchStatus(match.id, status as 'NOT_STARTED' | 'ACTIVE' | 'COMPLETED', token);
+                await updateMatchStatus(match.id, status as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED', token);
                 if (homeScore !== '' && awayScore !== '') {
                   await updateMatchResult(match.id, Number(homeScore), Number(awayScore), token);
                 }

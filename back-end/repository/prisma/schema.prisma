@@ -16,7 +16,7 @@ enum UserRole {
 
 enum MatchStatus {
   NOT_STARTED
-  ACTIVE
+  IN_PROGRESS
   COMPLETED
 }
 

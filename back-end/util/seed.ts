@@ -22,7 +22,11 @@ const seededReferees = [
   { username: 'Felix_Zwayer', countryShortName: 'GER' },
   { username: 'Ismail_Elfath', countryShortName: 'USA' },
   { username: 'Tori_Penso', countryShortName: 'USA' },
-  { username: 'belgium_referee', countryShortName: 'BEL' },
+  { username: 'Frank_De_Bleeckere', countryShortName: 'BEL' },
+] as const;
+
+const fixedCoachAccounts = [
+  { username: 'Domenico_Tedesco', countryShortName: 'BEL' },
 ] as const;
 
 async function main() {
@@ -42,7 +46,12 @@ async function main() {
   await prisma.user.createMany({
     data: [
       { username: 'admin', passwordHash: adminHash, role: 'ADMIN' },
-      { username: 'belgium_coach', passwordHash: coachHash, role: 'COACH', countryShortName: 'BEL' },
+      ...fixedCoachAccounts.map((coach) => ({
+        username: coach.username,
+        passwordHash: coachHash,
+        role: 'COACH' as const,
+        countryShortName: coach.countryShortName,
+      })),
       ...seededReferees.map((referee) => ({
         username: referee.username,
         passwordHash: refereeHash,
@@ -96,10 +105,31 @@ async function main() {
 
   const teams = await prisma.team.createManyAndReturn({ data: shuffledTeams });
 
+  for (const fixedCoach of fixedCoachAccounts) {
+    const matchingTeam = teams.find((team) => team.countryShortName === fixedCoach.countryShortName);
+
+    if (!matchingTeam) {
+      continue;
+    }
+
+    await prisma.user.update({
+      where: { username: fixedCoach.username },
+      data: { teamId: matchingTeam.id },
+    });
+  }
+
+  const fixedCoachUsernames = new Set<string>(fixedCoachAccounts.map((coach) => coach.username));
+
   for (const team of teams) {
+    const coachUsername = team.coach.replace(/\s+/g, '_');
+
+    if (fixedCoachUsernames.has(coachUsername)) {
+      continue;
+    }
+
     await prisma.user.create({
       data: {
-        username: team.coach.replace(/\s+/g, '_'),
+        username: coachUsername,
         passwordHash: coachHash,
         role: 'COACH',
         countryShortName: team.countryShortName,

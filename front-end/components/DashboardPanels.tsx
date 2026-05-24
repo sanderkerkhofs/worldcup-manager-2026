@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import useSWR from 'swr';
+import { getMatchStatusLabel } from '../lib/matchStatus';
 import { useSession } from '../lib/useSession';
 import {
   getPlayers,
@@ -142,11 +143,14 @@ export function CoachPanel({ overview, token, onRefresh }: Props) {
   }
 
   const team = overview.teams.find((item) => item.id === teamId);
+  const teamLabel = team
+    ? `${team.countryFlag} ${team.name}`
+    : 'your team';
 
   return (
     <section className="stack">
       <h2>Coach Controls</h2>
-      <p className="muted">Manage availability for {team?.name ?? 'your team'}.</p>
+      <p className="muted">Manage availability for {teamLabel}.</p>
       <div className="tableWrap">
         <table>
           <thead>
@@ -216,9 +220,9 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
             return (
               <article key={match.id} className="panelCard">
                 <h3>{homeTeam} vs {awayTeam}</h3>
-                <p className="muted">Status: {match.status}</p>
+                <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
                 <div className="rowButtons">
-                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'ACTIVE', token); await onRefresh(); }}>Set ACTIVE</button>
+                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'IN_PROGRESS', token); await onRefresh(); }}>Set IN_PROGRESS</button>
                   <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'COMPLETED', token); await onRefresh(); }}>Set COMPLETED</button>
                 </div>
                 <div className="scoreInputs">

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import useSWR from 'swr';
+import { getMatchStatusLabel } from '../lib/matchStatus';
 import { useSession } from '../lib/useSession';
 import { getOverview } from '../services/competitionService';
 
@@ -41,7 +42,7 @@ export default function RefereePage() {
             <article key={match.id} className="panelCard">
               <p className="eyebrow">Match editor</p>
               <h3>{homeTeam} vs {awayTeam}</h3>
-              <p className="muted">Status: {match.status}</p>
+              <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
               <Link href={`/matches/${match.id}`} className="linkButton">Open match page</Link>
             </article>
           );

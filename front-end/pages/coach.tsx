@@ -13,6 +13,11 @@ export default function CoachPage() {
     () => overview?.teams.find((candidate) => candidate.id === user?.teamId),
     [overview?.teams, user?.teamId],
   );
+  const teamWorkspaceLabel = team
+    ? `${team.countryFlag} ${team.name}`
+    : user?.countryFlag
+      ? `${user.countryFlag} Your team`
+      : 'Your team';
 
   if (!token || user?.role !== 'COACH') {
     return (
@@ -33,7 +38,7 @@ export default function CoachPage() {
     <div className="stack">
       <section className="heroCard">
         <p className="eyebrow">Coach Workspace</p>
-        <h2>{team?.name ?? 'Your team'}</h2>
+        <h2>{teamWorkspaceLabel}</h2>
         <p className="muted">Keep squad availability clean so referees can only select available players.</p>
       </section>
 

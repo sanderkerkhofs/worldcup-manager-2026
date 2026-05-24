@@ -43,8 +43,14 @@ npm run dev
 The seed script creates these login accounts for demo purposes:
 
 - `admin` / `admin123`
-- `belgium_coach` / `coach123`
-- `belgium_referee` / `referee123`
+
+Example coach login:
+
+- `Domenico_Tedesco` / `coach123` (BEL, COACH, Belgium)
+
+Example referee login:
+
+- `Frank_De_Bleeckere` / `referee123` (BEL, REFEREE, Belgium)
 
 ## Useful URLs
 

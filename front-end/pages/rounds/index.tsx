@@ -29,7 +29,7 @@ export default function RoundsPage() {
         {orderedRounds.map((round) => {
           const matches = overview.matches.filter((match) => match.roundId === round.id);
           const completed = matches.filter((match) => match.status === 'COMPLETED').length;
-          const active = matches.filter((match) => match.status === 'ACTIVE').length;
+          const active = matches.filter((match) => match.status === 'IN_PROGRESS').length;
           const roundStatus = completed === matches.length && matches.length > 0
             ? 'FINISHED'
             : active > 0

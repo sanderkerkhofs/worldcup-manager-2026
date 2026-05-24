@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { useSession } from '../lib/useSession';
+import { getMatchStatusLabel } from '../lib/matchStatus';
 import { getOverview } from '../services/competitionService';
 import { deleteUser, listUsers } from '../services/authService';
 
@@ -119,7 +120,7 @@ export default function AdminPage() {
                   {matches.map((match) => (
                     <Link key={match.id} className="matchLinkRow" href={`/matches/${match.id}`}>
                       <span>{match.homeTeamId ? teamById.get(match.homeTeamId)?.name : 'TBD'} vs {match.awayTeamId ? teamById.get(match.awayTeamId)?.name : 'TBD'}</span>
-                      <small>{match.status}</small>
+                      <small>{getMatchStatusLabel(match.status)}</small>
                     </Link>
                   ))}
                 </div>

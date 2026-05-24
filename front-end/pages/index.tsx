@@ -1,7 +1,10 @@
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faChevronLeft,
+  faChevronRight,
   faPenToSquare,
   faArrowUpRightFromSquare,
   faTrophy,
@@ -13,6 +16,38 @@ import { useSession } from '../lib/useSession';
 export default function HomePage() {
   const { token, user } = useSession();
   const { data: overview, error, isLoading, mutate } = useSWR(['overview', token ?? 'public'], () => getOverview(token));
+  const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
+
+  const rounds = overview?.rounds ?? [];
+  const matches = overview?.matches ?? [];
+
+  const orderedRounds = useMemo(
+    () => [...rounds].sort((left, right) => left.orderNumber - right.orderNumber),
+    [rounds],
+  );
+
+  const defaultStartedRoundId = useMemo(() => {
+    const startedRound = orderedRounds.find((round) => {
+      const roundMatches = matches.filter((match) => match.roundId === round.id);
+      return roundMatches.some((match) => match.status === 'IN_PROGRESS' || match.status === 'COMPLETED');
+    });
+
+    return startedRound?.id ?? orderedRounds[0]?.id ?? null;
+  }, [orderedRounds, matches]);
+
+  useEffect(() => {
+    if (!selectedRoundId || !orderedRounds.some((round) => round.id === selectedRoundId)) {
+      setSelectedRoundId(defaultStartedRoundId);
+    }
+  }, [selectedRoundId, orderedRounds, defaultStartedRoundId]);
+
+  const selectedRoundIndex = orderedRounds.findIndex((round) => round.id === selectedRoundId);
+  const selectedRound = selectedRoundIndex >= 0 ? orderedRounds[selectedRoundIndex] : null;
+  const selectedRoundMatches = selectedRound
+    ? matches.filter((match) => match.roundId === selectedRound.id)
+    : [];
+  const hasPreviousRound = selectedRoundIndex > 0;
+  const hasNextRound = selectedRoundIndex >= 0 && selectedRoundIndex < orderedRounds.length - 1;
 
   if (isLoading) {
     return <p className="muted">Loading competition data...</p>;
@@ -29,48 +64,78 @@ export default function HomePage() {
     <div className="stack">
       <section className="stack">
         <h2><span className="iconLabel"><FontAwesomeIcon icon={faTrophy} /> Bracket Overview</span></h2>
-        <div className="gridCols">
-          {overview.rounds.map((round) => {
-            const roundMatches = overview.matches.filter((match) => match.roundId === round.id);
+        {selectedRound ? (
+          <article className="panelCard">
+            <div className="roundNavControls">
+              <button
+                className="smallButton roundNavButton"
+                type="button"
+                disabled={!hasPreviousRound}
+                onClick={() => {
+                  if (hasPreviousRound) {
+                    setSelectedRoundId(orderedRounds[selectedRoundIndex - 1].id);
+                  }
+                }}
+              >
+                <span className="iconLabel"><FontAwesomeIcon icon={faChevronLeft} /> Previous</span>
+              </button>
 
-            return (
-              <article key={round.id} className="panelCard">
-                <div className="panelHeader">
-                  <h3>{round.name}</h3>
-                  <Link className="smallButton" href={`/rounds/${round.id}`}><span className="iconLabel"><FontAwesomeIcon icon={faArrowUpRightFromSquare} /> Manage</span></Link>
-                </div>
-                {roundMatches.length === 0 ? (
-                  <p className="muted">No matches yet.</p>
-                ) : (
-                  <ul className="matchList">
-                    {roundMatches.map((match) => {
-                      const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                      const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+              <Link className="smallButton roundNavButton" href={`/rounds/${selectedRound.id}`}>
+                <span className="iconLabel"><FontAwesomeIcon icon={faArrowUpRightFromSquare} className="roundNavIcon" /> Manage</span>
+              </Link>
 
-                      return (
-                        <li key={match.id}>
-                          <span>
-                            {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD'} vs{' '}
-                            {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD'}
-                          </span>
-                          <strong>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</strong>
-                          <div className="matchRowFooter rowButtons">
-                            <small>{match.status}</small>
-                            {isAdmin && (
-                              <Link className="smallButton matchEditButton" href={`/matches/${match.id}`}>
-                                <span className="iconLabel"><FontAwesomeIcon icon={faPenToSquare} /> Edit</span>
-                              </Link>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </article>
-            );
-          })}
-        </div>
+              <button
+                className="smallButton roundNavButton"
+                type="button"
+                disabled={!hasNextRound}
+                onClick={() => {
+                  if (hasNextRound) {
+                    setSelectedRoundId(orderedRounds[selectedRoundIndex + 1].id);
+                  }
+                }}
+              >
+                <span className="iconLabel">Next <FontAwesomeIcon icon={faChevronRight} /></span>
+              </button>
+            </div>
+
+            <div className="panelHeader">
+              <h3>{selectedRound.name}</h3>
+            </div>
+
+            {selectedRoundMatches.length === 0 ? (
+              <p className="muted">No matches yet.</p>
+            ) : (
+              <ul className="matchList">
+                {selectedRoundMatches.map((match) => {
+                  const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
+                  const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+
+                  return (
+                    <li key={match.id}>
+                      <span>
+                        {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD'} vs{' '}
+                        {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD'}
+                      </span>
+                      <strong>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</strong>
+                      <div className="matchRowFooter rowButtons">
+                        <small>{match.status}</small>
+                        {isAdmin && (
+                          <Link className="smallButton matchEditButton" href={`/matches/${match.id}`}>
+                            <span className="iconLabel"><FontAwesomeIcon icon={faPenToSquare} /> Edit</span>
+                          </Link>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </article>
+        ) : (
+          <article className="panelCard">
+            <p className="muted">No rounds found.</p>
+          </article>
+        )}
       </section>
 
       <section className="stack">
@@ -93,7 +158,7 @@ export default function HomePage() {
             <tbody>
               {overview.standings.map((row) => (
                 <tr key={row.teamId}>
-                  <td>{row.teamName}</td>
+                  <td>{teamById.get(row.teamId)?.countryFlag ? `${teamById.get(row.teamId)?.countryFlag} ` : ''}{row.teamName}</td>
                   <td>{row.played}</td>
                   <td>{row.won}</td>
                   <td>{row.drawn}</td>

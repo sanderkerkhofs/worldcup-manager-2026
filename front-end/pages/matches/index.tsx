@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import useSWR from 'swr';
+import { getMatchStatusLabel } from '../../lib/matchStatus';
 import { useSession } from '../../lib/useSession';
 import { getOverview } from '../../services/competitionService';
 
@@ -62,7 +63,7 @@ export default function MatchesPage() {
                   </h3>
                   <p className="muted">{new Date(match.matchDate).toLocaleString()}</p>
                   <p className="muted">Score: {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
-                  <p className="muted">Status: {match.status}</p>
+                  <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
                   <div className="rowButtons">
                     <Link href={`/matches/${match.id}`} className="linkButton">Open editor</Link>
                   </div>

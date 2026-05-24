@@ -3,7 +3,7 @@ import { MatchStatus } from '../types';
 import { ValidationError } from '../util/errors';
 
 function isMatchStatus(status: string): status is MatchStatus {
-  return status === 'NOT_STARTED' || status === 'ACTIVE' || status === 'COMPLETED';
+  return status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'COMPLETED';
 }
 
 export class Match {

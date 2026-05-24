@@ -33,7 +33,16 @@ export async function registerGuestUser(input: RegisterDto) {
     throw new ValidationError('Public registration can only create guest accounts.');
   }
 
-  const existingUser = await prisma.user.findUnique({ where: { username: input.username } });
+  const normalizedUsername = input.username.trim();
+
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      username: {
+        equals: normalizedUsername,
+        mode: 'insensitive',
+      },
+    },
+  });
 
   if (existingUser) {
     throw new ValidationError('Username is already taken.');
@@ -41,7 +50,7 @@ export async function registerGuestUser(input: RegisterDto) {
 
   const user = await prisma.user.create({
     data: {
-      username: input.username.trim(),
+      username: normalizedUsername,
       passwordHash: await hashPassword(input.password),
       role: 'GUEST',
     },
@@ -51,7 +60,16 @@ export async function registerGuestUser(input: RegisterDto) {
 }
 
 export async function loginUser(input: LoginDto) {
-  const user = await prisma.user.findUnique({ where: { username: input.username } });
+  const normalizedUsername = input.username.trim();
+
+  const user = await prisma.user.findFirst({
+    where: {
+      username: {
+        equals: normalizedUsername,
+        mode: 'insensitive',
+      },
+    },
+  });
 
   if (!user) {
     throw new UnauthorizedError('Invalid username or password.');

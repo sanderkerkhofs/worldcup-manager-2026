@@ -25,20 +25,22 @@ export function Layout({ children }: { children: ReactNode }) {
           <h1 className="brand">Worldcup Manager 2026</h1>
         </div>
 
-        <nav className="topbarActions">
-          <Link href="/" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faGaugeHigh} /> Dashboard</span></Link>
-          <Link href="/rounds" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faLayerGroup} /> Rounds</span></Link>
-          {role === 'ADMIN' && <Link href="/admin" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
-          {role === 'COACH' && <Link href="/coach" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faPersonRunning} /> Coach</span></Link>}
-          {role === 'REFEREE' && <Link href="/referee" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
-          {isAuthenticated && <Link href="/matches" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
+        <nav id="main-navigation" className="topbarGroup" aria-label="Main navigation">
+          <Link href="/" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faGaugeHigh} /> Dashboard</span></Link>
+          <Link href="/rounds" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faLayerGroup} /> Rounds</span></Link>
+          {role === 'ADMIN' && <Link href="/admin" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
+          {role === 'COACH' && <Link href="/coach" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faPersonRunning} /> Coach</span></Link>}
+          {role === 'REFEREE' && <Link href="/referee" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
+          {isAuthenticated && <Link href="/matches" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
           {isAuthenticated ? (
             <>
-              <span className="userBadge">{user?.username} ({user?.role})</span>
-              <button className="ghostButton" onClick={logout}><span className="iconLabel"><FontAwesomeIcon icon={faRightFromBracket} /> Logout</span></button>
+              <span className="userBadge topbarUserBadge">{user?.username} ({user?.role})</span>
+              <button className="topbarNavItem topbarLogout" onClick={logout}>
+                <span className="iconLabel"><FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>
+              </button>
             </>
           ) : (
-            <Link href="/login" className="linkButton"><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Login</span></Link>
+            <Link href="/login" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Login</span></Link>
           )}
         </nav>
       </header>

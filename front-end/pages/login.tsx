@@ -28,19 +28,19 @@ export default function LoginPage() {
                 <td>admin</td>
               </tr>
               <tr>
-                <td>belgium_coach</td>
+                <td>Domenico_Tedesco</td>
                 <td>coach123</td>
                 <td>coach</td>
               </tr>
               <tr>
-                <td>belgium_referee</td>
+                <td>Frank_De_Bleeckere</td>
                 <td>referee123</td>
                 <td>referee</td>
               </tr>
               <tr>
                 <td>-</td>
                 <td>-</td>
-                <td>guest (no login needed)</td>
+                <td>guest</td>
               </tr>
             </tbody>
           </table>

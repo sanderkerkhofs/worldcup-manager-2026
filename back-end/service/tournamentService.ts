@@ -292,7 +292,7 @@ export async function initiateRound(roundId: string) {
 
   await prisma.match.updateMany({
     where: { roundId, status: 'NOT_STARTED' },
-    data: { status: 'ACTIVE' },
+    data: { status: 'IN_PROGRESS' },
   });
 
   const matches = await prisma.match.findMany({ where: { roundId }, orderBy: { matchDate: 'asc' } });

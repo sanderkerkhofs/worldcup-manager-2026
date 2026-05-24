@@ -61,8 +61,7 @@ The following users are created:
 | username          | password   | role    |
 | ----------------- | ---------- | ------- |
 | admin             | admin123   | ADMIN   |
-| belgium_coach     | coach123   | COACH   |
-| belgium_referee   | referee123 | REFEREE |
+| Domenico_Tedesco  | coach123   | COACH   |
 | Michael_Oliver    | referee123 | REFEREE |
 | Anthony_Taylor    | referee123 | REFEREE |
 | Francois_Letexier | referee123 | REFEREE |
@@ -70,11 +69,15 @@ The following users are created:
 | Felix_Zwayer      | referee123 | REFEREE |
 | Ismail_Elfath     | referee123 | REFEREE |
 | Tori_Penso        | referee123 | REFEREE |
+| Frank_De_Bleeckere| referee123 | REFEREE |
 
 Notes:
 
 - Passwords are hashed with bcrypt before storage.
 - Referees are queried and sorted by username, then assigned to matches.
+- Team coaches are also created for seeded teams using their coach name with underscores.
+- Example coach login: `Domenico_Tedesco` / `coach123` (BEL, COACH, Belgium).
+- Example referee login: `Frank_De_Bleeckere` / `referee123` (BEL, REFEREE, Belgium).
 
 ## Seeded Teams
 

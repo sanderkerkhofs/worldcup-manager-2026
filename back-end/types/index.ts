@@ -1,6 +1,6 @@
 export type UserRole = 'ADMIN' | 'COACH' | 'REFEREE' | 'GUEST';
 
-export type MatchStatus = 'NOT_STARTED' | 'ACTIVE' | 'COMPLETED';
+export type MatchStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export type PlayerStatus = 'AVAILABLE' | 'UNAVAILABLE';
 
