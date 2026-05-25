@@ -43,10 +43,15 @@ export default function CoachPage() {
       </section>
 
       <section className="stack">
-        <div className="panelHeader">
-          <h2>Player Availability</h2>
-          <Link href="/" className="linkButton">View dashboard</Link>
-        </div>
+        <header className="sectionTitleCard">
+          <div className="sectionTitleCopy">
+            <p className="eyebrow">Squad</p>
+            <h2>Player Availability</h2>
+          </div>
+          <div className="rowButtons">
+            <Link href="/" className="linkButton">View dashboard</Link>
+          </div>
+        </header>
         <div className="tableWrap">
           <table>
             <thead>

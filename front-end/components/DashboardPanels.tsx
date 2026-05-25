@@ -86,7 +86,12 @@ export function AdminPanel({ overview, token, onRefresh }: Props) {
 
   return (
     <section className="stack">
-      <h2>Admin Controls</h2>
+      <header className="sectionTitleCard">
+        <div className="sectionTitleCopy">
+          <p className="eyebrow">Admin</p>
+          <h2>Admin Controls</h2>
+        </div>
+      </header>
       <div className="gridCols">
         {(rounds ?? overview.rounds).map((round) => {
           const canManageRound = isRoundManageable(overview, round);
@@ -128,8 +133,13 @@ export function CoachPanel({ overview, token, onRefresh }: Props) {
 
   return (
     <section className="stack">
-      <h2>Coach Controls</h2>
-      <p className="muted">Manage availability for {teamLabel}.</p>
+      <header className="sectionTitleCard">
+        <div className="sectionTitleCopy">
+          <p className="eyebrow">Coach</p>
+          <h2>Coach Controls</h2>
+          <p className="muted">Manage availability for {teamLabel}.</p>
+        </div>
+      </header>
       <div className="tableWrap">
         <table>
           <thead>
@@ -185,7 +195,12 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
 
   return (
     <section className="stack">
-      <h2>Referee Controls</h2>
+      <header className="sectionTitleCard">
+        <div className="sectionTitleCopy">
+          <p className="eyebrow">Referee</p>
+          <h2>Referee Controls</h2>
+        </div>
+      </header>
       {assignedMatches.length === 0 ? (
         <p className="muted">No assigned matches for this referee.</p>
       ) : (
@@ -259,27 +274,30 @@ export function ScorePanel({ token }: { token: string | null }) {
 
   return (
     <section className="stack">
-      <h2>Top Scorers</h2>
-      <div className="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Team</th>
-              <th>Goals</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(topScorers ?? []).map((row) => (
-              <tr key={row.playerId}>
-                <td>{row.teamCountryFlag} {row.playerName}</td>
-                <td>{row.teamCountryFlag} {row.teamName}</td>
-                <td>{row.goals}</td>
+      <article className="panelCard stack">
+        <p className="eyebrow">Stats</p>
+        <h2>Top Scorers</h2>
+        <div className="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Team</th>
+                <th>Goals</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {(topScorers ?? []).map((row) => (
+                <tr key={row.playerId}>
+                  <td>{row.teamCountryFlag} {row.playerName}</td>
+                  <td>{row.teamCountryFlag} {row.teamName}</td>
+                  <td>{row.goals}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
     </section>
   );
 }

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faGaugeHigh,
+  faHouse,
+  faChartLine,
   faUserShield,
   faPersonRunning,
   faFlagCheckered,
@@ -14,7 +16,20 @@ import { useSession } from '../lib/useSession';
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, isAuthenticated, logout } = useSession();
+  const router = useRouter();
   const role = user?.role;
+
+  const currentPath = router.asPath.split('?')[0].split('#')[0];
+
+  const isActiveRoute = (href: string) => {
+    if (href === '/') {
+      return currentPath === '/';
+    }
+
+    return currentPath === href || currentPath.startsWith(`${href}/`);
+  };
+
+  const navItemClass = (href: string) => (`topbarNavItem${isActiveRoute(href) ? ' topbarNavItemActive' : ''}`);
 
   return (
     <div className="shell">
@@ -25,11 +40,12 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
 
         <nav id="main-navigation" className="topbarGroup" aria-label="Main navigation">
-          <Link href="/" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faGaugeHigh} /> Dashboard</span></Link>
-          {role === 'ADMIN' && <Link href="/admin" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
-          {role === 'COACH' && <Link href="/coach" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faPersonRunning} /> Coach</span></Link>}
-          {role === 'REFEREE' && <Link href="/referee" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
-          {isAuthenticated && <Link href="/matches" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
+          <Link href="/" className={navItemClass('/')}><span className="iconLabel"><FontAwesomeIcon icon={faHouse} /> Home</span></Link>
+          {isAuthenticated && <Link href="/matches" className={navItemClass('/matches')}><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
+          <Link href="/stats" className={navItemClass('/stats')}><span className="iconLabel"><FontAwesomeIcon icon={faChartLine} /> Stats</span></Link>
+          {role === 'ADMIN' && <Link href="/admin" className={navItemClass('/admin')}><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
+          {role === 'COACH' && <Link href="/coach" className={navItemClass('/coach')}><span className="iconLabel"><FontAwesomeIcon icon={faPersonRunning} /> Coach</span></Link>}
+          {role === 'REFEREE' && <Link href="/referee" className={navItemClass('/referee')}><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
           {isAuthenticated ? (
             <>
               <span className="userBadge topbarUserBadge">{user?.username} ({user?.role})</span>
@@ -38,7 +54,7 @@ export function Layout({ children }: { children: ReactNode }) {
               </button>
             </>
           ) : (
-            <Link href="/login" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Login</span></Link>
+            <Link href="/login" className={navItemClass('/login')}><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Login</span></Link>
           )}
         </nav>
       </header>

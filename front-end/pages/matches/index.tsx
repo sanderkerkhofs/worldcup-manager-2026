@@ -29,48 +29,46 @@ export default function MatchesPage() {
 
   return (
     <div className="stack">
-      <section className="heroCard">
-        <p className="eyebrow">Matches</p>
-        <h2>Match control list</h2>
-        <p className="muted">Open any match to fill in status, scores, and scorers.</p>
-      </section>
-
       {roundsWithMatches.length === 0 ? (
         <section className="panelCard">
           <p className="muted">No matches are available yet.</p>
         </section>
       ) : (
         roundsWithMatches.map(({ round, matches }) => (
-          <section key={round.id} className="stack">
-            <div className="panelHeader">
-              <h3>{round.orderNumber}. {round.name}</h3>
-              <div className="rowButtons">
-                <p className="muted">{matches.length} matches</p>
-                <Link href={`/rounds/${round.id}`} className="smallButton">Open round page</Link>
+          <section key={round.id}>
+            <article className="panelCard stack">
+              <header className="sectionTitleCard">
+                <div className="sectionTitleCopy">
+                  <p className="eyebrow">Round {round.orderNumber}</p>
+                  <h3>{round.orderNumber}. {round.name}</h3>
+                </div>
+                <div className="rowButtons">
+                  <p className="muted">{matches.length} matches</p>
+                </div>
+              </header>
+
+              <div className="gridCols">
+                {matches.map((match) => {
+                  const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
+                  const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+
+                  return (
+                  <article key={match.id} className="panelCard">
+                    <h3>
+                      {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD'} vs{' '}
+                      {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD'}
+                    </h3>
+                    <p className="muted">{new Date(match.matchDate).toLocaleString()}</p>
+                    <p className="muted">Score: {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
+                    <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
+                    <div className="rowButtons">
+                      <Link href={`/matches/${match.id}`} className="linkButton">Open editor</Link>
+                    </div>
+                  </article>
+                  );
+                })}
               </div>
-            </div>
-
-            <div className="gridCols">
-              {matches.map((match) => {
-                const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
-
-                return (
-                <article key={match.id} className="panelCard">
-                  <h3>
-                    {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD'} vs{' '}
-                    {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD'}
-                  </h3>
-                  <p className="muted">{new Date(match.matchDate).toLocaleString()}</p>
-                  <p className="muted">Score: {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
-                  <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
-                  <div className="rowButtons">
-                    <Link href={`/matches/${match.id}`} className="linkButton">Open editor</Link>
-                  </div>
-                </article>
-                );
-              })}
-            </div>
+            </article>
           </section>
         ))
       )}

@@ -7,9 +7,8 @@ import {
   faChevronRight,
   faPenToSquare,
   faArrowUpRightFromSquare,
-  faTrophy,
 } from '@fortawesome/free-solid-svg-icons';
-import { CoachPanel, RefereePanel, ScorePanel } from '../components/DashboardPanels';
+import { CoachPanel, RefereePanel } from '../components/DashboardPanels';
 import { getOverview } from '../services/competitionService';
 import { useSession } from '../lib/useSession';
 
@@ -63,9 +62,8 @@ export default function HomePage() {
   return (
     <div className="stack">
       <section className="stack">
-        <h2><span className="iconLabel"><FontAwesomeIcon icon={faTrophy} /> Bracket Overview</span></h2>
         {selectedRound ? (
-          <article className="panelCard">
+          <article className="panelCard stack">
             <div className="roundNavControls">
               <button
                 className="smallButton roundNavButton"
@@ -98,8 +96,12 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="panelHeader">
-              <h3>{selectedRound.name}</h3>
+            <div className="sectionTitleCard">
+              <div className="sectionTitleCopy">
+                <p className="eyebrow">Round {selectedRound.orderNumber}</p>
+                <h3>{selectedRound.name}</h3>
+              </div>
+              <p className="muted">{selectedRoundMatches.length} matches</p>
             </div>
 
             {selectedRoundMatches.length === 0 ? (
@@ -137,44 +139,6 @@ export default function HomePage() {
           </article>
         )}
       </section>
-
-      <section className="stack">
-        <h2>Standings Snapshot</h2>
-        <div className="tableWrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Team</th>
-                <th>P</th>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>GF</th>
-                <th>GA</th>
-                <th>GD</th>
-                <th>PTS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {overview.standings.map((row) => (
-                <tr key={row.teamId}>
-                  <td>{teamById.get(row.teamId)?.countryFlag ? `${teamById.get(row.teamId)?.countryFlag} ` : ''}{row.teamName}</td>
-                  <td>{row.played}</td>
-                  <td>{row.won}</td>
-                  <td>{row.drawn}</td>
-                  <td>{row.lost}</td>
-                  <td>{row.goalsFor}</td>
-                  <td>{row.goalsAgainst}</td>
-                  <td>{row.goalDifference}</td>
-                  <td>{row.points}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <ScorePanel token={token} />
 
       {user?.role === 'COACH' && <CoachPanel overview={overview} token={token} onRefresh={async () => { await mutate(); }} />}
       {user?.role === 'REFEREE' && <RefereePanel overview={overview} token={token} onRefresh={async () => { await mutate(); }} />}

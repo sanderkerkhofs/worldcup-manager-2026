@@ -136,6 +136,11 @@ a {
   transform: none;
 }
 
+.topbarNavItemActive {
+  background: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+}
+
 .topbarLogout {
   margin-left: auto;
 }
@@ -317,6 +322,44 @@ select {
   justify-content: space-between;
   gap: 0.5rem;
   align-items: center;
+}
+
+.sectionTitleCard {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(4px);
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.sectionTitleCopy {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.sectionTitleCard h2,
+.sectionTitleCard h3 {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1.08;
+}
+
+.sectionTitleCard h2 {
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
+}
+
+.sectionTitleCard h3 {
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+.sectionTitleCard .rowButtons {
+  justify-content: flex-end;
 }
 
 .tableWrap {
@@ -553,6 +596,16 @@ input {
   .panelHeader {
     flex-wrap: wrap;
     align-items: flex-start;
+  }
+
+  .sectionTitleCard {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .sectionTitleCard .rowButtons {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .panelHeader .rowButtons {
