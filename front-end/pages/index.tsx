@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
-  faPenToSquare,
 } from '@fortawesome/free-solid-svg-icons';
 import { RefereePanel } from '../components/DashboardPanels';
 import { getOverview } from '../services/competitionService';
@@ -56,7 +55,6 @@ export default function HomePage() {
   }
 
   const teamById = new Map(overview.teams.map((team) => [team.id, team]));
-  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="stack">
@@ -109,19 +107,16 @@ export default function HomePage() {
 
                   return (
                     <li key={match.id}>
-                      <span>
-                        {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
-                        {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
-                      </span>
-                      <strong>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</strong>
-                      <div className="matchRowFooter rowButtons">
-                        <small>{match.status}</small>
-                        {isAdmin && (
-                          <Link className="smallButton matchEditButton" href={`/matches/${match.id}`}>
-                            <span className="iconLabel"><FontAwesomeIcon icon={faPenToSquare} /> Edit</span>
-                          </Link>
-                        )}
-                      </div>
+                      <Link className="matchListCardLink" href={`/matches/${match.id}`}>
+                        <span>
+                          {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
+                          {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
+                        </span>
+                        <strong>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</strong>
+                        <div className="matchRowFooter rowButtons">
+                          <small>{match.status}</small>
+                        </div>
+                      </Link>
                     </li>
                   );
                 })}
