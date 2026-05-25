@@ -3,6 +3,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { ScorePanel } from '../components/DashboardPanels';
 import { useSession } from '../lib/useSession';
 import { getMatchStatusLabel } from '../lib/matchStatus';
 import { getOverview } from '../services/competitionService';
@@ -47,6 +48,8 @@ export default function AdminPage() {
 
   return (
     <div className="stack">
+      <ScorePanel token={token} />
+
       <section className="stack">
         <article className="panelCard stack">
           <p className="eyebrow">User Management</p>

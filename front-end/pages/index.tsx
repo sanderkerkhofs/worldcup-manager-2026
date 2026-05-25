@@ -6,7 +6,6 @@ import {
   faChevronLeft,
   faChevronRight,
   faPenToSquare,
-  faArrowUpRightFromSquare,
 } from '@fortawesome/free-solid-svg-icons';
 import { CoachPanel, RefereePanel } from '../components/DashboardPanels';
 import { getOverview } from '../services/competitionService';
@@ -77,10 +76,6 @@ export default function HomePage() {
               >
                 <span className="iconLabel"><FontAwesomeIcon icon={faChevronLeft} /> Previous</span>
               </button>
-
-              <Link className="smallButton roundNavButton" href={`/rounds/${selectedRound.id}`}>
-                <span className="iconLabel"><FontAwesomeIcon icon={faArrowUpRightFromSquare} className="roundNavIcon" /> Manage</span>
-              </Link>
 
               <button
                 className="smallButton roundNavButton"

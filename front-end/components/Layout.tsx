@@ -35,7 +35,6 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">FIFA-Style Knockout Control</p>
           <h1 className="brand">Worldcup Manager 2026</h1>
         </div>
 
