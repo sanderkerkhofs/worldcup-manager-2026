@@ -50,6 +50,8 @@ export type Round = {
 export type Match = {
   id: string;
   roundId: string;
+  roundOrderNumber: number;
+  roundName: string;
   homeTeamId: string | null;
   awayTeamId: string | null;
   refereeId: string | null;

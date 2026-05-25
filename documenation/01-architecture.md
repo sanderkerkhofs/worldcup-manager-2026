@@ -35,7 +35,7 @@ This separation makes the code easier to test, reason about, and extend.
 
 The frontend is organized by responsibility:
 
-- **pages/**: route-level pages (`/`, `/login`, `/rounds/[id]`, `/matches/[matchId]`, etc.)
+- **pages/**: route-level pages (`/`, `/login`, `/rounds/[id]`, `/matches/[matchId]`, etc.). The `/rounds` overview route redirects to `/`.
 - **components/**: reusable panels/forms/layout pieces
 - **services/**: typed API calls (`getOverview`, `updateMatchStatus`, ...)
 - **lib/**: session state and helper utilities

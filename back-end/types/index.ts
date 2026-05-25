@@ -146,6 +146,8 @@ export type GoalResponse = {
 export type MatchResponse = {
   id: string;
   roundId: string;
+  roundOrderNumber: number;
+  roundName: string;
   homeTeamId: string | null;
   awayTeamId: string | null;
   refereeId: string | null;

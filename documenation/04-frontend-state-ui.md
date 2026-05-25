@@ -27,7 +27,11 @@ Pages call typed service functions from `front-end/services`.
 - `/coach`: player availability for coach team
 - `/referee`: assigned match queue and actions
 - `/matches/[matchId]`: detailed match editing
-- `/rounds/[roundId]`: round controls and match list
+- `/rounds/[roundId]`: stage controls and match list
+
+Routing note:
+
+- `/rounds` redirects to `/` because bracket overview is now centralized on the dashboard.
 
 ## 4. UI Design Pattern
 
@@ -57,6 +61,8 @@ Examples:
 - `updateMatchStatus()` -> `/api/matches/:matchId/status`
 - `updatePlayerStatus()` -> `/api/players/:playerId/status`
 - `simulateRound()` -> `/api/competition/rounds/:roundId/simulate`
+
+The frontend still calls round endpoints, but `roundId` is a stage identifier rather than a persisted round entity id.
 
 This mapping is centralized in service files for maintainability.
 

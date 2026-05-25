@@ -29,25 +29,25 @@
       <ul>
         <li><code>GET /api/competition/overview</code></li>
         <li><code>GET /api/competition/rounds</code></li>
-        <li><code>POST /api/competition/rounds/:roundId/initiate</code> (ADMIN)</li>
         <li><code>POST /api/competition/rounds/:roundId/simulate</code> (ADMIN)</li>
       </ul>
+      <p><code>roundId</code> is a stage identifier (derived from configured order), not a database Round row id.</p>
 
       <h3>Teams / Players / Matches / Users</h3>
       <p>Domain management endpoints are available under <code>/api/teams</code>, <code>/api/players</code>, <code>/api/matches</code>, and <code>/api/users</code>.</p>
 
       <h2>2. Key Business Rules</h2>
-      <h3>Round Initiation</h3>
+      <h3>Automatic Stage Activation</h3>
       <ul>
-        <li>Round must exist.</li>
-        <li>Previous round must be completed (except first round).</li>
-        <li>Matches must have both teams known.</li>
-        <li>Status moves from <code>NOT_STARTED</code> to <code>IN_PROGRESS</code>.</li>
+        <li>Stage must exist in fixed competition configuration.</li>
+        <li>First stage matches are seeded as <code>IN_PROGRESS</code>.</li>
+        <li>Next stage matches become <code>IN_PROGRESS</code> automatically when winners are assigned.</li>
+        <li>Matches must have both teams known before simulation.</li>
       </ul>
 
       <h3>Round Simulation</h3>
       <ul>
-        <li>Cannot run if NOT_STARTED matches remain.</li>
+        <li>Previous stage must be completed (except first stage).</li>
         <li>Teams must be assigned.</li>
         <li>Simulation creates non-draw outcomes with goals.</li>
       </ul>
@@ -55,6 +55,7 @@
       <h3>Match Update</h3>
       <ul>
         <li>Only ADMIN or assigned REFEREE can edit status/result/goals.</li>
+        <li>For non-first stages, editing is blocked until all previous-stage matches are <code>COMPLETED</code>.</li>
         <li><code>IN_PROGRESS</code>/<code>COMPLETED</code> require known teams.</li>
         <li><code>COMPLETED</code> requires valid non-draw knockout score.</li>
       </ul>

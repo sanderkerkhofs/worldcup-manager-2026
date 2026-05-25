@@ -29,7 +29,7 @@ HTML version:
 - How the data model works (ERD + constraints)
 - How business rules are enforced in backend services
 - How frontend pages map to roles and workflows
-- How match and round progression works end-to-end
+- How match and stage progression works end-to-end
 - How to study and explain the project in an evaluation/demo
 
 ## Quick Project Snapshot

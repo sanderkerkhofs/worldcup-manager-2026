@@ -22,8 +22,7 @@
         <li><strong>User</strong>: account with role and optional team assignment.</li>
         <li><strong>Team</strong>: national team metadata and coach info.</li>
         <li><strong>Player</strong>: belongs to team, includes shirt number and status.</li>
-        <li><strong>Round</strong>: ordered tournament stage.</li>
-        <li><strong>Match</strong>: fixture linking teams, referee, score, status.</li>
+        <li><strong>Match</strong>: fixture linking teams, referee, score, status, and stage metadata (<code>roundOrderNumber</code>, <code>roundName</code>).</li>
         <li><strong>Goal</strong>: scoring event linked to match/player/team.</li>
       </ul>
 
@@ -37,7 +36,6 @@
       <h2>3. ERD (Mermaid Source)</h2>
       <pre><code>erDiagram
     TEAM ||--o{ PLAYER : has
-    ROUND ||--o{ MATCH : contains
     TEAM ||--o{ MATCH : homeTeam
     TEAM ||--o{ MATCH : awayTeam
     USER ||--o{ MATCH : assignedReferee
@@ -51,7 +49,7 @@
       <ul>
         <li><code>User.username</code> unique</li>
         <li><code>Team.name</code> unique</li>
-        <li><code>Round.orderNumber</code> unique</li>
+        <li><code>Match.roundOrderNumber</code> indexed for stage queries</li>
         <li><code>Player(teamId, shirtNumber)</code> unique</li>
       </ul>
 
@@ -59,12 +57,12 @@
       <ul>
         <li><strong>Master data:</strong> teams, players, users</li>
         <li><strong>Transactional data:</strong> matches and goals</li>
-        <li><strong>Process data:</strong> round initiation, simulation, completion</li>
+        <li><strong>Process data:</strong> stage initiation, simulation, and progression locking</li>
       </ul>
 
       <h2>6. Why It Fits Knockout Tournaments</h2>
       <ul>
-        <li>Round order enables deterministic progression.</li>
+        <li>Stage order in match metadata enables deterministic progression.</li>
         <li>Status lifecycle supports operational control.</li>
         <li>Goal events keep scoring auditable and detailed.</li>
         <li>Team/player split supports coach workflows cleanly.</li>

@@ -9,10 +9,6 @@ export function getRounds(token?: string | null) {
   return api.get<Round[]>('/api/competition/rounds', token);
 }
 
-export function initiateRound(roundId: string, token: string) {
-  return api.post<{ round: Round; matches: Match[] }>(`/api/competition/rounds/${roundId}/initiate`, {}, token);
-}
-
 export function simulateRound(roundId: string, token: string) {
   return api.post<RoundSimulationResult>(`/api/competition/rounds/${roundId}/simulate`, {}, token);
 }

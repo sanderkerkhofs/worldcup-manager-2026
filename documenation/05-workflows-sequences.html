@@ -21,12 +21,11 @@
       <pre><code>User -> Frontend -> POST /api/auth/login -> Backend -> DB lookup (case-insensitive)
 Backend -> token + user payload -> Frontend stores session</code></pre>
 
-      <h2>2. Initiate Round (Admin)</h2>
-      <pre><code>Admin clicks initiate
-Frontend calls POST /api/competition/rounds/:id/initiate
-Backend validates previous round + team assignment
-Backend updates matches: NOT_STARTED -> IN_PROGRESS
-Backend returns updated round/matches</code></pre>
+      <h2>2. Automatic Stage Activation</h2>
+      <pre><code>System seeds first stage as IN_PROGRESS
+    Backend waits for current stage completion
+    Backend assigns winners to next-stage matches
+    Backend sets next-stage matches to IN_PROGRESS</code></pre>
 
       <h2>3. Referee Match Update</h2>
       <pre><code>Referee edits status/score
@@ -44,12 +43,12 @@ Frontend updates player state</code></pre>
 
       <h2>5. Bracket Progression</h2>
       <ol>
-        <li>Round exists</li>
-        <li>Admin initiates round</li>
-        <li>Matches become <code>IN_PROGRESS</code></li>
+        <li>Precreated stage matches exist</li>
+        <li>First stage starts as <code>IN_PROGRESS</code></li>
         <li>Results and goals are entered</li>
         <li>Matches become <code>COMPLETED</code></li>
-        <li>System validates readiness for next stage</li>
+        <li>System fills winners into next-stage matches</li>
+        <li>Next stage becomes <code>IN_PROGRESS</code> automatically</li>
       </ol>
     </main>
   </body>

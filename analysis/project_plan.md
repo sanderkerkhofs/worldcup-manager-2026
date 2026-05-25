@@ -2,7 +2,7 @@
 
 ## 1. Goal
 
-Build a full-stack web app named worldcup-manager-2026 that manages one fixed World Cup style knockout competition (starting from 16th Final) to final winner, using clear role-based permissions (admin, coach, referee, guest).
+Build a full-stack web app named worldcup-manager-2026 that manages one fixed World Cup style knockout competition (starting from 8th Final) to final winner, using clear role-based permissions (admin, coach, referee, guest).
 
 ## 2. Deliverables for Project Analysis
 
@@ -17,10 +17,10 @@ Build a full-stack web app named worldcup-manager-2026 that manages one fixed Wo
 ### In Scope (MVP)
 
 - Use fixed worldcup-manager-2026 metadata from app configuration (name, year, host country)
-- Seed 32 teams into the competition in randomized order
-- Use fixed knockout rounds (16th Final, Round of 16, Quarterfinals, Semifinals, Final)
-- Admin initiates rounds in sequence
-- Fill/update teams in matches for initiated rounds
+- Seed 16 teams into the competition in randomized order
+- Use fixed knockout stages (8th Final, Quarterfinal, Semifinal, Final)
+- First stage starts active automatically; next stages activate after progression
+- Fill/update teams in matches for active stages
 - Schedule matches
 - Referee inserts and updates match status (not started, active, completed)
 - Referee inserts and updates goals with scored-by-player data
@@ -34,25 +34,24 @@ Main entities:
 
 - Team
 - Player
-- Round
 - Match
 
 Critical relationship choices:
 
-- `Match` contains `round_id`
+- `Match` contains `roundOrderNumber` and `roundName`
 - `Player` contains `player_id` as unique identifier and belongs to exactly one team
 
 No competition metadata entity is required in the database because the app manages one fixed competition only.
 
-This guarantees every match belongs to exactly one round in the fixed competition flow.
+This guarantees every match belongs to exactly one fixed stage in the competition flow without requiring a separate Round table.
 
 ## 5. Functional Requirements
 
 - System uses fixed worldcup-manager-2026 metadata from app configuration (name, year, host country)
 - Teams are seeded automatically; admin does not manually register teams for MVP
-- System provides fixed knockout rounds for the competition
-- Admin can initiate each round (16th Final -> Round of 16 -> Quarterfinals -> Semifinals -> Final)
-- Admin can assign/update teams in round matches
+- System provides fixed knockout stages for the competition
+- System auto-activates the first stage and auto-activates next stages after winners are assigned
+- Admin can assign/update teams in stage matches
 - Admin can schedule matches
 - Coach can select players for matches of their own team
 - Each team has at least 15 seeded players with a simple availability status
@@ -61,13 +60,13 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 - Referee can only select goal scorers who are marked available
 - Assigned referee can only update results for their assigned match
 - Admin can update results for all matches
-- System can compute winners and progression to the next round
+- System can compute winners and progression to the next stage
 - Guest can only view public competition information (fixtures, bracket, results)
 - System stores goals at player level for future top-scorer ranking
 
 ## 5.1 Role Permissions Matrix
 
-- Admin: full CRUD rights for competition data, teams, rounds, matches, and public competition data.
+- Admin: full CRUD rights for competition data, teams, matches, and public competition data.
 - Coach: can manage player availability for own team using available/unavailable.
 - Referee: can insert/update match status and match goals (including goal scorer registration) only for assigned matches.
 - Guest: read-only access to public competition information.
@@ -96,7 +95,7 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 - Next.js provides the web client and routing for competition pages.
 - Express.js exposes API endpoints consumed by the Next.js frontend.
 - Prisma manages schema, migrations, and typed data access.
-- PostgreSQL stores competition, team, player, round, and match data with relational integrity.
+- PostgreSQL stores competition, team, player, and match data with relational integrity.
 - Backend follows layered architecture: domain, services, controllers.
 - Incoming request payloads are encapsulated in DTOs stored in `types/index.ts`.
 - Swagger is available at `/api-docs`, with route docs and component schemas.
@@ -114,8 +113,8 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 - Project setup
 - Express.js API structure and route modules
 - Prisma schema and PostgreSQL migrations
-- CRUD for competition settings, teams, rounds, matches
-- Fixed 16th Final bracket seeding (16th Final, Round of 16, Quarterfinals, Semifinals, Final)
+- CRUD for competition settings, teams, and matches
+- Fixed 8th Final bracket seeding (8th Final, Quarterfinal, Semifinal, Final)
 - Team and player seed data inserted into the database for demo/testing (players with unique player ID and availability status)
 - Teams are seeded in randomized order to avoid a fixed bracket pattern
 - Multiple referees seeded and assignable per match for authorization checks
@@ -124,7 +123,7 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 
 ### Milestone 3 - Business Logic
 
-- Round initiation flow
+- Automatic stage activation flow
 - Match status transitions
 - Result processing and winner progression
 - Referee-owned match status and goals update flow
@@ -138,7 +137,7 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 - Next.js project structure and shared layout
 - UI for knockout dashboard
 - Team and match management screens
-- Bracket and round progression views
+- Bracket and stage progression views
 - Role-specific screens/actions for admin, coach, referee, and guest
 - Reusable API service layer + useSWR data fetching
 - Dynamic routing, forms with validation, login/register/logout, browser storage integration
@@ -155,8 +154,8 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 
 ## 9. Risks and Mitigation
 
-- Round progression consistency: enforce strict round order and completion checks
-- Invalid bracket setup (team count mismatch): block initiation until valid pairings exist
+- Stage progression consistency: enforce strict order and completion checks
+- Invalid bracket setup (team count mismatch): block progression until valid pairings exist
 - Incorrect role permissions: enforce backend authorization first, then mirror in frontend visibility
 - Inconsistent data: enforce constraints + validation at API and DB levels
 - Time pressure: prioritize MVP and keep optional features for phase 2
@@ -164,12 +163,12 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 ## 10. Definition of Done (MVP)
 
 - worldcup-manager-2026 metadata (name, year, host country) is fixed and loaded from app configuration
-- Exactly 32 teams are auto-seeded into the competition in randomized order
+- Exactly 16 teams are auto-seeded into the competition in randomized order
 - Teams and players are seeded in the database for a quick project start
 - Each team contains at least 15 players
 - Each player has a dedicated player ID for stable goal-scoring references
 - Player status is limited to available/unavailable for simple lineup and scorer selection
-- Pre-created rounds are visible and can be initiated by admin
+- Pre-created stage matches are visible, with first stage active by default and next stages auto-activated when unlocked
 - Matches can be scheduled, status-updated, and scored
 - Coaches can select players for their own team matches
 - Referee can insert/update match status and goals
@@ -177,7 +176,7 @@ This guarantees every match belongs to exactly one round in the fixed competitio
 - Admin can update results of all matches
 - Match result stores scored-by-player details for future top-scorer ranking
 - Guests can only access public read-only pages
-- Winner progression to the next round works correctly
+- Winner progression to the next stage works correctly
 - Completed final clearly exposes competition winner
 - Required analysis documentation is complete and consistent
 

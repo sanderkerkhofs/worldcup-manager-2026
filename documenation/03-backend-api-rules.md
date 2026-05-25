@@ -12,8 +12,9 @@
 
 - `GET /api/competition/overview`
 - `GET /api/competition/rounds`
-- `POST /api/competition/rounds/:roundId/initiate` (ADMIN)
 - `POST /api/competition/rounds/:roundId/simulate` (ADMIN)
+
+Note: `roundId` is a stage identifier (derived from configured round order), not a database `Round` row id.
 
 ### Teams / Players / Matches / Users
 
@@ -21,22 +22,23 @@
 
 ## 2. Key Business Rules
 
-### 2.1 Round Initiation
+### 2.1 Automatic Stage Activation
 
-- Round must exist.
-- Previous round must be fully completed (except first round).
-- Matches must have both teams known.
-- Matches in that round move from `NOT_STARTED` to `IN_PROGRESS`.
+- Stage must exist in fixed competition configuration.
+- First stage matches are seeded as `IN_PROGRESS`.
+- Next stage matches become `IN_PROGRESS` automatically when previous stage winners are assigned.
+- Matches must have both teams known before simulation.
 
 ### 2.2 Round Simulation
 
-- Round cannot be simulated if NOT_STARTED matches remain.
+- Previous stage must be fully completed (except first stage).
 - Teams must be assigned to matches.
 - Simulation generates non-draw outcomes and goal events.
 
 ### 2.3 Match Update Rules
 
 - Only ADMIN or assigned REFEREE can update match status/result/goals.
+- For non-first rounds, edits are blocked until all previous-round matches are `COMPLETED`.
 - `IN_PROGRESS` and `COMPLETED` require known teams.
 - `COMPLETED` requires valid score and non-draw result.
 

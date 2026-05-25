@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { asyncHandler, authenticateToken, requireRoles } from '../util/middleware';
-import { getCompetitionOverview, initiateRound, listRounds, simulateRound } from '../service/tournamentService';
+import { getCompetitionOverview, listRounds, simulateRound } from '../service/tournamentService';
 
 export const competitionRouter = Router();
 export const tournamentRouter = competitionRouter;
@@ -23,11 +23,6 @@ competitionRouter.get('/bracket', asyncHandler(async (_req, res) => {
 competitionRouter.get('/rounds', asyncHandler(async (_req, res) => {
   const rounds = await listRounds();
   res.json(rounds);
-}));
-
-competitionRouter.post('/rounds/:roundId/initiate', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
-  const result = await initiateRound(req.params.roundId);
-  res.json(result);
 }));
 
 competitionRouter.post('/rounds/:roundId/simulate', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {

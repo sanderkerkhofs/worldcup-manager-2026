@@ -1,173 +1,92 @@
 # Seed Data Guide
 
-This document explains exactly what is inserted by the current seed script in [back-end/util/seed.ts](../back-end/util/seed.ts).
+This document explains what is inserted by the current seed script in [back-end/util/seed.ts](../back-end/util/seed.ts).
 
 ## Purpose
 
-The seed script gives you a predictable starter dataset for:
+The seed script gives a predictable starter dataset for:
 
 - authentication/login testing
 - role-based authorization testing
 - match + referee assignment testing
-- quick Swagger/demo flows
-- future top-scorer ranking flows (player-level IDs)
+- knockout stage progression testing
+- top-scorer and goal-flow demos
 
-## Analysis Update: Dedicated Player Table
+## Data Model Note
 
-For the approved analysis model, a dedicated `Player` table is required.
+There is no separate `Round` table.
 
-Planned core fields:
+Round metadata is stored directly on each match:
 
-- `player_id` (primary key)
-- `team_id` (foreign key to Team)
-- `first_name`
-- `last_name`
-- `shirt_number`
-- `position`
-- `status` (fixed values: available, unavailable)
+- `roundOrderNumber`
+- `roundName`
 
-Goal scorer registrations must reference `player_id` so top-scorer ranking is deterministic and stable over time.
-
-Each team should have at least 15 seeded players so coach availability management is meaningful in the analysis model.
-
-Note:
-
-- Backend/frontend implementation will be recreated later after analysis approval.
-- This document currently describes the seed intent and analysis design direction only.
+The backend still exposes competition round endpoints using stage identifiers.
 
 ## Seed Order (Reset + Insert)
 
-The script first deletes data in dependency-safe order, then inserts fresh data.
+The script deletes data in dependency-safe order, then inserts fresh data.
 
 Delete order:
 
-1. `match`
-2. `round`
-3. `team`
+1. `goal`
+2. `match`
+3. `player`
 4. `user`
+5. `team`
 
 Insert order:
 
-1. users (including multiple referees)
-2. 32 international teams
-3. one fixed competition config (`worldcup-manager-2026`)
-4. rounds
-5. 16th Final matches (with assigned referees)
+1. users (admin, coaches, multiple referees)
+2. 16 teams (randomized selection from a larger pool)
+3. players (15 per team)
+4. precreated knockout matches for all stages
 
-## Seeded Users
+## Seeded Stage Setup
 
-The following users are created:
+Configured knockout stages:
 
-| username           | password   | role    |
-| ------------------ | ---------- | ------- |
-| admin              | admin123   | ADMIN   |
-| Domenico_Tedesco   | coach123   | COACH   |
-| Michael_Oliver     | referee123 | REFEREE |
-| Anthony_Taylor     | referee123 | REFEREE |
-| Francois_Letexier  | referee123 | REFEREE |
-| Clement_Turpin     | referee123 | REFEREE |
-| Felix_Zwayer       | referee123 | REFEREE |
-| Ismail_Elfath      | referee123 | REFEREE |
-| Tori_Penso         | referee123 | REFEREE |
-| Frank_De_Bleeckere | referee123 | REFEREE |
+1. 8th Final (8 matches)
+2. Quarterfinal (4 matches)
+3. Semifinal (2 matches)
+4. Final (1 match)
+
+Behavior:
+
+- Only first-stage matches start with known teams.
+- Later-stage matches are precreated with null teams.
+- Winners are copied forward when the previous stage is fully completed.
+
+## Seeded Users (Examples)
+
+- `admin` / `admin123`
+- `Domenico_Tedesco` / `coach123`
+- `Frank_De_Bleeckere` / `referee123`
 
 Notes:
 
-- Passwords are hashed with bcrypt before storage.
-- Referees are queried and sorted by username, then assigned to matches.
-- Team coaches are also created for seeded teams using their coach name with underscores.
-- Example coach login: `Domenico_Tedesco` / `coach123` (BEL, COACH, Belgium).
-- Example referee login: `Frank_De_Bleeckere` / `referee123` (BEL, REFEREE, Belgium).
+- Passwords are hashed with bcrypt.
+- Referees are assigned to matches in rotation.
+- Coach users are linked to seeded teams.
 
-## Seeded Teams
+## Seeded Team and Player Data
 
-The script creates 32 national teams (real international countries), including:
+- 16 teams are seeded per run.
+- Each team has 15 players.
+- Player availability is prefilled (`AVAILABLE` for primary squad, `UNAVAILABLE` for remaining players).
 
-- Argentina
-- Brazil
-- France
-- Germany
-- Spain
-- England
-- Portugal
-- Netherlands
-- ... (total 32)
+## Match Status Vocabulary
 
-Seed order note:
-
-- The teams should be inserted in a randomized order if the seed script supports shuffling, so the bracket does not always start with the same country pairings.
-
-Note:
-
-- In the approved analysis target, players are stored in a dedicated Player table instead of embedding player-like text in team fields.
-- Player status is kept simple and fixed to available/unavailable.
-
-## Seeded Competition Config + Rounds
-
-Current seed uses one fixed competition config:
-
-- name: `worldcup-manager-2026`
-- year: `2026`
-- format: `Knockout`
-
-Current rounds:
-
-1. 16th Final
-2. Round of 16
-3. Quarterfinals
-4. Semifinals
-5. Final
-
-## Seeded Team Pool
-
-All 32 teams belong to the same fixed competition scope.
-
-## Seeded Matches (Examples)
-
-The script inserts 16 matches in the `16th Final` round:
-
-- Match pairing pattern: based on the randomized team order, paired as 1 vs 2, 3 vs 4, ... up to 31 vs 32
-- Referees are assigned in rotation (`referee1` to `referee6`)
-- First 4 matches are seeded as `COMPLETED` with score `2-1`
-- Remaining 12 matches are seeded as `SCHEDULED` with null scores
-
-Example completed match:
-
-- Home: Argentina
-- Away: Brazil
-- Status: COMPLETED
-- Score: 2 - 1
-
-Example scheduled match:
-
-- Home: South Korea
-- Away: Australia
-- Status: SCHEDULED
-- Score: null
-
-## Authorization Example
-
-Because matches have `refereeId`:
-
-- assigned referee can update that match result
-- admin can update all match results
-- non-assigned referee is blocked from updating the match
+- `NOT_STARTED`
+- `IN_PROGRESS`
+- `COMPLETED`
 
 ## How To Run Seed
 
 From [back-end](../back-end):
 
 ```bash
-npm run seed
+npm run db:seed
 ```
 
-If your Prisma schema changed, run migrations and generate client first.
-
-## Important Consistency Note
-
-Current seed now matches the current direction:
-
-- fixed competition `worldcup-manager-2026`
-- 32 teams
-- seeded `16th Final` matches
-- multiple assigned referees
+This command force-resets the database schema and reseeds fresh demo data.

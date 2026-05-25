@@ -10,7 +10,7 @@ This folder contains the Express API for Tournament Manager.
 - `repository/` wraps Prisma queries.
 - `model/` contains the domain entities and validation.
 - `types/` contains the shared DTO and response contracts.
-- `util/seed.ts` loads the database with demo users, teams, rounds, and matches.
+- `util/seed.ts` loads the database with demo users, teams, and precreated knockout matches that include round metadata.
 
 ## Setup
 
@@ -22,14 +22,14 @@ This folder contains the Express API for Tournament Manager.
 npm install
 ```
 
-4. Generate the Prisma client and seed the database:
+1. Generate the Prisma client and seed the database:
 
 ```console
 npm run db:generate
 npm run db:seed
 ```
 
-5. Start the server:
+1. Start the server:
 
 ```console
 npm start

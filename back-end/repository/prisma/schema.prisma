@@ -54,18 +54,10 @@ model Team {
   goals        Goal[]
 }
 
-model Round {
-  id           String   @id @default(cuid())
-  name         String
-  orderNumber  Int      @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  matches      Match[]
-}
-
 model Match {
   id           String      @id @default(cuid())
-  roundId      String
+  roundOrderNumber Int
+  roundName    String
   homeTeamId   String?
   awayTeamId   String?
   refereeId    String?
@@ -75,13 +67,12 @@ model Match {
   status       MatchStatus @default(NOT_STARTED)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  round        Round       @relation(fields: [roundId], references: [id], onDelete: Cascade)
   homeTeam     Team?       @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
   awayTeam     Team?       @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
   referee      User?       @relation("AssignedReferee", fields: [refereeId], references: [id], onDelete: SetNull)
   goals        Goal[]
 
-  @@index([roundId])
+  @@index([roundOrderNumber])
   @@index([refereeId])
   @@index([homeTeamId])
   @@index([awayTeamId])

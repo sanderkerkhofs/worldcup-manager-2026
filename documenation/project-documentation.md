@@ -13,7 +13,7 @@ It includes:
 
 Primary goal:
 
-- Manage rounds, matches, players, and competition flow with role-based access.
+- Manage knockout stages, matches, players, and competition flow with role-based access.
 
 ## 2. Tech Stack
 
@@ -53,8 +53,7 @@ Main entities:
 - User: roles ADMIN, COACH, REFEREE, GUEST
 - Team: national team with country metadata and coach
 - Player: belongs to a team, has status AVAILABLE/UNAVAILABLE
-- Round: competition stage (ordered)
-- Match: fixture between two teams with status
+- Match: fixture between two teams with status and embedded stage metadata (`roundOrderNumber`, `roundName`)
 - Goal: goal events tied to a match/player/team
 
 Match statuses:
@@ -67,7 +66,7 @@ Match statuses:
 
 - ADMIN:
   - Manage users
-  - Initiate and simulate rounds
+  - Initiate and simulate stages
   - Edit match status/results/goals
 - COACH:
   - Update player availability for own team
@@ -80,11 +79,11 @@ Match statuses:
 
 ### 6.1 Competition Progression
 
-1. Admin initiates a round.
-2. Match statuses move from NOT_STARTED to IN_PROGRESS.
-3. Referees/Admin update scores and goals.
-4. Matches are completed.
-5. Next round can be generated/continued when rules are met.
+1. First-stage matches are seeded as IN_PROGRESS.
+2. Referees/Admin update scores and goals.
+3. Matches are completed.
+4. Next-stage matches are auto-filled with winners.
+5. Next-stage matches become IN_PROGRESS automatically.
 
 ### 6.2 Match Editing
 
@@ -115,8 +114,9 @@ Base URL: `http://localhost:3000`
 
 - `GET /api/competition/overview`
 - `GET /api/competition/rounds`
-- `POST /api/competition/rounds/:roundId/initiate` (ADMIN)
 - `POST /api/competition/rounds/:roundId/simulate` (ADMIN)
+
+Note: `roundId` is a stage identifier in API routes and responses, not a persisted `Round` table primary key.
 
 ### Teams
 

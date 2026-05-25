@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGaugeHigh,
-  faLayerGroup,
   faUserShield,
   faPersonRunning,
   faFlagCheckered,
@@ -27,7 +26,6 @@ export function Layout({ children }: { children: ReactNode }) {
 
         <nav id="main-navigation" className="topbarGroup" aria-label="Main navigation">
           <Link href="/" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faGaugeHigh} /> Dashboard</span></Link>
-          <Link href="/rounds" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faLayerGroup} /> Rounds</span></Link>
           {role === 'ADMIN' && <Link href="/admin" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
           {role === 'COACH' && <Link href="/coach" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faPersonRunning} /> Coach</span></Link>}
           {role === 'REFEREE' && <Link href="/referee" className="topbarNavItem"><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}

@@ -36,7 +36,7 @@ Goal:
 
 Practice these mini-presentations:
 
-1. "How a round moves from NOT_STARTED to COMPLETED"
+1. "How a stage moves from NOT_STARTED to COMPLETED"
 2. "How a referee updates a match safely"
 3. "How a coach changes player availability"
 4. "How role-based access is enforced"
@@ -64,7 +64,7 @@ Potential next steps you can discuss in evaluation:
 ## Quick Revision Sheet
 
 - **Architecture:** Layered backend + service-centric rules
-- **Data model:** User, Team, Player, Round, Match, Goal
+- **Data model:** User, Team, Player, Match (with round metadata), Goal
 - **Statuses:** NOT_STARTED -> IN_PROGRESS -> COMPLETED
 - **Security:** JWT + role middleware + contextual checks
 - **Core value:** Reliable role-driven tournament operations

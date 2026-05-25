@@ -187,8 +187,7 @@
           <tr><td>User</td><td>System account with role ADMIN, COACH, REFEREE, or GUEST.</td></tr>
           <tr><td>Team</td><td>National team with country metadata and assigned coach.</td></tr>
           <tr><td>Player</td><td>Team player with availability state.</td></tr>
-          <tr><td>Round</td><td>Tournament stage (ordered by round number).</td></tr>
-          <tr><td>Match</td><td>Fixture between teams with score, referee, and status.</td></tr>
+          <tr><td>Match</td><td>Fixture between teams with score, referee, status, and embedded stage metadata.</td></tr>
           <tr><td>Goal</td><td>Scoring event linked to match, player, and minute.</td></tr>
         </tbody>
       </table>
@@ -197,7 +196,7 @@
 
       <h2>4. Role-Based Access</h2>
       <ul>
-        <li><strong>ADMIN</strong>: manages users, initiates/simulates rounds, edits matches.</li>
+        <li><strong>ADMIN</strong>: manages users, initiates/simulates stages, edits matches.</li>
         <li><strong>COACH</strong>: updates own team player availability.</li>
         <li><strong>REFEREE</strong>: updates assigned matches and goals.</li>
         <li><strong>GUEST</strong>: public access to non-protected views.</li>
@@ -206,10 +205,11 @@
       <h2>5. Main Workflows</h2>
       <h3>Competition progression</h3>
       <ol>
-        <li>Admin initiates a round.</li>
-        <li>Matches move to <code>IN_PROGRESS</code>.</li>
-        <li>Referee/Admin updates score and goals.</li>
-        <li>Matches are completed and next-round progression can occur.</li>
+          <li>First-stage matches are seeded as IN_PROGRESS.</li>
+          <li>Referees/Admin update scores and goals.</li>
+          <li>Matches are completed.</li>
+          <li>Next-stage matches are auto-filled with winners.</li>
+          <li>Next-stage matches become IN_PROGRESS automatically.</li>
       </ol>
 
       <h3>Match editing validation</h3>
@@ -236,7 +236,7 @@
           </tr>
           <tr>
             <td>Competition</td>
-            <td><code>GET /api/competition/overview</code>, <code>GET /api/competition/rounds</code>, <code>POST /api/competition/rounds/:roundId/initiate</code>, <code>POST /api/competition/rounds/:roundId/simulate</code></td>
+            <td><code>GET /api/competition/overview</code>, <code>GET /api/competition/rounds</code>, <code>POST /api/competition/rounds/:roundId/simulate</code></td>
           </tr>
           <tr>
             <td>Teams</td>
@@ -258,6 +258,7 @@
       </table>
 
       <p>Swagger UI: <code>http://localhost:3000/api-docs</code></p>
+      <p><code>roundId</code> in competition routes is a stage identifier, not a persisted Round entity id.</p>
 
       <h2>7. Local Setup</h2>
       <h3>Start database</h3>

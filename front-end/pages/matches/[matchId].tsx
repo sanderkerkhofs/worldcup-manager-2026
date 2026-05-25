@@ -89,7 +89,7 @@ export default function MatchEditorPage() {
           <p><strong>Away coach:</strong> {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.coach}` : 'TBD'}</p>
           <p><strong>Current score:</strong> {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
           <p><strong>Status:</strong> {getMatchStatusLabel(match.status)}</p>
-          {!hasPlayableTeams && <p className="muted">Round not initiated yet for this match.</p>}
+          {!hasPlayableTeams && <p className="muted">Teams are not assigned to this match yet.</p>}
         </article>
 
         <article className="panelCard">

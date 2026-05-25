@@ -33,7 +33,6 @@ async function main() {
   await prisma.goal.deleteMany();
   await prisma.match.deleteMany();
   await prisma.player.deleteMany();
-  await prisma.round.deleteMany();
   await prisma.user.deleteMany();
   await prisma.team.deleteMany();
 
@@ -151,21 +150,15 @@ async function main() {
     });
   }
 
-  const rounds = await prisma.round.createManyAndReturn({
-    data: fixedRounds.map((round) => ({
-      name: round.name,
-      orderNumber: round.orderNumber,
-    })),
-  });
-
-  const orderedRounds = [...rounds].sort((left, right) => left.orderNumber - right.orderNumber);
+  const orderedRounds = [...fixedRounds].sort((left, right) => left.orderNumber - right.orderNumber);
   const allMatches = [] as Array<{
-    roundId: string;
+    roundOrderNumber: number;
+    roundName: string;
     homeTeamId: string | null;
     awayTeamId: string | null;
     refereeId: string | null;
     matchDate: Date;
-    status: 'NOT_STARTED';
+    status: 'NOT_STARTED' | 'IN_PROGRESS';
     homeScore: null;
     awayScore: null;
   }>;
@@ -180,12 +173,13 @@ async function main() {
       const awayTeam = hasKnownTeams ? teams[index * 2 + 1] : null;
 
       allMatches.push({
-        roundId: round.id,
+        roundOrderNumber: round.orderNumber,
+        roundName: round.name,
         homeTeamId: homeTeam?.id ?? null,
         awayTeamId: awayTeam?.id ?? null,
         refereeId: referee?.id ?? null,
         matchDate: new Date(Date.UTC(2026, 5, 10 + round.orderNumber * 2 + index, index % 2 === 0 ? 14 : 18, 0, 0)),
-        status: 'NOT_STARTED',
+        status: round.orderNumber === 1 ? 'IN_PROGRESS' : 'NOT_STARTED',
         homeScore: null,
         awayScore: null,
       });
@@ -194,7 +188,7 @@ async function main() {
 
   await prisma.match.createMany({ data: allMatches });
 
-  console.log(`Database seeded with ${competition.name}, 16 teams, 4 rounds, 15 players per team, and multiple referees.`);
+  console.log(`Database seeded with ${competition.name}, 16 teams, precreated knockout matches, 15 players per team, and multiple referees.`);
 }
 
 main()

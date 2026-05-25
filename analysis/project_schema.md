@@ -17,16 +17,11 @@ This document centralizes the analysis data model in one place:
 - country
 - coach
 
-### Round
-
-- round_id (PK)
-- name
-- order_number
-
 ### Match
 
 - match_id (PK)
-- round_id (FK -> Round)
+- round_order_number
+- round_name
 - home_team_id (FK -> Team)
 - away_team_id (FK -> Team)
 - referee_id (FK -> User, optional in this analysis model)
@@ -55,7 +50,6 @@ This document centralizes the analysis data model in one place:
 
 ## 2. Relationship Overview
 
-- Round 1 -> N Match
 - Team 1 -> N Player
 - Match 1 -> N Goal
 - Player 1 -> N Goal
@@ -68,6 +62,7 @@ Business rule highlights:
 - each team has at least 15 players
 - player status is fixed to available/unavailable
 - referee can only select available players when registering goal scorers
+- stage progression uses Match.round_order_number ordering (no separate Round table)
 
 ## 3. UML Class Diagram
 
@@ -80,15 +75,10 @@ classDiagram
     +string coach
   }
 
-  class Round {
-    +int round_id
-    +string name
-    +int order_number
-  }
-
   class Match {
     +int match_id
-    +int round_id
+    +int round_order_number
+    +string round_name
     +int home_team_id
     +int away_team_id
     +int referee_id
@@ -117,7 +107,6 @@ classDiagram
     +int minute
   }
 
-  Round "1" --> "*" Match
   Team "1" --> "*" Player
   Match "1" --> "*" Goal
   Player "1" --> "*" Goal
@@ -128,7 +117,6 @@ classDiagram
 
 ```mermaid
 erDiagram
-  ROUND ||--o{ MATCH : contains
   TEAM ||--o{ PLAYER : has
   MATCH ||--o{ GOAL : records
   PLAYER ||--o{ GOAL : scores
@@ -147,15 +135,10 @@ erDiagram
     VARCHAR coach
   }
 
-  ROUND {
-    INT round_id PK
-    VARCHAR name
-    INT order_number
-  }
-
   MATCH {
     INT match_id PK
-    INT round_id FK
+    INT round_order_number
+    VARCHAR round_name
     INT home_team_id FK
     INT away_team_id FK
     INT referee_id FK
@@ -183,7 +166,6 @@ erDiagram
     INT minute
   }
 
-  ROUND ||--o{ MATCH : contains
   TEAM ||--o{ PLAYER : has
   MATCH ||--o{ GOAL : has
   PLAYER ||--o{ GOAL : scores

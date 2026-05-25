@@ -29,8 +29,9 @@
         <li><code>/coach</code>: player availability updates</li>
         <li><code>/referee</code>: assigned match workflow</li>
         <li><code>/matches/[matchId]</code>: detailed match editing</li>
-        <li><code>/rounds/[roundId]</code>: round controls and list</li>
+        <li><code>/rounds/[roundId]</code>: stage controls and list</li>
       </ul>
+      <p><code>/rounds</code> redirects to <code>/</code> because bracket overview is centralized on dashboard.</p>
 
       <h2>4. UI Design Pattern</h2>
       <ul>
@@ -54,6 +55,7 @@
         <li><code>updatePlayerStatus()</code> -> <code>/api/players/:playerId/status</code></li>
         <li><code>simulateRound()</code> -> <code>/api/competition/rounds/:roundId/simulate</code></li>
       </ul>
+      <p>Round endpoints remain, but <code>roundId</code> is a stage identifier instead of a persisted round entity id.</p>
 
       <h2>7. Debugging Path</h2>
       <ol>

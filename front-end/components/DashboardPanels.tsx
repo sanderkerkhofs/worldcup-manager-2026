@@ -6,7 +6,6 @@ import {
   getPlayers,
   getRounds,
   getTopScorers,
-  initiateRound,
   simulateRound,
   updateMatchResult,
   updateMatchStatus,
@@ -20,16 +19,14 @@ type Props = {
   onRefresh: () => Promise<void>;
 };
 
-function RoundCard({ round, matches, canManageRound, blockedReason, onInitiate, token, onRefresh }: {
+function RoundCard({ round, matches, canManageRound, blockedReason, token, onRefresh }: {
   round: Round;
   matches: Match[];
   canManageRound: boolean;
   blockedReason?: string;
-  onInitiate: () => Promise<void>;
   token: string;
   onRefresh: () => Promise<void>;
 }) {
-  const [initiating, setInitiating] = useState(false);
   const [simulating, setSimulating] = useState(false);
 
   return (
@@ -37,20 +34,6 @@ function RoundCard({ round, matches, canManageRound, blockedReason, onInitiate, 
       <div className="panelHeader">
         <h3>{round.orderNumber}. {round.name}</h3>
         <div className="rowButtons">
-          <button
-            className="smallButton"
-            disabled={!canManageRound || initiating}
-            onClick={async () => {
-              setInitiating(true);
-              try {
-                await onInitiate();
-              } finally {
-                setInitiating(false);
-              }
-            }}
-          >
-            {initiating ? 'Initiating...' : 'Initiate'}
-          </button>
           <button
             className="smallButton"
             disabled={!canManageRound || simulating}
@@ -120,10 +103,6 @@ export function AdminPanel({ overview, token, onRefresh }: Props) {
               blockedReason={blockedReason}
               token={token}
               onRefresh={onRefresh}
-              onInitiate={async () => {
-                await initiateRound(round.id, token);
-                await onRefresh();
-              }}
             />
           );
         })}

@@ -17,21 +17,18 @@ sequenceDiagram
     FE->>FE: store session in browser
 ```
 
-## 2. Initiate Round (Admin)
+## 2. Automatic Stage Activation
 
 ```mermaid
 sequenceDiagram
-    participant A as Admin
-    participant FE as Frontend
+    participant SYS as System
     participant BE as Competition Service
     participant DB as PostgreSQL
 
-    A->>FE: Click Initiate Round
-    FE->>BE: POST /api/competition/rounds/:id/initiate
-    BE->>DB: Validate previous round completion
-    BE->>DB: Ensure teams are known
-    BE->>DB: Update matches NOT_STARTED -> IN_PROGRESS
-    BE-->>FE: Round + matches response
+    SYS->>DB: Seed first stage matches as IN_PROGRESS
+    BE->>DB: Wait until current stage is COMPLETED
+    BE->>DB: Assign winners to next-stage matches
+    BE->>DB: Set next-stage matches to IN_PROGRESS
 ```
 
 ## 3. Referee Match Update Flow
@@ -71,10 +68,9 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[Round exists] --> B[Admin initiates round]
-    B --> C[Matches become IN_PROGRESS]
-    C --> D[Referee/Admin enters results]
-    D --> E[Matches become COMPLETED]
-    E --> F[Service checks readiness]
-    F --> G[Next round can be generated/played]
+    A[Precreated matches exist per stage] --> B[First stage starts IN_PROGRESS]
+    B --> C[Referee/Admin enters results]
+    C --> D[Matches become COMPLETED]
+    D --> E[Service assigns winners to next stage matches]
+    E --> F[Next stage becomes IN_PROGRESS automatically]
 ```

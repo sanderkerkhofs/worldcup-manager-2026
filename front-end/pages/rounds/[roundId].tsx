@@ -3,13 +3,13 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { useSession } from '../../lib/useSession';
-import { getOverview, initiateRound, simulateRound } from '../../services/competitionService';
+import { getOverview, simulateRound } from '../../services/competitionService';
 
 export default function RoundDetailPage() {
   const router = useRouter();
   const { roundId } = router.query;
   const { token, user } = useSession();
-  const [busyAction, setBusyAction] = useState<'initiate' | 'simulate' | null>(null);
+  const [busyAction, setBusyAction] = useState<'simulate' | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   const { data: overview, error, isLoading, mutate } = useSWR(
@@ -65,30 +65,10 @@ export default function RoundDetailPage() {
             <h3>Admin Controls</h3>
           </div>
           {!canManageRound && round.orderNumber > 1 && (
-            <p className="muted">Previous round must be fully completed before initiating or simulating this round.</p>
+            <p className="muted">Previous round must be fully completed before simulating this round.</p>
           )}
           {message && <p className="muted">{message}</p>}
           <div className="rowButtons">
-            <button
-              className="smallButton"
-              disabled={!canManageRound || busyAction === 'initiate'}
-              onClick={async () => {
-                if (!token) return;
-                setBusyAction('initiate');
-                setMessage(null);
-                try {
-                  await initiateRound(round.id, token);
-                  await mutate();
-                  setMessage(`${round.name} initiated.`);
-                } catch (actionError) {
-                  setMessage(actionError instanceof Error ? actionError.message : 'Unable to initiate round.');
-                } finally {
-                  setBusyAction(null);
-                }
-              }}
-            >
-              {busyAction === 'initiate' ? 'Initiating...' : 'Initiate round'}
-            </button>
             <button
               className="smallButton"
               disabled={!canManageRound || busyAction === 'simulate'}

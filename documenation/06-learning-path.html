@@ -28,7 +28,7 @@
 
       <h2>Phase 4 - Demo Narratives</h2>
       <ol>
-        <li>How round status moves NOT_STARTED -> IN_PROGRESS -> COMPLETED</li>
+        <li>How stage status moves NOT_STARTED -> IN_PROGRESS -> COMPLETED</li>
         <li>How referee updates are safely constrained</li>
         <li>How coach availability drives match operations</li>
         <li>How role-based access is enforced</li>
@@ -55,7 +55,7 @@
       <h2>Quick Revision Sheet</h2>
       <ul>
         <li>Architecture: layered backend + service-centric rules</li>
-        <li>Data model: User, Team, Player, Round, Match, Goal</li>
+        <li>Data model: User, Team, Player, Match (with stage metadata), Goal</li>
         <li>Statuses: NOT_STARTED -> IN_PROGRESS -> COMPLETED</li>
         <li>Security: JWT + role middleware + contextual checks</li>
       </ul>

@@ -28,11 +28,26 @@ async function loadMatch(matchId: string) {
   return match;
 }
 
+async function assertRoundUnlocked(match: { roundOrderNumber: number }) {
+  if (match.roundOrderNumber <= 1) {
+    return;
+  }
+
+  const previousRoundMatches = await prisma.match.findMany({
+    where: { roundOrderNumber: match.roundOrderNumber - 1 },
+    select: { status: true },
+  });
+
+  if (previousRoundMatches.length === 0 || previousRoundMatches.some((item) => item.status !== 'COMPLETED')) {
+    throw new ValidationError('Cannot edit this match until all matches in the previous round are COMPLETED.');
+  }
+}
+
 async function validateGoalInput(matchId: string, goal: GoalInputDto) {
   const match = await loadMatch(matchId);
 
   if (!match.homeTeamId || !match.awayTeamId) {
-    throw new ValidationError('This match is not available yet. Initiate the round first.');
+    throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
   const player = await prisma.player.findUnique({ where: { id: goal.playerId } });
@@ -80,9 +95,10 @@ export async function getMatch(matchId: string) {
 export async function updateMatchStatus(matchId: string, status: MatchStatus, actor: RequestUser) {
   const match = await loadMatch(matchId);
   assertMatchAccess(actor, match.refereeId);
+  await assertRoundUnlocked(match);
 
   if ((status === 'IN_PROGRESS' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
-    throw new ValidationError('This match is not available yet. Initiate the round first.');
+    throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
   if (status === 'COMPLETED') {
@@ -106,9 +122,10 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
 export async function updateMatchResult(matchId: string, input: MatchResultDto, actor: RequestUser) {
   const match = await loadMatch(matchId);
   assertMatchAccess(actor, match.refereeId);
+  await assertRoundUnlocked(match);
 
   if (!match.homeTeamId || !match.awayTeamId) {
-    throw new ValidationError('This match is not available yet. Initiate the round first.');
+    throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
   if (match.status !== 'IN_PROGRESS') {
@@ -159,7 +176,7 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
     },
   });
 
-  await createNextRoundMatchesIfReady(updated.roundId);
+  await createNextRoundMatchesIfReady(String(updated.roundOrderNumber));
 
   return Match.from(updated);
 }
@@ -167,9 +184,10 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
 export async function addGoal(matchId: string, input: GoalInputDto, actor: RequestUser) {
   const match = await loadMatch(matchId);
   assertMatchAccess(actor, match.refereeId);
+  await assertRoundUnlocked(match);
 
   if (!match.homeTeamId || !match.awayTeamId) {
-    throw new ValidationError('This match is not available yet. Initiate the round first.');
+    throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
   if (match.status !== 'IN_PROGRESS') {
@@ -195,9 +213,10 @@ export async function addGoal(matchId: string, input: GoalInputDto, actor: Reque
 export async function updateGoal(matchId: string, goalId: string, input: GoalInputDto, actor: RequestUser) {
   const match = await loadMatch(matchId);
   assertMatchAccess(actor, match.refereeId);
+  await assertRoundUnlocked(match);
 
   if (!match.homeTeamId || !match.awayTeamId) {
-    throw new ValidationError('This match is not available yet. Initiate the round first.');
+    throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
   if (match.status !== 'IN_PROGRESS') {

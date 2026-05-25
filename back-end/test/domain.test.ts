@@ -62,7 +62,8 @@ describe('Match domain validation', () => {
   it('creates a valid match', () => {
     const match = new Match({
       id: 'match-1',
-      roundId: 'round-1',
+      roundOrderNumber: 1,
+      roundName: '8th Final',
       homeTeamId: 'team-1',
       awayTeamId: 'team-2',
       refereeId: null,
@@ -79,7 +80,8 @@ describe('Match domain validation', () => {
   it('rejects matches where the same team plays itself', () => {
     expect(() => new Match({
       id: 'match-2',
-      roundId: 'round-1',
+      roundOrderNumber: 1,
+      roundName: '8th Final',
       homeTeamId: 'team-1',
       awayTeamId: 'team-1',
       refereeId: null,

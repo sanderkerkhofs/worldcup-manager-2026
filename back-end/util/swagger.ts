@@ -88,6 +88,8 @@ export const swaggerDocument = {
         properties: {
           id: { type: 'string' },
           roundId: { type: 'string' },
+          roundOrderNumber: { type: 'integer' },
+          roundName: { type: 'string' },
           homeTeamId: { type: 'string' },
           awayTeamId: { type: 'string' },
           refereeId: { type: ['string', 'null'] },
@@ -210,15 +212,6 @@ export const swaggerDocument = {
         tags: ['Competition'],
         summary: 'Get the fixed competition overview',
         responses: { 200: { description: 'Competition overview' } },
-      },
-    },
-    '/api/competition/rounds/{roundId}/initiate': {
-      post: {
-        tags: ['Competition'],
-        summary: 'Initiate a round',
-        security: [{ bearerAuth: [] }],
-        parameters: [{ name: 'roundId', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 200: { description: 'Round initiated' } },
       },
     },
     '/api/competition/rounds/{roundId}/simulate': {

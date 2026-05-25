@@ -20,14 +20,14 @@ Last updated: 2026-05-24
 
 ## Notes
 
-- Project scope is intentionally simplified for school delivery: knockout-only flow with fixed rounds.
+- Project scope is intentionally simplified for school delivery: knockout-only flow with fixed stages.
 - Project operates on one fixed competition only (worldcup-manager-2026).
-- Admin initiates rounds in order and updates teams within those rounds.
-- Referee updates match status and goals/results within active rounds.
+- First stage starts active automatically; next stages activate automatically when progression rules are met.
+- Referee updates match status and goals/results within active stage matches.
 - Competition metadata (name, year, host country) is fixed through app configuration.
-- Fixed bracket starts at 16th Final (16th Final -> Round of 16 -> Quarterfinals -> Semifinals -> Final).
+- Fixed bracket starts at 8th Final (8th Final -> Quarterfinal -> Semifinal -> Final).
 - Conceptual model keeps one fixed competition and does not store competition metadata as a database entity.
-- Round lifecycle used across documentation: not started -> active -> completed.
+- Stage lifecycle used across documentation: not started -> active -> completed.
 - Roles are explicitly modeled: admin (full CRUD), coach (player availability management), referee (match status/goals updates), guest (public read-only).
 - Referee match updates include scored-by-player data for later top-scorer ranking.
 - Dedicated Player entity with unique player ID is part of the analysis model for top-scorer ranking.

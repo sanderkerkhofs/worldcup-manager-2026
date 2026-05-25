@@ -1,14 +1,44 @@
 import { prisma } from '../repository/prisma/client';
-import { competition } from '../util/competition';
+import { competition, fixedRounds } from '../util/competition';
 import { Match } from '../model/match';
-import { Round } from '../model/round';
 import { Team } from '../model/team';
 import { Player } from '../model/player';
 import { Goal } from '../model/goal';
-import { CompetitionOverviewResponse, GoalInputDto, MatchResponse, RoundSimulationResponse, StandingRow, TopScorerRow } from '../types';
+import { CompetitionOverviewResponse, GoalInputDto, MatchResponse, RoundResponse, RoundSimulationResponse, StandingRow, TopScorerRow } from '../types';
 import { NotFoundError, ValidationError } from '../util/errors';
 import { createNextRoundMatchesIfReady } from './roundProgressionService';
 import { getCountryFlagFromShortName } from '../util/country';
+
+function roundIdFromOrder(orderNumber: number): string {
+  return String(orderNumber);
+}
+
+function resolveRoundByIdentifier(roundId: string) {
+  const numericId = Number.parseInt(roundId.replace(/^round-/i, ''), 10);
+
+  if (Number.isInteger(numericId) && numericId > 0) {
+    return fixedRounds.find((round) => round.orderNumber === numericId) ?? null;
+  }
+
+  return fixedRounds.find((round) => round.name.toLowerCase() === roundId.toLowerCase()) ?? null;
+}
+
+function buildRoundResponse(round: { name: string; orderNumber: number }, matches: Array<{ createdAt: Date; updatedAt: Date }>): RoundResponse {
+  const createdAt = matches.length > 0
+    ? new Date(Math.min(...matches.map((match) => match.createdAt.getTime())))
+    : new Date();
+  const updatedAt = matches.length > 0
+    ? new Date(Math.max(...matches.map((match) => match.updatedAt.getTime())))
+    : new Date();
+
+  return {
+    id: roundIdFromOrder(round.orderNumber),
+    name: round.name,
+    orderNumber: round.orderNumber,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
+  };
+}
 
 function createStandingRow(team: Team): StandingRow {
   return {
@@ -173,20 +203,19 @@ async function loadValidatedPreviousRound(orderNumber: number) {
     return null;
   }
 
-  const previousRound = await prisma.round.findUnique({
-    where: { orderNumber: orderNumber - 1 },
-    include: { matches: true },
+  const previousRoundMatches = await prisma.match.findMany({
+    where: { roundOrderNumber: orderNumber - 1 },
   });
 
-  if (!previousRound) {
+  if (previousRoundMatches.length === 0) {
     throw new ValidationError('Previous round is missing.');
   }
 
-  if (previousRound.matches.length === 0 || previousRound.matches.some((match) => match.status !== 'COMPLETED')) {
+  if (previousRoundMatches.some((match) => match.status !== 'COMPLETED')) {
     throw new ValidationError('Previous round must be completed before this round can be started or simulated.');
   }
 
-  return previousRound;
+  return orderNumber - 1;
 }
 
 function hasPlayableTeams(match: { homeTeamId: string | null; awayTeamId: string | null }) {
@@ -194,9 +223,8 @@ function hasPlayableTeams(match: { homeTeamId: string | null; awayTeamId: string
 }
 
 export async function getCompetitionOverview(): Promise<CompetitionOverviewResponse> {
-  const [teams, rounds, matches, players, goals, referees] = await Promise.all([
+  const [teams, matches, players, goals, referees] = await Promise.all([
     prisma.team.findMany({ orderBy: { name: 'asc' } }),
-    prisma.round.findMany({ orderBy: { orderNumber: 'asc' } }),
     prisma.match.findMany({ orderBy: { matchDate: 'asc' } }),
     prisma.player.findMany({ orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }] }),
     prisma.goal.findMany({ orderBy: { createdAt: 'asc' } }),
@@ -204,12 +232,12 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
   ]);
 
   const teamModels = teams.map((team) => Team.from(team));
-  const roundModels = rounds.map((round) => Round.from(round));
   const matchModels = matches.map((match) => Match.from(match));
   const playerModels = players.map((player) => Player.from(player));
   const goalModels = goals.map((goal) => Goal.from(goal));
   const teamById = new Map(teamModels.map((team) => [team.id, team]));
   const refereeById = new Map(referees.map((referee) => [referee.id, referee]));
+  const rounds = fixedRounds.map((round) => buildRoundResponse(round, matches.filter((match) => match.roundOrderNumber === round.orderNumber)));
 
   return {
     competition,
@@ -223,16 +251,12 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
       createdAt: team.createdAt.toISOString(),
       updatedAt: team.updatedAt.toISOString(),
     })),
-    rounds: roundModels.map((round) => ({
-      id: round.id,
-      name: round.name,
-      orderNumber: round.orderNumber,
-      createdAt: round.createdAt.toISOString(),
-      updatedAt: round.updatedAt.toISOString(),
-    })),
+    rounds,
     matches: matchModels.map((match) => ({
       id: match.id,
       roundId: match.roundId,
+      roundOrderNumber: match.roundOrderNumber,
+      roundName: match.roundName,
       homeTeamId: match.homeTeamId,
       awayTeamId: match.awayTeamId,
       refereeId: match.refereeId,
@@ -253,85 +277,44 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
 }
 
 export async function listRounds() {
-  const rounds = await prisma.round.findMany({ orderBy: { orderNumber: 'asc' } });
-  return rounds.map((round) => Round.from(round));
-}
-
-export async function initiateRound(roundId: string) {
-  const round = await prisma.round.findUnique({
-    where: { id: roundId },
-    include: { matches: { orderBy: { matchDate: 'asc' } } },
+  const matches = await prisma.match.findMany({
+    select: { roundOrderNumber: true, roundName: true, createdAt: true, updatedAt: true },
+    orderBy: { roundOrderNumber: 'asc' },
   });
 
-  if (!round) {
-    throw new NotFoundError('Round was not found.');
-  }
+  return fixedRounds.map((round) => {
+    const roundMatches = matches.filter((match) => match.roundOrderNumber === round.orderNumber);
+    const resolvedName = roundMatches[0]?.roundName ?? round.name;
 
-  const previousRound = await loadValidatedPreviousRound(round.orderNumber);
-
-  if (previousRound) {
-    await createNextRoundMatchesIfReady(previousRound.id);
-  }
-
-  const refreshedRound = await prisma.round.findUnique({
-    where: { id: roundId },
-    include: { matches: { orderBy: { matchDate: 'asc' } } },
+    return buildRoundResponse({ name: resolvedName, orderNumber: round.orderNumber }, roundMatches);
   });
-
-  if (!refreshedRound) {
-    throw new NotFoundError('Round was not found.');
-  }
-
-  if (refreshedRound.matches.length === 0) {
-    throw new ValidationError('Round does not contain any pre-seeded matches.');
-  }
-
-  if (refreshedRound.matches.some((match) => !hasPlayableTeams(match))) {
-    throw new ValidationError('Round cannot be initiated yet because participant teams are not known.');
-  }
-
-  await prisma.match.updateMany({
-    where: { roundId, status: 'NOT_STARTED' },
-    data: { status: 'IN_PROGRESS' },
-  });
-
-  const matches = await prisma.match.findMany({ where: { roundId }, orderBy: { matchDate: 'asc' } });
-
-  return {
-    round: Round.from(refreshedRound),
-    matches: matches.map((match) => Match.from(match)),
-  };
 }
 
 export async function simulateRound(roundId: string): Promise<RoundSimulationResponse> {
-  const initialRound = await prisma.round.findUnique({
-    where: { id: roundId },
-    include: { matches: { orderBy: { matchDate: 'asc' } } },
-  });
+  const activeRound = resolveRoundByIdentifier(roundId);
 
-  if (!initialRound) {
+  if (!activeRound) {
     throw new NotFoundError('Round was not found.');
   }
 
-  const activeRound = initialRound;
+  const activeRoundMatches = await prisma.match.findMany({
+    where: { roundOrderNumber: activeRound.orderNumber },
+    orderBy: { matchDate: 'asc' },
+  });
 
   await loadValidatedPreviousRound(activeRound.orderNumber);
 
-  if (activeRound.matches.length === 0) {
+  if (activeRoundMatches.length === 0) {
     throw new ValidationError('Round does not contain any pre-seeded matches to simulate.');
   }
 
-  if (activeRound.matches.some((match) => !hasPlayableTeams(match))) {
+  if (activeRoundMatches.some((match) => !hasPlayableTeams(match))) {
     throw new ValidationError('Round cannot be simulated yet because participant teams are not known.');
-  }
-
-  if (activeRound.matches.some((match) => match.status === 'NOT_STARTED')) {
-    throw new ValidationError('Initiate this round before simulating it.');
   }
 
   const teamsInRound = new Set<string>();
 
-  for (const match of activeRound.matches) {
+  for (const match of activeRoundMatches) {
     if (!match.homeTeamId || !match.awayTeamId) {
       throw new ValidationError('Round cannot be simulated yet because participant teams are not known.');
     }
@@ -357,9 +340,9 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
   let goalsCreated = 0;
 
   await prisma.$transaction(async (transaction) => {
-    await transaction.goal.deleteMany({ where: { matchId: { in: activeRound.matches.map((match) => match.id) } } });
+    await transaction.goal.deleteMany({ where: { matchId: { in: activeRoundMatches.map((match) => match.id) } } });
 
-    for (const match of activeRound.matches) {
+    for (const match of activeRoundMatches) {
       const goals = buildGoalsForMatch(Match.from(match), playersByTeam);
       const homeScore = goals.filter((goal) => goal.teamId === match.homeTeamId).length;
       const awayScore = goals.filter((goal) => goal.teamId === match.awayTeamId).length;
@@ -389,7 +372,7 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
     }
   });
 
-  await createNextRoundMatchesIfReady(activeRound.id);
+  await createNextRoundMatchesIfReady(roundIdFromOrder(activeRound.orderNumber));
 
   const [teams, referees] = await Promise.all([
     prisma.team.findMany({ select: { id: true, coach: true } }),
@@ -400,16 +383,12 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
   const refereeNameById = new Map(referees.map((referee) => [referee.id, referee.username.replace(/_/g, ' ')]));
 
   return {
-    round: {
-      id: activeRound.id,
-      name: activeRound.name,
-      orderNumber: activeRound.orderNumber,
-      createdAt: activeRound.createdAt.toISOString(),
-      updatedAt: activeRound.updatedAt.toISOString(),
-    },
+    round: buildRoundResponse(activeRound, updatedMatches),
     matches: updatedMatches.map((match) => ({
       id: match.id,
       roundId: match.roundId,
+      roundOrderNumber: match.roundOrderNumber,
+      roundName: match.roundName,
       homeTeamId: match.homeTeamId,
       awayTeamId: match.awayTeamId,
       refereeId: match.refereeId,

@@ -1,59 +1,57 @@
 # User Stories - worldcup-manager-2026
 
-## US-01 Seed Fixed Rounds
+## US-01 Seed Fixed Stage Matches
 
-As an admin, I want fixed rounds to be seeded in the database so that no manual round structure is needed.
+As an admin, I want fixed stage matches to be seeded in the database so that no manual stage structure is needed.
 
 ### Acceptance Criteria
 
-- System seeds fixed rounds in the database for the competition
-- Default order is fixed (16th Final -> Round of 16 -> Quarterfinals -> Semifinals -> Final)
-- Admin can see all rounds immediately
+- System seeds fixed stage matches in the database for the competition
+- Default order is fixed (8th Final -> Quarterfinal -> Semifinal -> Final)
+- Admin can see all stages immediately
 
 ### Wireframe
 
 ```text
 +------------------------------------------------------+
-| Competition Setup - Rounds                           |
+| Competition Setup - Stages                           |
 +------------------------------------------------------+
-| Pre-created rounds                                   |
-| 1. 16th Final           Status: Not started          |
-| 2. Round of 16          Status: Not started          |
-| 3. Quarterfinals        Status: Not started          |
-| 4. Semifinals           Status: Not started          |
-| 5. Final                Status: Not started          |
+| Pre-created stage matches                            |
+| 1. 8th Final            Status: Not started          |
+| 2. Quarterfinal         Status: Not started          |
+| 3. Semifinal            Status: Not started          |
+| 4. Final                Status: Not started          |
 +------------------------------------------------------+
 ```
 
-## US-02 Initiate Round
+## US-02 Automatic Stage Activation
 
-As an admin, I want to initiate rounds in fixed order so that match planning can start per stage.
+As an admin, I want stages to activate in fixed order automatically so that match planning stays simple and consistent.
 
 ### Acceptance Criteria
 
-- Admin can start the next allowed round
-- A round cannot be initiated before the previous one is completed
-- Round status changes from not started to active
+- First stage starts active automatically
+- Next stage cannot become active before the previous one is completed
+- Stage status changes from not started to active automatically when unlocked
 
 ### Wireframe
 
 ```text
 +------------------------------------------------------+
-| Round Control                                        |
+| Stage Control                                        |
 +------------------------------------------------------+
-| 16th Final       [ Initiate ]      Status: Not started |
-| Round of 16      [ Locked ]        Status: Not started |
-| Quarterfinals    [ Locked ]        Status: Not started |
-| Semifinals       [ Locked ]        Status: Not started |
+| 8th Final        [ Active ]        Status: Active      |
+| Quarterfinal     [ Locked ]        Status: Not started |
+| Semifinal        [ Locked ]        Status: Not started |
 | Final            [ Locked ]        Status: Not started |
 |                                                      |
-| Message: Complete current round before next round.   |
+| Message: Next stage opens when previous stage ends.  |
 +------------------------------------------------------+
 ```
 
-## US-03 Update Matches in Active Round
+## US-03 Update Matches in Active Stage
 
-As a referee, I want to update match status in an active round so that fixtures stay correct and clear.
+As a referee, I want to update match status in an active stage so that fixtures stay correct and clear.
 
 ### Acceptance Criteria
 
@@ -66,7 +64,7 @@ As a referee, I want to update match status in an active round so that fixtures 
 
 ```text
 +------------------------------------------------------+
-| 16th Final - Match Editor                             |
+| 8th Final - Match Editor                              |
 +------------------------------------------------------+
 | Match 1                                              |
 | Home: [ Netherlands v ]                              |
@@ -146,14 +144,14 @@ As a coach, I want to mark my players as available or unavailable so that the re
 +------------------------------------------------------+
 ```
 
-## US-06 Progress Winners to Next Round
+## US-06 Progress Winners to Next Stage
 
-As an admin, I want winners to move to the next pre-created round so that knockout progression is managed automatically.
+As an admin, I want winners to move to the next pre-created stage matches so that knockout progression is managed automatically.
 
 ### Acceptance Criteria
 
 - System selects winners from completed matches
-- Winners are assigned to next round matches
+- Winners are assigned to next stage matches
 - Progression is blocked when not all required matches are completed
 
 ### Wireframe
@@ -162,11 +160,11 @@ As an admin, I want winners to move to the next pre-created round so that knocko
 +------------------------------------------------------+
 | Progress Winners                                     |
 +------------------------------------------------------+
-| Source round: 16th Final                             |
+| Source stage: 8th Final                              |
 | Completed matches: 8 / 8                             |
-| [ Move Winners to Quarterfinals ]                    |
+| [ Move Winners to Quarterfinal ]                     |
 |                                                      |
-| Assigned teams in Quarterfinals                      |
+| Assigned teams in Quarterfinal                        |
 | Match 1: Netherlands vs Brazil                       |
 | Match 2: Argentina vs France                         |
 |                                                      |
@@ -176,12 +174,12 @@ As an admin, I want winners to move to the next pre-created round so that knocko
 
 ## US-07 View Tournament Bracket Overview
 
-As a viewer, I want to see a simple bracket overview so that I can follow current round, results, and final winner.
+As a viewer, I want to see a simple bracket overview so that I can follow current stage, results, and final winner.
 
 ### Acceptance Criteria
 
-- Overview shows rounds, matches, and match status
-- Overview highlights current active round
+- Overview shows stages, matches, and match status
+- Overview highlights current active stage
 - Final winner is clearly shown when final is completed
 
 ### Wireframe
@@ -190,12 +188,12 @@ As a viewer, I want to see a simple bracket overview so that I can follow curren
 +------------------------------------------------------+
 | Tournament Bracket - World Cup 2026                  |
 +------------------------------------------------------+
-| 16th Final  Round of 16  Quarterfinals  Semifinals   |
+| 8th Final  Quarterfinal  Semifinal  Final            |
 |                              Final                    |
 | NED 2-1 GER  -> NED vs BRA      -> NED vs ESP -> NED |
 | ARG 3-0 USA  -> ARG vs FRA      -> ARG vs POR ->     |
 | ...                                                  |
-| Current round: Quarterfinals                         |
+| Current stage: Quarterfinal                          |
 | Winner: Netherlands (shown after final completion)   |
 +------------------------------------------------------+
 ```
@@ -232,4 +230,4 @@ As a guest, I want to view public competition information only so that private m
 - Read and Delete stories must be fully implemented in both frontend and backend in the current sprint.
 - For each HTTP operation (`GET`, `POST`, `PUT`, `DELETE`), at least one full route must be testable via Swagger against the real database.
 - Frontend story implementation must use reusable components and API service modules (no direct fetch logic in UI components).
-- Keep knockout scope simple: pre-created rounds, sequential initiation, and winner progression only after required matches are completed.
+- Keep knockout scope simple: pre-created stage matches, sequential initiation, and winner progression only after required matches are completed.

@@ -1,6 +1,20 @@
-import { Match as PrismaMatch } from '@prisma/client';
 import { MatchStatus } from '../types';
 import { ValidationError } from '../util/errors';
+
+type PrismaMatchLike = {
+  id: string;
+  roundOrderNumber: number;
+  roundName: string;
+  homeTeamId: string | null;
+  awayTeamId: string | null;
+  refereeId?: string | null;
+  homeScore: number | null;
+  awayScore: number | null;
+  matchDate: Date;
+  status: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 function isMatchStatus(status: string): status is MatchStatus {
   return status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'COMPLETED';
@@ -8,6 +22,8 @@ function isMatchStatus(status: string): status is MatchStatus {
 
 export class Match {
   public readonly id: string;
+  public readonly roundOrderNumber: number;
+  public readonly roundName: string;
   public readonly roundId: string;
   public readonly homeTeamId: string | null;
   public readonly awayTeamId: string | null;
@@ -21,7 +37,8 @@ export class Match {
 
   constructor({
     id,
-    roundId,
+    roundOrderNumber,
+    roundName,
     homeTeamId,
     awayTeamId,
     refereeId,
@@ -33,7 +50,8 @@ export class Match {
     updatedAt,
   }: {
     id: string;
-    roundId: string;
+    roundOrderNumber: number;
+    roundName: string;
     homeTeamId: string | null;
     awayTeamId: string | null;
     refereeId: string | null;
@@ -44,8 +62,12 @@ export class Match {
     createdAt?: Date;
     updatedAt?: Date;
   }) {
-    if (!roundId.trim()) {
-      throw new ValidationError('Match must belong to a round.');
+    if (!Number.isInteger(roundOrderNumber) || roundOrderNumber <= 0) {
+      throw new ValidationError('Match must belong to a valid round order number.');
+    }
+
+    if (!roundName.trim()) {
+      throw new ValidationError('Match must belong to a named round.');
     }
 
     if ((homeTeamId === null) !== (awayTeamId === null)) {
@@ -73,7 +95,9 @@ export class Match {
     }
 
     this.id = id;
-    this.roundId = roundId;
+    this.roundOrderNumber = roundOrderNumber;
+    this.roundName = roundName;
+    this.roundId = String(roundOrderNumber);
     this.homeTeamId = homeTeamId;
     this.awayTeamId = awayTeamId;
     this.refereeId = refereeId;
@@ -85,7 +109,7 @@ export class Match {
     this.updatedAt = updatedAt ?? new Date();
   }
 
-  static from(prismaMatch: PrismaMatch & { refereeId?: string | null }): Match {
+  static from(prismaMatch: PrismaMatchLike): Match {
     const status = prismaMatch.status as unknown as string;
 
     if (!isMatchStatus(status)) {
@@ -94,7 +118,8 @@ export class Match {
 
     return new Match({
       id: prismaMatch.id,
-      roundId: prismaMatch.roundId,
+      roundOrderNumber: prismaMatch.roundOrderNumber,
+      roundName: prismaMatch.roundName,
       homeTeamId: prismaMatch.homeTeamId,
       awayTeamId: prismaMatch.awayTeamId,
       refereeId: prismaMatch.refereeId ?? null,

@@ -48,7 +48,7 @@ This checklist translates the additional school requirements into implementation
 - Team and player base data seeded in the database for lecturer/demo usage
 - Dedicated `Player` table included with unique `player_id`
 - Each team has at least 15 players with a simple availability status
-- Fixed rounds (16th Final, Round of 16, Quarterfinals, Semifinals, Final) seeded in the database
+- Fixed stages (8th Final, Quarterfinal, Semifinal, Final) seeded in the database
 - Multiple referee users seeded and assignable to matches
 
 ## 6. Testing Requirements (Jest)
@@ -133,12 +133,12 @@ Not mandatory to apply in project now (may still be asked in defense):
 
 - Application manages one fixed competition only for MVP scope (worldcup-manager-2026).
 - Competition format is knockout-only for MVP.
-- Rounds are fixed (16th Final, Round of 16, Quarterfinals, Semifinals, Final).
-- Admin initiates rounds in strict sequence.
+- Stages are fixed (8th Final, Quarterfinal, Semifinal, Final).
+- First stage starts active automatically; next stages activate in strict sequence after progression.
 - Competition metadata (name, year, host country) is fixed in app configuration.
-- Teams and match status are updated inside active rounds instead of creating round structures manually.
+- Teams and match status are updated inside active stage matches instead of creating stage structures manually.
 - Match status vocabulary is standardized to: not started, active, completed.
-- Winner progression to the next round happens only after required matches are completed.
+- Winner progression to the next stage happens only after required matches are completed.
 - Role simplification for demo value: admin = full CRUD, coach = team lineup, referee = match status/goals entry, guest = public read-only.
 - Authorization rule: assigned referee can only update assigned match results; admin can update all match results.
 - Conceptual model uses one fixed competition and avoids storing competition metadata in database entities.

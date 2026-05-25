@@ -5,8 +5,7 @@
 - **User**: platform account with role and optional team assignment.
 - **Team**: national team metadata, coach name, flag, short code.
 - **Player**: belongs to a team, has shirt number and availability state.
-- **Round**: ordered stage in the knockout bracket.
-- **Match**: belongs to a round, links teams and referee, stores score and status.
+- **Match**: fixture that stores round metadata directly (`roundOrderNumber`, `roundName`), links teams and referee, and stores score/status.
 - **Goal**: event in a match by a player at a minute.
 
 ## 2. Match Status Vocabulary
@@ -53,17 +52,10 @@ erDiagram
         datetime updatedAt
     }
 
-    ROUND {
-        string id PK
-        string name
-        int orderNumber UK
-        datetime createdAt
-        datetime updatedAt
-    }
-
     MATCH {
         string id PK
-        string roundId FK
+        int roundOrderNumber
+        string roundName
         string homeTeamId FK
         string awayTeamId FK
         string refereeId FK
@@ -85,7 +77,6 @@ erDiagram
     }
 
     TEAM ||--o{ PLAYER : has
-    ROUND ||--o{ MATCH : contains
     TEAM ||--o{ MATCH : homeTeam
     TEAM ||--o{ MATCH : awayTeam
     USER ||--o{ MATCH : assignedReferee
@@ -99,8 +90,8 @@ erDiagram
 
 - `User.username` is unique.
 - `Team.name` is unique.
-- `Round.orderNumber` is unique.
 - `Player(teamId, shirtNumber)` is unique.
+- `Match.roundOrderNumber` is indexed for stage queries.
 - `Match` and `Goal` have indexes on key foreign keys.
 
 ## 5. ERP Perspective (Business Objects + Process)
@@ -117,7 +108,7 @@ If you view this project in ERP terms:
   - Goals (event records)
 
 - **Process data**:
-  - Round initiation
+  - Automatic stage activation
   - Round simulation
   - Match result finalization
 
@@ -125,7 +116,7 @@ This separation is useful for reporting and auditability.
 
 ## 6. Why This Model Fits Knockout Tournaments
 
-- Round ordering gives deterministic progression.
+- Round ordering is preserved through `Match.roundOrderNumber`.
 - Match status lifecycle supports operational workflow.
 - Goal events support detailed score reconstruction.
 - Team/player separation enables coach-driven availability control.
