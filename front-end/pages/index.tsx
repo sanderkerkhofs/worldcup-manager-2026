@@ -110,8 +110,8 @@ export default function HomePage() {
                   return (
                     <li key={match.id}>
                       <span>
-                        {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD'} vs{' '}
-                        {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD'}
+                        {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
+                        {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
                       </span>
                       <strong>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</strong>
                       <div className="matchRowFooter rowButtons">

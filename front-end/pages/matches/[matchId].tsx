@@ -12,10 +12,10 @@ export default function MatchEditorPage() {
   const { token, user } = useSession();
   const isReady = typeof matchId === 'string';
 
-  const { data: overview } = useSWR(token ? ['match-overview', token] : null, () => getOverview(token));
-  const { data: match, mutate: mutateMatch } = useSWR(isReady ? ['match', matchId, token] : null, () => getMatch(matchId as string, token));
-  const { data: homePlayers } = useSWR(token && match?.homeTeamId ? ['players-home', match.homeTeamId, token] : null, () => getPlayers(match!.homeTeamId as string, token));
-  const { data: awayPlayers } = useSWR(token && match?.awayTeamId ? ['players-away', match.awayTeamId, token] : null, () => getPlayers(match!.awayTeamId as string, token));
+  const { data: overview } = useSWR(['match-overview-public'], () => getOverview());
+  const { data: match, mutate: mutateMatch } = useSWR(isReady ? ['match-public', matchId] : null, () => getMatch(matchId as string));
+  const { data: homePlayers } = useSWR(match?.homeTeamId ? ['players-home-public', match.homeTeamId] : null, () => getPlayers(match!.homeTeamId as string));
+  const { data: awayPlayers } = useSWR(match?.awayTeamId ? ['players-away-public', match.awayTeamId] : null, () => getPlayers(match!.awayTeamId as string));
 
   const [status, setStatus] = useState('NOT_STARTED');
   const [homeScore, setHomeScore] = useState('');
@@ -43,18 +43,7 @@ export default function MatchEditorPage() {
   const selectedTeamPlayers = availablePlayers.filter((player) => player.teamId === goalTeamId);
 
   if (!isReady) {
-    return <p className="muted">Loading match editor...</p>;
-  }
-
-  if (!token) {
-    return (
-      <section className="heroCard">
-        <p className="eyebrow">Match Editor</p>
-        <h2>Authentication required</h2>
-        <p className="muted">Login to update match status, scores, and goal scorers.</p>
-        <Link href="/login" className="linkButton">Go to login</Link>
-      </section>
-    );
+    return <p className="muted">Loading match details...</p>;
   }
 
   if (!match || !overview) {
@@ -70,12 +59,12 @@ export default function MatchEditorPage() {
   return (
     <div className="matchEditorLayout">
       <section className="heroCard">
-        <p className="eyebrow">Match Editor</p>
+        <p className="eyebrow">Match Details</p>
         <h2>{homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'Home'} vs {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'Away'}</h2>
-        <p className="muted">Status, score, and scorers live here. Use this page for the referee workflow.</p>
+        <p className="muted">Status, score, and scorers live here. Editing is limited to admins and referees.</p>
         <div className="rowButtons">
           <Link href="/" className="linkButton">Back to dashboard</Link>
-          <Link href="/referee" className="linkButton">Referee area</Link>
+          {token && <Link href="/referee" className="linkButton">Referee area</Link>}
         </div>
       </section>
 

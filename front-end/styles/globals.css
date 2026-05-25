@@ -358,6 +358,14 @@ select {
   font-size: clamp(1.15rem, 2vw, 1.45rem);
 }
 
+.sectionTitleCardPlain {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  padding: 0;
+}
+
 .sectionTitleCard .rowButtons {
   justify-content: flex-end;
 }

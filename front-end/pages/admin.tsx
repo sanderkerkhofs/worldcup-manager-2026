@@ -3,15 +3,13 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import { ScorePanel } from '../components/DashboardPanels';
 import { useSession } from '../lib/useSession';
-import { getMatchStatusLabel } from '../lib/matchStatus';
 import { getOverview } from '../services/competitionService';
 import { deleteUser, listUsers } from '../services/authService';
 
 export default function AdminPage() {
   const { token, user } = useSession();
-  const { data: overview, error, isLoading, mutate } = useSWR(token ? ['admin-overview', token] : null, () => getOverview(token));
+  const { data: overview, error, isLoading } = useSWR(token ? ['admin-overview', token] : null, () => getOverview(token));
   const { data: users, mutate: mutateUsers } = useSWR(token ? ['admin-users', token] : null, () => listUsers(token!));
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -48,8 +46,6 @@ export default function AdminPage() {
 
   return (
     <div className="stack">
-      <ScorePanel token={token} />
-
       <section className="stack">
         <article className="panelCard stack">
           <p className="eyebrow">User Management</p>
@@ -109,38 +105,6 @@ export default function AdminPage() {
         </article>
       </section>
 
-      <section className="stack">
-        <header className="sectionTitleCard">
-          <div className="sectionTitleCopy">
-            <p className="eyebrow">Navigation</p>
-            <h2>Round Pages</h2>
-          </div>
-          <div className="rowButtons">
-            <Link className="smallButton" href="/rounds">Open rounds hub</Link>
-          </div>
-        </header>
-        <div className="gridCols">
-          {overview.rounds.map((round) => {
-            const matches = overview.matches.filter((match) => match.roundId === round.id);
-            return (
-              <article key={round.id} className="panelCard">
-                <h3>{round.orderNumber}. {round.name}</h3>
-                <p className="muted">{matches.length} matches</p>
-                <div className="rowButtons">
-                </div>
-                <div className="matchList compactList">
-                  {matches.map((match) => (
-                    <Link key={match.id} className="matchLinkRow" href={`/matches/${match.id}`}>
-                      <span>{match.homeTeamId ? teamById.get(match.homeTeamId)?.name : 'TBD'} vs {match.awayTeamId ? teamById.get(match.awayTeamId)?.name : 'TBD'}</span>
-                      <small>{getMatchStatusLabel(match.status)}</small>
-                    </Link>
-                  ))}
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
     </div>
   );
 }

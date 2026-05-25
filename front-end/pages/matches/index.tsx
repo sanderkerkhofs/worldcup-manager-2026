@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import useSWR from 'swr';
 import { getMatchStatusLabel } from '../../lib/matchStatus';
-import { useSession } from '../../lib/useSession';
 import { getOverview } from '../../services/competitionService';
 
 export default function MatchesPage() {
-  const { token } = useSession();
-  const { data: overview, error, isLoading } = useSWR(['matches-overview', token ?? 'public'], () => getOverview(token));
+  const { data: overview, error, isLoading } = useSWR(['matches-overview-public'], () => getOverview());
 
   if (isLoading) {
     return <p className="muted">Loading match list...</p>;
@@ -37,13 +35,9 @@ export default function MatchesPage() {
         roundsWithMatches.map(({ round, matches }) => (
           <section key={round.id}>
             <article className="panelCard stack">
-              <header className="sectionTitleCard">
+              <header className="sectionTitleCard sectionTitleCardPlain">
                 <div className="sectionTitleCopy">
-                  <p className="eyebrow">Round {round.orderNumber}</p>
-                  <h3>{round.orderNumber}. {round.name}</h3>
-                </div>
-                <div className="rowButtons">
-                  <p className="muted">{matches.length} matches</p>
+                  <p className="eyebrow">Round {round.orderNumber} - {round.name}</p>
                 </div>
               </header>
 
@@ -55,14 +49,15 @@ export default function MatchesPage() {
                   return (
                   <article key={match.id} className="panelCard">
                     <h3>
-                      {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD'} vs{' '}
-                      {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD'}
+                      {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
+                      {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
                     </h3>
                     <p className="muted">{new Date(match.matchDate).toLocaleString()}</p>
+                    <p className="muted">Referee: {match.refereeName ? `${match.refereeCountryFlag ?? ''} ${match.refereeName}`.trim() : 'Unassigned'}</p>
                     <p className="muted">Score: {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
                     <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
                     <div className="rowButtons">
-                      <Link href={`/matches/${match.id}`} className="linkButton">Open editor</Link>
+                      <Link href={`/matches/${match.id}`} className="linkButton">Open match</Link>
                     </div>
                   </article>
                   );

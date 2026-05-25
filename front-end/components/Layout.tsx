@@ -39,7 +39,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
         <nav id="main-navigation" className="topbarGroup" aria-label="Main navigation">
           <Link href="/" className={navItemClass('/')}><span className="iconLabel"><FontAwesomeIcon icon={faHouse} /> Home</span></Link>
-          {isAuthenticated && <Link href="/matches" className={navItemClass('/matches')}><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
+          <Link href="/matches" className={navItemClass('/matches')}><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>
           <Link href="/stats" className={navItemClass('/stats')}><span className="iconLabel"><FontAwesomeIcon icon={faChartLine} /> Stats</span></Link>
           {role === 'ADMIN' && <Link href="/admin" className={navItemClass('/admin')}><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
           {role === 'REFEREE' && <Link href="/referee" className={navItemClass('/referee')}><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
