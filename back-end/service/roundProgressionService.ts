@@ -23,7 +23,9 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   }
 
   const allMatchesCompleted = completedRoundMatches.every((match) => (
-    match.status === 'COMPLETED' && typeof match.homeScore === 'number' && typeof match.awayScore === 'number'
+    (match.status === 'FINISHED' || match.status === 'COMPLETED')
+      && typeof match.homeScore === 'number'
+      && typeof match.awayScore === 'number'
   ));
 
   if (!allMatchesCompleted) {
@@ -69,6 +71,10 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   const hasAllTeamsAssigned = nextRoundMatches.every((match) => match.homeTeamId && match.awayTeamId);
 
   if (hasAllTeamsAssigned) {
+    await prisma.match.updateMany({
+      where: { roundOrderNumber: completedRoundOrderNumber, status: 'FINISHED' },
+      data: { status: 'COMPLETED' },
+    });
     return;
   }
 
@@ -86,9 +92,14 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
           awayTeamId,
           homeScore: null,
           awayScore: null,
-          status: 'IN_PROGRESS',
+          status: 'NOT_STARTED',
         },
       });
     }
+
+    await transaction.match.updateMany({
+      where: { roundOrderNumber: completedRoundOrderNumber, status: 'FINISHED' },
+      data: { status: 'COMPLETED' },
+    });
   });
 }

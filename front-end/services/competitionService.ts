@@ -30,7 +30,7 @@ export function updateMatchStatus(matchId: string, status: MatchStatus, token: s
 }
 
 export function updateMatchResult(matchId: string, homeScore: number, awayScore: number, token: string) {
-  return api.put<Match>(`/api/matches/${matchId}/result`, { homeScore, awayScore, status: 'COMPLETED' }, token);
+  return api.put<Match>(`/api/matches/${matchId}/result`, { homeScore, awayScore, status: 'FINISHED' }, token);
 }
 
 export function addGoal(matchId: string, input: GoalInput, token: string) {

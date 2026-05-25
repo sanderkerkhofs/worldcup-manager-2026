@@ -114,7 +114,7 @@ async function main() {
     awayTeamId: string | null;
     refereeId: string | null;
     matchDate: Date;
-    status: 'NOT_STARTED' | 'IN_PROGRESS';
+    status: 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS';
     homeScore: null;
     awayScore: null;
   }>;
@@ -135,7 +135,7 @@ async function main() {
         awayTeamId: awayTeam?.id ?? null,
         refereeId: referee?.id ?? null,
         matchDate: new Date(Date.UTC(2026, 5, 10 + round.orderNumber * 2 + index, index % 2 === 0 ? 14 : 18, 0, 0)),
-        status: round.orderNumber === 1 ? 'IN_PROGRESS' : 'NOT_STARTED',
+        status: round.orderNumber === 1 ? 'IN_PROGRESS' : 'PLANNED',
         homeScore: null,
         awayScore: null,
       });

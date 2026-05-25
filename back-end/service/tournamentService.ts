@@ -59,7 +59,7 @@ function calculateStandings(matches: Match[], teams: Team[]): StandingRow[] {
   const rows = new Map<string, StandingRow>(teams.map((team) => [team.id, createStandingRow(team)]));
 
   for (const match of matches) {
-    if (match.status !== 'COMPLETED' || match.homeScore === null || match.awayScore === null || !match.homeTeamId || !match.awayTeamId) {
+    if ((match.status !== 'FINISHED' && match.status !== 'COMPLETED') || match.homeScore === null || match.awayScore === null || !match.homeTeamId || !match.awayTeamId) {
       continue;
     }
 
@@ -211,8 +211,8 @@ async function loadValidatedPreviousRound(orderNumber: number) {
     throw new ValidationError('Previous round is missing.');
   }
 
-  if (previousRoundMatches.some((match) => match.status !== 'COMPLETED')) {
-    throw new ValidationError('Previous round must be completed before this round can be started or simulated.');
+  if (previousRoundMatches.some((match) => match.status !== 'FINISHED' && match.status !== 'COMPLETED')) {
+    throw new ValidationError('Previous round must be finished before this round can be started or simulated.');
   }
 
   return orderNumber - 1;
@@ -360,7 +360,7 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
         data: {
           homeScore,
           awayScore,
-          status: 'COMPLETED',
+          status: 'FINISHED',
         },
       });
 

@@ -17,7 +17,7 @@ export default function MatchEditorPage() {
   const { data: homePlayers } = useSWR(match?.homeTeamId ? ['players-home-public', match.homeTeamId] : null, () => getPlayers(match!.homeTeamId as string));
   const { data: awayPlayers } = useSWR(match?.awayTeamId ? ['players-away-public', match.awayTeamId] : null, () => getPlayers(match!.awayTeamId as string));
 
-  const [status, setStatus] = useState('NOT_STARTED');
+  const [status, setStatus] = useState('PLANNED');
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');
   const [goalMinute, setGoalMinute] = useState('');
@@ -87,8 +87,10 @@ export default function MatchEditorPage() {
             <label>
               Match status
               <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!canEdit || !hasPlayableTeams}>
+                <option value="PLANNED">PLANNED</option>
                 <option value="NOT_STARTED">NOT_STARTED</option>
                 <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="FINISHED">FINISHED</option>
                 <option value="COMPLETED">COMPLETED</option>
               </select>
             </label>
@@ -108,7 +110,7 @@ export default function MatchEditorPage() {
               onClick={async () => {
                 if (!token) return;
                 setMessage(null);
-                await updateMatchStatus(match.id, status as 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED', token);
+                await updateMatchStatus(match.id, status as 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED', token);
                 if (homeScore !== '' && awayScore !== '') {
                   await updateMatchResult(match.id, Number(homeScore), Number(awayScore), token);
                 }

@@ -38,7 +38,7 @@ export default function RoundDetailPage() {
 
   const previousRound = orderedRounds.find((item) => item.orderNumber === round.orderNumber - 1);
   const previousMatches = previousRound ? overview.matches.filter((match) => match.roundId === previousRound.id) : [];
-  const canManageRound = round.orderNumber === 1 || (previousMatches.length > 0 && previousMatches.every((match) => match.status === 'COMPLETED'));
+  const canManageRound = round.orderNumber === 1 || (previousMatches.length > 0 && previousMatches.every((match) => match.status === 'FINISHED' || match.status === 'COMPLETED'));
 
   const teamById = new Map(overview.teams.map((team) => [team.id, team]));
   const roundMatches = overview.matches
@@ -65,7 +65,7 @@ export default function RoundDetailPage() {
             <h3>Admin Controls</h3>
           </div>
           {!canManageRound && round.orderNumber > 1 && (
-            <p className="muted">Previous round must be fully completed before simulating this round.</p>
+            <p className="muted">Previous round must be fully finished before simulating this round.</p>
           )}
           {message && <p className="muted">{message}</p>}
           <div className="rowButtons">

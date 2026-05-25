@@ -97,13 +97,13 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
   assertMatchAccess(actor, match.refereeId);
   await assertRoundUnlocked(match);
 
-  if ((status === 'IN_PROGRESS' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
+  if ((status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'FINISHED' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
-  if (status === 'COMPLETED') {
+  if (status === 'FINISHED' || status === 'COMPLETED') {
     if (match.homeScore === null || match.awayScore === null) {
-      throw new ValidationError('Provide a valid score before completing the match.');
+      throw new ValidationError('Provide a valid score before finishing the match.');
     }
 
     if (match.homeScore === match.awayScore) {
@@ -172,7 +172,7 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
   const updated = await prisma.match.update({
     where: { id: matchId },
     data: {
-      status: input.status ?? 'COMPLETED',
+      status: input.status ?? 'FINISHED',
     },
   });
 

@@ -15,8 +15,10 @@ enum UserRole {
 }
 
 enum MatchStatus {
+  PLANNED
   NOT_STARTED
   IN_PROGRESS
+  FINISHED
   COMPLETED
 }
 
@@ -64,7 +66,7 @@ model Match {
   homeScore    Int?
   awayScore    Int?
   matchDate    DateTime
-  status       MatchStatus @default(NOT_STARTED)
+  status       MatchStatus @default(PLANNED)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   homeTeam     Team?       @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)

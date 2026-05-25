@@ -70,11 +70,11 @@ describe('Match domain validation', () => {
       homeScore: null,
       awayScore: null,
       matchDate: new Date('2026-05-10T18:00:00.000Z'),
-      status: 'NOT_STARTED',
+      status: 'PLANNED',
     });
 
     expect(match.homeTeamId).toBe('team-1');
-    expect(match.status).toBe('NOT_STARTED');
+    expect(match.status).toBe('PLANNED');
   });
 
   it('rejects matches where the same team plays itself', () => {
@@ -88,7 +88,7 @@ describe('Match domain validation', () => {
       homeScore: null,
       awayScore: null,
       matchDate: new Date('2026-05-10T18:00:00.000Z'),
-      status: 'NOT_STARTED',
+      status: 'PLANNED',
     })).toThrow('Home team and away team must be different.');
   });
 });

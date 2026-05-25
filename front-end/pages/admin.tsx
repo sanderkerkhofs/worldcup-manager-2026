@@ -33,7 +33,6 @@ export default function AdminPage() {
     return <p className="errorText">Failed to load admin workspace.</p>;
   }
 
-  const teamById = new Map(overview.teams.map((team) => [team.id, team]));
   const sortedUsers = [...(users ?? [])].sort((left, right) => {
     const roleComparison = left.role.localeCompare(right.role);
 
@@ -56,7 +55,6 @@ export default function AdminPage() {
                   <th>Username</th>
                   <th>Country</th>
                   <th>Role</th>
-                  <th>Team</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -66,10 +64,6 @@ export default function AdminPage() {
                     <td>{managedUser.countryFlag ? `${managedUser.countryFlag} ` : ''}{managedUser.username}</td>
                     <td>{managedUser.countryShortName ?? '-'}</td>
                     <td>{managedUser.role}</td>
-                    <td>{managedUser.teamId ? (() => {
-                      const team = teamById.get(managedUser.teamId);
-                      return team ? `${team.countryFlag} ${team.name}` : managedUser.teamId;
-                    })() : '-'}</td>
                     <td>
                       <button
                         className="smallButton"

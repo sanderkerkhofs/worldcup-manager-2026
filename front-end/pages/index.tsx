@@ -26,7 +26,7 @@ export default function HomePage() {
   const defaultStartedRoundId = useMemo(() => {
     const startedRound = orderedRounds.find((round) => {
       const roundMatches = matches.filter((match) => match.roundId === round.id);
-      return roundMatches.some((match) => match.status === 'IN_PROGRESS' || match.status === 'COMPLETED');
+      return roundMatches.some((match) => match.status === 'IN_PROGRESS' || match.status === 'FINISHED' || match.status === 'COMPLETED');
     });
 
     return startedRound?.id ?? orderedRounds[0]?.id ?? null;

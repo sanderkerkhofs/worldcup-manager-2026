@@ -17,7 +17,11 @@ type PrismaMatchLike = {
 };
 
 function isMatchStatus(status: string): status is MatchStatus {
-  return status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'COMPLETED';
+  return status === 'PLANNED'
+    || status === 'NOT_STARTED'
+    || status === 'IN_PROGRESS'
+    || status === 'FINISHED'
+    || status === 'COMPLETED';
 }
 
 export class Match {

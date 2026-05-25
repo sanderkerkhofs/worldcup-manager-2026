@@ -72,7 +72,7 @@ function isRoundManageable(overview: CompetitionOverview, round: Round) {
     return false;
   }
 
-  return previousMatches.every((match) => match.status === 'COMPLETED');
+  return previousMatches.every((match) => match.status === 'FINISHED' || match.status === 'COMPLETED');
 }
 
 export function AdminPanel({ overview, token, onRefresh }: Props) {
@@ -94,7 +94,7 @@ export function AdminPanel({ overview, token, onRefresh }: Props) {
         {(rounds ?? overview.rounds).map((round) => {
           const canManageRound = isRoundManageable(overview, round);
           const blockedReason = round.orderNumber > 1 && !canManageRound
-            ? 'Requires previous round to be fully completed.'
+            ? 'Requires previous round to be fully finished.'
             : undefined;
 
           return (
@@ -151,7 +151,7 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
                 <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
                 <div className="rowButtons">
                   <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'IN_PROGRESS', token); await onRefresh(); }}>Set IN_PROGRESS</button>
-                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'COMPLETED', token); await onRefresh(); }}>Set COMPLETED</button>
+                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'FINISHED', token); await onRefresh(); }}>Set FINISHED</button>
                 </div>
                 <div className="scoreInputs">
                   <input
