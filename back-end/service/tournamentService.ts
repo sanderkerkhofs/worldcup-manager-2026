@@ -247,7 +247,6 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
       country: team.country,
       countryShortName: team.countryShortName,
       countryFlag: team.countryFlag,
-      coach: team.coach,
       createdAt: team.createdAt.toISOString(),
       updatedAt: team.updatedAt.toISOString(),
     })),
@@ -262,8 +261,6 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
       refereeId: match.refereeId,
       refereeName: match.refereeId ? (refereeById.get(match.refereeId)?.username.replace(/_/g, ' ') ?? null) : null,
       refereeCountryFlag: match.refereeId ? getCountryFlagFromShortName(refereeById.get(match.refereeId)?.countryShortName) : null,
-      homeCoach: match.homeTeamId ? teamById.get(match.homeTeamId)?.coach ?? null : null,
-      awayCoach: match.awayTeamId ? teamById.get(match.awayTeamId)?.coach ?? null : null,
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       matchDate: match.matchDate.toISOString(),
@@ -374,12 +371,10 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
 
   await createNextRoundMatchesIfReady(roundIdFromOrder(activeRound.orderNumber));
 
-  const [teams, referees] = await Promise.all([
-    prisma.team.findMany({ select: { id: true, coach: true } }),
+  const [referees] = await Promise.all([
     prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true, countryShortName: true } }),
   ]);
 
-  const teamCoachById = new Map(teams.map((team) => [team.id, team.coach]));
   const refereeNameById = new Map(referees.map((referee) => [referee.id, referee.username.replace(/_/g, ' ')]));
 
   return {
@@ -393,8 +388,6 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
       awayTeamId: match.awayTeamId,
       refereeId: match.refereeId,
       refereeName: match.refereeId ? refereeNameById.get(match.refereeId) ?? null : null,
-      homeCoach: match.homeTeamId ? teamCoachById.get(match.homeTeamId) ?? null : null,
-      awayCoach: match.awayTeamId ? teamCoachById.get(match.awayTeamId) ?? null : null,
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       matchDate: match.matchDate.toISOString(),

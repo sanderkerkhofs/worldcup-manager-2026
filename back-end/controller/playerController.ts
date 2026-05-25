@@ -1,5 +1,5 @@
-import { Router, Request } from 'express';
-import { asyncHandler, authenticateToken, requireRoles, RequestUser } from '../util/middleware';
+import { Router } from 'express';
+import { asyncHandler, authenticateToken, requireRoles } from '../util/middleware';
 import { createPlayer, deletePlayer, getPlayer, listPlayers, updatePlayer, updatePlayerStatus } from '../service/playerService';
 
 export const playerRouter = Router();
@@ -25,14 +25,8 @@ playerRouter.put('/:playerId', authenticateToken, requireRoles('ADMIN'), asyncHa
   res.json(player);
 }));
 
-playerRouter.patch('/:playerId/status', authenticateToken, requireRoles('ADMIN', 'COACH'), asyncHandler(async (req, res) => {
-  const user = (req as Request & { user?: RequestUser }).user;
-
-  if (!user) {
-    throw new Error('Missing authenticated user.');
-  }
-
-  const player = await updatePlayerStatus(req.params.playerId, req.body.status, user);
+playerRouter.patch('/:playerId/status', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
+  const player = await updatePlayerStatus(req.params.playerId, req.body.status);
   res.json(player);
 }));
 

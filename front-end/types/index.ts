@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'COACH' | 'REFEREE' | 'GUEST';
+export type UserRole = 'ADMIN' | 'REFEREE' | 'GUEST';
 export type PlayerStatus = 'AVAILABLE' | 'UNAVAILABLE';
 export type MatchStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
@@ -22,7 +22,6 @@ export type Team = {
   country: string;
   countryShortName: string;
   countryFlag: string;
-  coach: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -57,8 +56,6 @@ export type Match = {
   refereeId: string | null;
   refereeName: string | null;
   refereeCountryFlag?: string | null;
-  homeCoach: string | null;
-  awayCoach: string | null;
   homeScore: number | null;
   awayScore: number | null;
   matchDate: string;

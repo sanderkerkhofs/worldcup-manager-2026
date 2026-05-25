@@ -85,8 +85,6 @@ export default function MatchEditorPage() {
           <p><strong>Round:</strong> {overview.rounds.find((round) => round.id === match.roundId)?.name ?? 'Round'}</p>
           <p><strong>Date:</strong> {new Date(match.matchDate).toLocaleString()}</p>
           <p><strong>Referee:</strong> {overviewMatch?.refereeName ? `${overviewMatch.refereeCountryFlag ?? ''} ${overviewMatch.refereeName}`.trim() : 'Unassigned'}</p>
-          <p><strong>Home coach:</strong> {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.coach}` : 'TBD'}</p>
-          <p><strong>Away coach:</strong> {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.coach}` : 'TBD'}</p>
           <p><strong>Current score:</strong> {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
           <p><strong>Status:</strong> {getMatchStatusLabel(match.status)}</p>
           {!hasPlayableTeams && <p className="muted">Teams are not assigned to this match yet.</p>}

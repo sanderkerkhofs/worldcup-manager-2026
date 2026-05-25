@@ -28,11 +28,6 @@ export default function LoginPage() {
                 <td>admin</td>
               </tr>
               <tr>
-                <td>Domenico_Tedesco</td>
-                <td>coach123</td>
-                <td>coach</td>
-              </tr>
-              <tr>
                 <td>Frank_De_Bleeckere</td>
                 <td>referee123</td>
                 <td>referee</td>

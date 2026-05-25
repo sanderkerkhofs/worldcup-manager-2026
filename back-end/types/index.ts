@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'COACH' | 'REFEREE' | 'GUEST';
+export type UserRole = 'ADMIN' | 'REFEREE' | 'GUEST';
 
 export type MatchStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
@@ -36,7 +36,6 @@ export type TeamCreateDto = {
   country: string;
   countryShortName: string;
   countryFlag: string;
-  coach: string;
 };
 
 export type TeamUpdateDto = Partial<TeamCreateDto>;
@@ -109,7 +108,6 @@ export type TeamResponse = {
   country: string;
   countryShortName: string;
   countryFlag: string;
-  coach: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -153,8 +151,6 @@ export type MatchResponse = {
   refereeId: string | null;
   refereeName: string | null;
   refereeCountryFlag?: string | null;
-  homeCoach: string | null;
-  awayCoach: string | null;
   homeScore: number | null;
   awayScore: number | null;
   matchDate: string;

@@ -12,7 +12,6 @@ export const swaggerDocument = {
     { name: 'Status' },
     { name: 'Auth' },
     { name: 'Competition' },
-    { name: 'Teams' },
     { name: 'Players' },
     { name: 'Matches' },
   ],
@@ -34,7 +33,7 @@ export const swaggerDocument = {
         properties: {
           id: { type: 'string' },
           username: { type: 'string' },
-          role: { type: 'string', enum: ['ADMIN', 'COACH', 'REFEREE', 'GUEST'] },
+          role: { type: 'string', enum: ['ADMIN', 'REFEREE', 'GUEST'] },
           teamId: { type: ['string', 'null'] },
         },
       },
@@ -60,7 +59,6 @@ export const swaggerDocument = {
           id: { type: 'string' },
           name: { type: 'string' },
           country: { type: 'string' },
-          coach: { type: 'string' },
         },
       },
       Player: {
@@ -222,9 +220,6 @@ export const swaggerDocument = {
         parameters: [{ name: 'roundId', in: 'path', required: true, schema: { type: 'string' } }],
         responses: { 200: { description: 'Round simulated' } },
       },
-    },
-    '/api/teams': {
-      get: { tags: ['Teams'], summary: 'List teams', responses: { 200: { description: 'Teams list' } } },
     },
     '/api/players': {
       get: { tags: ['Players'], summary: 'List players', responses: { 200: { description: 'Players list' } } },

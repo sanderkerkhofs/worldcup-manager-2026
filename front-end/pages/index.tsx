@@ -7,7 +7,7 @@ import {
   faChevronRight,
   faPenToSquare,
 } from '@fortawesome/free-solid-svg-icons';
-import { CoachPanel, RefereePanel } from '../components/DashboardPanels';
+import { RefereePanel } from '../components/DashboardPanels';
 import { getOverview } from '../services/competitionService';
 import { useSession } from '../lib/useSession';
 
@@ -135,7 +135,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {user?.role === 'COACH' && <CoachPanel overview={overview} token={token} onRefresh={async () => { await mutate(); }} />}
       {user?.role === 'REFEREE' && <RefereePanel overview={overview} token={token} onRefresh={async () => { await mutate(); }} />}
     </div>
   );

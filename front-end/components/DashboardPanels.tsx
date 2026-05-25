@@ -3,15 +3,13 @@ import useSWR from 'swr';
 import { getMatchStatusLabel } from '../lib/matchStatus';
 import { useSession } from '../lib/useSession';
 import {
-  getPlayers,
   getRounds,
   getTopScorers,
   simulateRound,
   updateMatchResult,
   updateMatchStatus,
-  updatePlayerStatus,
 } from '../services/competitionService';
-import { CompetitionOverview, Match, Player, PlayerStatus, Round } from '../types';
+import { CompetitionOverview, Match, Round } from '../types';
 
 type Props = {
   overview: CompetitionOverview;
@@ -111,70 +109,6 @@ export function AdminPanel({ overview, token, onRefresh }: Props) {
             />
           );
         })}
-      </div>
-    </section>
-  );
-}
-
-export function CoachPanel({ overview, token, onRefresh }: Props) {
-  const { user } = useSession();
-  const teamId = user?.teamId;
-
-  const { data: players } = useSWR(token && teamId ? ['players', teamId, token] : null, () => getPlayers(teamId!, token));
-
-  if (!token || !teamId || !players) {
-    return null;
-  }
-
-  const team = overview.teams.find((item) => item.id === teamId);
-  const teamLabel = team
-    ? `${team.countryFlag} ${team.name}`
-    : 'your team';
-
-  return (
-    <section className="stack">
-      <header className="sectionTitleCard">
-        <div className="sectionTitleCopy">
-          <p className="eyebrow">Coach</p>
-          <h2>Coach Controls</h2>
-          <p className="muted">Manage availability for {teamLabel}.</p>
-        </div>
-      </header>
-      <div className="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Position</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players.map((player: Player) => {
-              const nextStatus: PlayerStatus = player.status === 'AVAILABLE' ? 'UNAVAILABLE' : 'AVAILABLE';
-
-              return (
-                <tr key={player.id}>
-                  <td>{player.firstName} {player.lastName} #{player.shirtNumber}</td>
-                  <td>{player.position}</td>
-                  <td><span className={`chip ${player.status === 'AVAILABLE' ? 'chipOk' : 'chipWarn'}`}>{player.status}</span></td>
-                  <td>
-                    <button
-                      className="smallButton"
-                      onClick={async () => {
-                        await updatePlayerStatus(player.id, nextStatus, token);
-                        await onRefresh();
-                      }}
-                    >
-                      Set {nextStatus}
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
     </section>
   );

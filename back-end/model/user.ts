@@ -3,7 +3,7 @@ import { UserRole } from '../types';
 import { ValidationError } from '../util/errors';
 
 function isUserRole(role: string): role is UserRole {
-  return role === 'ADMIN' || role === 'COACH' || role === 'REFEREE' || role === 'GUEST';
+  return role === 'ADMIN' || role === 'REFEREE' || role === 'GUEST';
 }
 
 export class User {

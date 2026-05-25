@@ -25,10 +25,6 @@ const seededReferees = [
   { username: 'Frank_De_Bleeckere', countryShortName: 'BEL' },
 ] as const;
 
-const fixedCoachAccounts = [
-  { username: 'Domenico_Tedesco', countryShortName: 'BEL' },
-] as const;
-
 async function main() {
   await prisma.goal.deleteMany();
   await prisma.match.deleteMany();
@@ -36,21 +32,14 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.team.deleteMany();
 
-  const [adminHash, coachHash, refereeHash] = await Promise.all([
+  const [adminHash, refereeHash] = await Promise.all([
     hashPassword('admin123'),
-    hashPassword('coach123'),
     hashPassword('referee123'),
   ]);
 
   await prisma.user.createMany({
     data: [
       { username: 'admin', passwordHash: adminHash, role: 'ADMIN' },
-      ...fixedCoachAccounts.map((coach) => ({
-        username: coach.username,
-        passwordHash: coachHash,
-        role: 'COACH' as const,
-        countryShortName: coach.countryShortName,
-      })),
       ...seededReferees.map((referee) => ({
         username: referee.username,
         passwordHash: refereeHash,
@@ -103,39 +92,6 @@ async function main() {
   const shuffledTeams = [...teamSeedData].sort(() => Math.random() - 0.5).slice(0, 16);
 
   const teams = await prisma.team.createManyAndReturn({ data: shuffledTeams });
-
-  for (const fixedCoach of fixedCoachAccounts) {
-    const matchingTeam = teams.find((team) => team.countryShortName === fixedCoach.countryShortName);
-
-    if (!matchingTeam) {
-      continue;
-    }
-
-    await prisma.user.update({
-      where: { username: fixedCoach.username },
-      data: { teamId: matchingTeam.id },
-    });
-  }
-
-  const fixedCoachUsernames = new Set<string>(fixedCoachAccounts.map((coach) => coach.username));
-
-  for (const team of teams) {
-    const coachUsername = team.coach.replace(/\s+/g, '_');
-
-    if (fixedCoachUsernames.has(coachUsername)) {
-      continue;
-    }
-
-    await prisma.user.create({
-      data: {
-        username: coachUsername,
-        passwordHash: coachHash,
-        role: 'COACH',
-        countryShortName: team.countryShortName,
-        teamId: team.id,
-      },
-    });
-  }
 
   for (const team of teams) {
     await prisma.player.createMany({

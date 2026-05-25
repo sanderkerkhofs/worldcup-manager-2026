@@ -6,7 +6,6 @@ import {
   faHouse,
   faChartLine,
   faUserShield,
-  faPersonRunning,
   faFlagCheckered,
   faFutbol,
   faRightFromBracket,
@@ -43,7 +42,6 @@ export function Layout({ children }: { children: ReactNode }) {
           {isAuthenticated && <Link href="/matches" className={navItemClass('/matches')}><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
           <Link href="/stats" className={navItemClass('/stats')}><span className="iconLabel"><FontAwesomeIcon icon={faChartLine} /> Stats</span></Link>
           {role === 'ADMIN' && <Link href="/admin" className={navItemClass('/admin')}><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
-          {role === 'COACH' && <Link href="/coach" className={navItemClass('/coach')}><span className="iconLabel"><FontAwesomeIcon icon={faPersonRunning} /> Coach</span></Link>}
           {role === 'REFEREE' && <Link href="/referee" className={navItemClass('/referee')}><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
           {isAuthenticated ? (
             <>
