@@ -16,10 +16,6 @@ const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
 const seededReferees = [
   { username: 'Michael_Oliver' },
-  { username: 'Anthony_Taylor' },
-  { username: 'Francois_Letexier' },
-  { username: 'Clement_Turpin' },
-  { username: 'Felix_Zwayer' },
   { username: 'Ismail_Elfath' },
   { username: 'Tori_Penso' },
   { username: 'Frank_De_Bleeckere' },
@@ -118,6 +114,8 @@ async function main() {
   }
 
   const orderedRounds = [...fixedRounds].sort((left, right) => left.orderNumber - right.orderNumber);
+  const seedStartDate = new Date(Date.UTC(2026, 5, 10, 14, 0, 0));
+  let globalMatchIndex = 0;
   const allMatches = [] as Array<{
     roundOrderNumber: number;
     roundName: string;
@@ -138,6 +136,8 @@ async function main() {
       const hasKnownTeams = round.orderNumber === 1;
       const homeTeam = hasKnownTeams ? teams[index * 2] : null;
       const awayTeam = hasKnownTeams ? teams[index * 2 + 1] : null;
+      const matchDate = new Date(seedStartDate.getTime() + globalMatchIndex * 24 * 60 * 60 * 1000);
+      globalMatchIndex += 1;
 
       allMatches.push({
         roundOrderNumber: round.orderNumber,
@@ -145,7 +145,7 @@ async function main() {
         homeTeamId: homeTeam?.id ?? null,
         awayTeamId: awayTeam?.id ?? null,
         refereeId: referee?.id ?? null,
-        matchDate: new Date(Date.UTC(2026, 5, 10 + round.orderNumber * 2 + index, index % 2 === 0 ? 14 : 18, 0, 0)),
+        matchDate,
         status: round.orderNumber === 1 ? 'IN_PROGRESS' : 'PLANNED',
         homeScore: null,
         awayScore: null,

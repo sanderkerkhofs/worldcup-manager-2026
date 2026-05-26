@@ -66,7 +66,6 @@ export type Goal = {
   matchId: string;
   playerId: string;
   teamId: string;
-  minute: number;
   createdAt: string;
 };
 
@@ -81,7 +80,6 @@ export type MatchCreateInput = {
 export type GoalInput = {
   playerId: string;
   teamId: string;
-  minute: number;
 };
 
 export type RoundSimulationResult = {

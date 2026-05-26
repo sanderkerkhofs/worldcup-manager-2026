@@ -306,6 +306,127 @@ select {
   align-items: end;
 }
 
+.matchEditorLayout {
+  display: grid;
+  gap: 1rem;
+}
+
+.matchOverviewCard {
+  gap: 0.9rem;
+}
+
+.matchOverviewCard h2,
+.matchOverviewCard h3,
+.matchOverviewCard h4 {
+  margin: 0;
+}
+
+.matchOverviewCard h3,
+.matchOverviewCard h4 {
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.matchOverviewCard h4 {
+  font-size: 1.08rem;
+}
+
+.matchMetaGrid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.matchMetaItem {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 0.65rem 0.75rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.matchMetaLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-1);
+  font-size: 0.72rem;
+}
+
+.matchMetaValue {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.matchSectionDivider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 0.2rem 0;
+}
+
+.matchEditBlock {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.42);
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.matchEditHeader {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.matchOverviewCard .messageList {
+  margin-top: -0.1rem;
+}
+
+.goalSplitGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.goalTeamCard {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.goalTeamCard label {
+  display: grid;
+  gap: 0.28rem;
+  font-size: 0.9rem;
+}
+
+.goalTeamHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.goalTeamHeader h5 {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.06rem;
+  line-height: 1.1;
+}
+
+.goalTeamScore {
+  margin: 0;
+  color: var(--ink-1);
+  font-weight: 600;
+}
+
 .stack {
   display: grid;
   gap: 1rem;
@@ -646,6 +767,14 @@ input {
   }
 
   .gridCols {
+    grid-template-columns: 1fr;
+  }
+
+  .matchEditBlock {
+    padding: 0.75rem;
+  }
+
+  .goalSplitGrid {
     grid-template-columns: 1fr;
   }
 

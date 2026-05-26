@@ -143,7 +143,6 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
           matchId,
           playerId: goal.playerId,
           teamId: goal.teamId,
-          minute: goal.minute,
         },
       });
     }
@@ -201,7 +200,6 @@ export async function addGoal(matchId: string, input: GoalInputDto, actor: Reque
       matchId,
       playerId: input.playerId,
       teamId: input.teamId,
-      minute: input.minute,
     },
   });
 

@@ -170,15 +170,7 @@ function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>):
     ...Array.from({ length: awayScore }, () => awayTeamId),
   ]);
 
-  const minutes = new Set<number>();
-
-  while (minutes.size < goalTeams.length) {
-    minutes.add(randomInt(1, 90));
-  }
-
-  const sortedMinutes = Array.from(minutes).sort((left, right) => left - right);
-
-  return goalTeams.map((teamId, index) => {
+  return goalTeams.map((teamId) => {
     const teamPlayers = playersByTeam.get(teamId) ?? [];
     const availablePlayers = teamPlayers.filter((player) => player.status === 'AVAILABLE');
     const scorerPool = availablePlayers.length > 0 ? availablePlayers : teamPlayers;
@@ -192,7 +184,6 @@ function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>):
     return {
       playerId: scorer.id,
       teamId,
-      minute: sortedMinutes[index],
     };
   });
 }
@@ -348,7 +339,6 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
             matchId: match.id,
             playerId: goal.playerId,
             teamId: goal.teamId,
-            minute: goal.minute,
           })),
         });
       }

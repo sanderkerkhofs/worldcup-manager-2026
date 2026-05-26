@@ -102,7 +102,6 @@ model Goal {
   matchId      String
   playerId     String
   teamId       String
-  minute       Int
   createdAt    DateTime @default(now())
   match        Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
   player       Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)

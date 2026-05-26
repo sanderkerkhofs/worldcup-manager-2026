@@ -104,7 +104,6 @@ export const swaggerDocument = {
           matchId: { type: 'string' },
           playerId: { type: 'string' },
           teamId: { type: 'string' },
-          minute: { type: 'integer' },
         },
       },
       StandingRow: {

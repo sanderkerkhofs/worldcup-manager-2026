@@ -2,13 +2,12 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import { getMatchStatusLabel } from '../lib/matchStatus';
-import { RefereePanel } from '../components/DashboardPanels';
 import { getOverview } from '../services/competitionService';
 import { useSession } from '../lib/useSession';
 
 export default function HomePage() {
-  const { token, user } = useSession();
-  const { data: overview, error, isLoading, mutate } = useSWR(['overview', token ?? 'public'], () => getOverview(token));
+  const { token } = useSession();
+  const { data: overview, error, isLoading } = useSWR(['overview', token ?? 'public'], () => getOverview(token));
 
   const rounds = overview?.rounds ?? [];
   const matches = overview?.matches ?? [];
@@ -176,8 +175,6 @@ export default function HomePage() {
           </div>
         </article>
       </section>
-
-      {user?.role === 'REFEREE' && <RefereePanel overview={overview} token={token} onRefresh={async () => { await mutate(); }} />}
     </div>
   );
 }

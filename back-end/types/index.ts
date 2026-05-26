@@ -69,7 +69,6 @@ export type MatchCreateDto = {
 export type GoalInputDto = {
   playerId: string;
   teamId: string;
-  minute: number;
 };
 
 export type MatchStatusDto = {
@@ -139,7 +138,6 @@ export type GoalResponse = {
   matchId: string;
   playerId: string;
   teamId: string;
-  minute: number;
   createdAt: string;
 };
 
