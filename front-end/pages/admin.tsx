@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import useSWR from 'swr';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../lib/useSession';
 import { getOverview, resetMatches, simulateRound } from '../services/competitionService';
 import { deleteUser, listUsers } from '../services/authService';
@@ -209,7 +207,7 @@ export default function AdminPage() {
                           }
                         }}
                       >
-                        {busyUserId === managedUser.id ? 'Deleting...' : <span className="iconLabel"><FontAwesomeIcon icon={faTrashCan} /> Delete</span>}
+                        {busyUserId === managedUser.id ? 'Deleting...' : 'Delete'}
                       </button>
                     </td>
                   </tr>
