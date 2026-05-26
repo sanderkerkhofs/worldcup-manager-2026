@@ -1,11 +1,26 @@
+import Link from 'next/link';
 import useSWR from 'swr';
 import { ScorePanel } from '../components/DashboardPanels';
 import { useSession } from '../lib/useSession';
 import { getOverview } from '../services/competitionService';
 
 export default function StatsPage() {
-  const { token } = useSession();
+  const { isAuthenticated, user, token } = useSession();
   const { data: overview, error, isLoading } = useSWR(['stats-overview', token ?? 'public'], () => getOverview(token));
+
+  if (!isAuthenticated || user?.role === 'GUEST') {
+    return (
+      <section className="heroCard">
+        <p className="eyebrow">Goalscoring Leaderboard</p>
+        <h2>Restricted access</h2>
+        <p className="muted">Login as a user to view standings and score summaries.</p>
+        <div className="rowButtons">
+          <Link href="/login" className="linkButton">Go to login</Link>
+          <Link href="/register" className="linkButton">Go to register</Link>
+        </div>
+      </section>
+    );
+  }
 
   if (isLoading) {
     return <p className="muted">Loading stats...</p>;
@@ -21,9 +36,7 @@ export default function StatsPage() {
     <div className="stack">
       <section className="stack">
         <article className="panelCard stack">
-          <p className="eyebrow">Leaderboard</p>
-          <h2>Standings Snapshot</h2>
-          <p className="muted">Current table summary for all teams in this tournament run.</p>
+          <p className="eyebrow">Tournament Standings</p>
           <div className="tableWrap">
             <table>
               <thead>

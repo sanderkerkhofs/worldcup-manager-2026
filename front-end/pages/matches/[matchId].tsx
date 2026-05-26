@@ -9,13 +9,14 @@ import { addGoal, getMatch, getOverview, getPlayers, updateMatchResult, updateMa
 export default function MatchEditorPage() {
   const router = useRouter();
   const { matchId } = router.query;
-  const { token, user } = useSession();
+  const { isAuthenticated, token, user } = useSession();
   const isReady = typeof matchId === 'string';
+  const canViewMatch = isAuthenticated && user?.role !== 'GUEST';
 
-  const { data: overview } = useSWR(['match-overview-public'], () => getOverview());
-  const { data: match, mutate: mutateMatch } = useSWR(isReady ? ['match-public', matchId] : null, () => getMatch(matchId as string));
-  const { data: homePlayers } = useSWR(match?.homeTeamId ? ['players-home-public', match.homeTeamId] : null, () => getPlayers(match!.homeTeamId as string));
-  const { data: awayPlayers } = useSWR(match?.awayTeamId ? ['players-away-public', match.awayTeamId] : null, () => getPlayers(match!.awayTeamId as string));
+  const { data: overview } = useSWR(canViewMatch ? ['match-overview-public'] : null, () => getOverview());
+  const { data: match, mutate: mutateMatch } = useSWR(canViewMatch && isReady ? ['match-public', matchId] : null, () => getMatch(matchId as string));
+  const { data: homePlayers } = useSWR(canViewMatch && match?.homeTeamId ? ['players-home-public', match.homeTeamId] : null, () => getPlayers(match!.homeTeamId as string));
+  const { data: awayPlayers } = useSWR(canViewMatch && match?.awayTeamId ? ['players-away-public', match.awayTeamId] : null, () => getPlayers(match!.awayTeamId as string));
 
   const [status, setStatus] = useState('PLANNED');
   const [homeScore, setHomeScore] = useState('');
@@ -41,6 +42,20 @@ export default function MatchEditorPage() {
   }, [awayPlayers, homePlayers]);
 
   const selectedTeamPlayers = availablePlayers.filter((player) => player.teamId === goalTeamId);
+
+  if (!canViewMatch) {
+    return (
+      <section className="heroCard">
+        <p className="eyebrow">Match Details</p>
+        <h2>Restricted access</h2>
+        <p className="muted">Login as a user to view match details and editing tools.</p>
+        <div className="rowButtons">
+          <Link href="/login" className="linkButton">Go to login</Link>
+          <Link href="/register" className="linkButton">Go to register</Link>
+        </div>
+      </section>
+    );
+  }
 
   if (!isReady) {
     return <p className="muted">Loading match details...</p>;
@@ -73,7 +88,7 @@ export default function MatchEditorPage() {
           <h3>Match info</h3>
           <p><strong>Round:</strong> {overview.rounds.find((round) => round.id === match.roundId)?.name ?? 'Round'}</p>
           <p><strong>Date:</strong> {new Date(match.matchDate).toLocaleString()}</p>
-          <p><strong>Referee:</strong> {overviewMatch?.refereeName ? `${overviewMatch.refereeCountryFlag ?? ''} ${overviewMatch.refereeName}`.trim() : 'Unassigned'}</p>
+          <p><strong>Referee:</strong> {overviewMatch?.refereeName ?? 'Unassigned'}</p>
           <p><strong>Current score:</strong> {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
           <p><strong>Status:</strong> {getMatchStatusLabel(match.status)}</p>
           {!hasPlayableTeams && <p className="muted">Teams are not assigned to this match yet.</p>}

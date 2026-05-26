@@ -2,15 +2,12 @@ import { prisma } from '../repository/prisma/client';
 import { User } from '../model/user';
 import { AuthUser } from '../types';
 import { NotFoundError, ValidationError } from '../util/errors';
-import { getCountryFlagFromShortName } from '../util/country';
 
 function toPublicUser(user: User): AuthUser {
   return {
     id: user.id,
     username: user.username,
     role: user.role,
-    countryShortName: user.countryShortName,
-    countryFlag: getCountryFlagFromShortName(user.countryShortName),
     teamId: user.teamId,
   };
 }

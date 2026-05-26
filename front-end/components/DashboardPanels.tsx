@@ -209,8 +209,7 @@ export function ScorePanel({ token }: { token: string | null }) {
   return (
     <section className="stack">
       <article className="panelCard stack">
-        <p className="eyebrow">Stats</p>
-        <h2>Top Scorers</h2>
+        <p className="eyebrow">Goalscoring Leaderboard</p>
         <div className="tableWrap">
           <table>
             <thead>
@@ -221,13 +220,24 @@ export function ScorePanel({ token }: { token: string | null }) {
               </tr>
             </thead>
             <tbody>
-              {(topScorers ?? []).map((row) => (
-                <tr key={row.playerId}>
-                  <td>{row.teamCountryFlag} {row.playerName}</td>
-                  <td>{row.teamCountryFlag} {row.teamName}</td>
-                  <td>{row.goals}</td>
+              {(topScorers ?? []).length > 0 ? (
+                (topScorers ?? []).map((row) => (
+                  <tr key={row.playerId}>
+                    <td>{row.playerName}</td>
+                    <td>{row.teamCountryFlag} {row.teamName}</td>
+                    <td>{row.goals}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="tableEmptyCell">
+                    <div className="tableEmptyState">
+                      <strong className="tableEmptyTitle">No scorers yet</strong>
+                      <span className="tableEmptyHint">Goals will appear here once matches start producing scorers.</span>
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

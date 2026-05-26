@@ -1,10 +1,26 @@
 import Link from 'next/link';
 import useSWR from 'swr';
+import { useSession } from '../../lib/useSession';
 import { getMatchStatusLabel } from '../../lib/matchStatus';
 import { getOverview } from '../../services/competitionService';
 
 export default function MatchesPage() {
+  const { isAuthenticated, user } = useSession();
   const { data: overview, error, isLoading } = useSWR(['matches-overview-public'], () => getOverview());
+
+  if (!isAuthenticated || user?.role === 'GUEST') {
+    return (
+      <section className="heroCard">
+        <p className="eyebrow">Matches</p>
+        <h2>Restricted access</h2>
+        <p className="muted">Login as a user to view matches and round schedules.</p>
+        <div className="rowButtons">
+          <Link href="/login" className="linkButton">Go to login</Link>
+          <Link href="/register" className="linkButton">Go to register</Link>
+        </div>
+      </section>
+    );
+  }
 
   if (isLoading) {
     return <p className="muted">Loading match list...</p>;
@@ -41,27 +57,41 @@ export default function MatchesPage() {
                 </div>
               </header>
 
-              <div className="gridCols">
-                {matches.map((match) => {
-                  const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                  const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+              <div className="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fixture</th>
+                      <th>Date</th>
+                      <th>Referee</th>
+                      <th>Score</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {matches.map((match) => {
+                      const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
+                      const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
 
-                  return (
-                  <article key={match.id} className="panelCard">
-                    <h3>
-                      {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
-                      {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
-                    </h3>
-                    <p className="muted">{new Date(match.matchDate).toLocaleString()}</p>
-                    <p className="muted">Referee: {match.refereeName ? `${match.refereeCountryFlag ?? ''} ${match.refereeName}`.trim() : 'Unassigned'}</p>
-                    <p className="muted">Score: {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
-                    <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
-                    <div className="rowButtons">
-                      <Link href={`/matches/${match.id}`} className="linkButton">Open match</Link>
-                    </div>
-                  </article>
-                  );
-                })}
+                      return (
+                        <tr key={match.id}>
+                          <td>
+                            {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
+                            {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
+                          </td>
+                          <td>{new Date(match.matchDate).toLocaleString()}</td>
+                          <td>{match.refereeName ?? 'Unassigned'}</td>
+                          <td>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</td>
+                          <td>{getMatchStatusLabel(match.status)}</td>
+                          <td>
+                            <Link href={`/matches/${match.id}`} className="linkButton">Open match</Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </article>
           </section>

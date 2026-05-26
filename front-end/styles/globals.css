@@ -390,6 +390,38 @@ td {
   font-size: 0.92rem;
 }
 
+.tableEmptyCell {
+  padding: 1.25rem;
+  border-bottom: 0;
+}
+
+.tableEmptyState {
+  display: grid;
+  place-items: center;
+  gap: 0.35rem;
+  min-height: 7.5rem;
+  border: 1px dashed rgba(31, 26, 20, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 248, 239, 0.92)),
+    radial-gradient(circle at top, rgba(179, 63, 18, 0.08), transparent 55%);
+  text-align: center;
+}
+
+.tableEmptyTitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tableEmptyHint {
+  max-width: 28ch;
+  color: var(--ink-1);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -511,6 +543,16 @@ input {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.tournamentActions {
+  justify-content: flex-end;
+}
+
+.tournamentActionCell {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .roundNavControls {

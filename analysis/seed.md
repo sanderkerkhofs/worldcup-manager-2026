@@ -60,6 +60,9 @@ Behavior:
 ## Seeded Users (Examples)
 
 - `admin` / `admin123`
+- `greetjej` / `greetjej123` (user, BEL)
+- `elkes` / `elkes123` (user, BEL)
+- `johanp` / `johanp123` (user, BEL)
 - `Domenico_Tedesco` / `coach123`
 - `Frank_De_Bleeckere` / `referee123`
 

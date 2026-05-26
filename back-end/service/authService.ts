@@ -4,15 +4,12 @@ import { signAccessToken } from '../util/jwt';
 import { ValidationError, NotFoundError, UnauthorizedError } from '../util/errors';
 import { User } from '../model/user';
 import { AuthUser, LoginDto, RegisterDto } from '../types';
-import { getCountryFlagFromShortName } from '../util/country';
 
 function toPublicUser(user: User): AuthUser {
   return {
     id: user.id,
     username: user.username,
     role: user.role,
-    countryShortName: user.countryShortName,
-    countryFlag: getCountryFlagFromShortName(user.countryShortName),
     teamId: user.teamId,
   };
 }
@@ -29,8 +26,8 @@ function toAuthResponse(user: User) {
 }
 
 export async function registerGuestUser(input: RegisterDto) {
-  if (input.role && input.role !== 'GUEST') {
-    throw new ValidationError('Public registration can only create guest accounts.');
+  if (input.role && input.role !== 'USER') {
+    throw new ValidationError('Public registration can only create user accounts.');
   }
 
   const normalizedUsername = input.username.trim();
@@ -52,7 +49,7 @@ export async function registerGuestUser(input: RegisterDto) {
     data: {
       username: normalizedUsername,
       passwordHash: await hashPassword(input.password),
-      role: 'GUEST',
+      role: 'USER',
     },
   });
 

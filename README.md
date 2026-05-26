@@ -16,8 +16,8 @@ Tournament Manager is a learning-focused MVP for planning football tournaments. 
 docker compose up -d postgres
 ```
 
-2. Copy `back-end/.env.example` to `back-end/.env` and adjust the values if needed.
-3. Generate the Prisma client and seed the database:
+1. Copy `back-end/.env.example` to `back-end/.env` and adjust the values if needed.
+1. Generate the Prisma client and seed the database:
 
 ```console
 cd back-end
@@ -25,13 +25,13 @@ npm run db:generate
 npm run db:seed
 ```
 
-4. Start the backend:
+1. Start the backend:
 
 ```console
 npm start
 ```
 
-5. Start the frontend in a second terminal:
+1. Start the frontend in a second terminal:
 
 ```console
 cd front-end
@@ -43,6 +43,9 @@ npm run dev
 The seed script creates these login accounts for demo purposes:
 
 - `admin` / `admin123`
+- `greetjej` / `greetjej123` (user, BEL)
+- `elkes` / `elkes123` (user, BEL)
+- `johanp` / `johanp123` (user, BEL)
 
 Example coach login:
 

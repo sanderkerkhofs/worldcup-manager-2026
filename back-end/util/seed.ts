@@ -15,14 +15,20 @@ const playerLastNames = [
 const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
 
 const seededReferees = [
-  { username: 'Michael_Oliver', countryShortName: 'ENG' },
-  { username: 'Anthony_Taylor', countryShortName: 'ENG' },
-  { username: 'Francois_Letexier', countryShortName: 'FRA' },
-  { username: 'Clement_Turpin', countryShortName: 'FRA' },
-  { username: 'Felix_Zwayer', countryShortName: 'GER' },
-  { username: 'Ismail_Elfath', countryShortName: 'USA' },
-  { username: 'Tori_Penso', countryShortName: 'USA' },
-  { username: 'Frank_De_Bleeckere', countryShortName: 'BEL' },
+  { username: 'Michael_Oliver' },
+  { username: 'Anthony_Taylor' },
+  { username: 'Francois_Letexier' },
+  { username: 'Clement_Turpin' },
+  { username: 'Felix_Zwayer' },
+  { username: 'Ismail_Elfath' },
+  { username: 'Tori_Penso' },
+  { username: 'Frank_De_Bleeckere' },
+] as const;
+
+const seededUsers = [
+  { username: 'greetjej', password: 'greetjej123' },
+  { username: 'elkes', password: 'elkes123' },
+  { username: 'johanp', password: 'johanp123' },
 ] as const;
 
 async function main() {
@@ -32,19 +38,24 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.team.deleteMany();
 
-  const [adminHash, refereeHash] = await Promise.all([
+  const [adminHash, refereeHash, ...userHashes] = await Promise.all([
     hashPassword('admin123'),
     hashPassword('referee123'),
+    ...seededUsers.map((user) => hashPassword(user.password)),
   ]);
 
   await prisma.user.createMany({
     data: [
       { username: 'admin', passwordHash: adminHash, role: 'ADMIN' },
+      ...seededUsers.map((user, index) => ({
+        username: user.username,
+        passwordHash: userHashes[index],
+        role: 'USER' as const,
+      })),
       ...seededReferees.map((referee) => ({
         username: referee.username,
         passwordHash: refereeHash,
         role: 'REFEREE' as const,
-        countryShortName: referee.countryShortName,
       })),
     ],
   });

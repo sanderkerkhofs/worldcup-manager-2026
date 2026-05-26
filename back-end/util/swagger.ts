@@ -33,7 +33,7 @@ export const swaggerDocument = {
         properties: {
           id: { type: 'string' },
           username: { type: 'string' },
-          role: { type: 'string', enum: ['ADMIN', 'REFEREE', 'GUEST'] },
+          role: { type: 'string', enum: ['ADMIN', 'REFEREE', 'USER', 'GUEST'] },
           teamId: { type: ['string', 'null'] },
         },
       },
@@ -156,7 +156,7 @@ export const swaggerDocument = {
     '/api/auth/register': {
       post: {
         tags: ['Auth'],
-        summary: 'Register a guest user',
+        summary: 'Register a user',
         requestBody: {
           required: true,
           content: {
@@ -219,6 +219,14 @@ export const swaggerDocument = {
         security: [{ bearerAuth: [] }],
         parameters: [{ name: 'roundId', in: 'path', required: true, schema: { type: 'string' } }],
         responses: { 200: { description: 'Round simulated' } },
+      },
+    },
+    '/api/competition/reset-matches': {
+      post: {
+        tags: ['Competition'],
+        summary: 'Reset tournament matches and goals to the starting state',
+        security: [{ bearerAuth: [] }],
+        responses: { 200: { description: 'Tournament reset completed' } },
       },
     },
     '/api/players': {

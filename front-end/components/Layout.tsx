@@ -18,6 +18,11 @@ export function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const role = user?.role;
 
+  const isGuest = !isAuthenticated || role === 'GUEST';
+  const canViewUserPages = isAuthenticated && role !== 'GUEST';
+  const canViewAdminPage = role === 'ADMIN';
+  const canViewRefereePage = role === 'REFEREE';
+
   const currentPath = router.asPath.split('?')[0].split('#')[0];
 
   const isActiveRoute = (href: string) => {
@@ -39,19 +44,22 @@ export function Layout({ children }: { children: ReactNode }) {
 
         <nav id="main-navigation" className="topbarGroup" aria-label="Main navigation">
           <Link href="/" className={navItemClass('/')}><span className="iconLabel"><FontAwesomeIcon icon={faHouse} /> Home</span></Link>
-          <Link href="/matches" className={navItemClass('/matches')}><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>
-          <Link href="/stats" className={navItemClass('/stats')}><span className="iconLabel"><FontAwesomeIcon icon={faChartLine} /> Stats</span></Link>
-          {role === 'ADMIN' && <Link href="/admin" className={navItemClass('/admin')}><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
-          {role === 'REFEREE' && <Link href="/referee" className={navItemClass('/referee')}><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
-          {isAuthenticated ? (
+          {canViewUserPages && <Link href="/matches" className={navItemClass('/matches')}><span className="iconLabel"><FontAwesomeIcon icon={faFutbol} /> Matches</span></Link>}
+          {canViewUserPages && <Link href="/stats" className={navItemClass('/stats')}><span className="iconLabel"><FontAwesomeIcon icon={faChartLine} /> Stats</span></Link>}
+          {canViewAdminPage && <Link href="/admin" className={navItemClass('/admin')}><span className="iconLabel"><FontAwesomeIcon icon={faUserShield} /> Admin</span></Link>}
+          {canViewRefereePage && <Link href="/referee" className={navItemClass('/referee')}><span className="iconLabel"><FontAwesomeIcon icon={faFlagCheckered} /> Referee</span></Link>}
+          {isGuest ? (
+            <>
+              <Link href="/login" className={navItemClass('/login')}><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Login</span></Link>
+              <Link href="/register" className={navItemClass('/register')}><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Register</span></Link>
+            </>
+          ) : (
             <>
               <span className="userBadge topbarUserBadge">{user?.username} ({user?.role})</span>
               <button className="topbarNavItem topbarLogout" onClick={logout}>
                 <span className="iconLabel"><FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>
               </button>
             </>
-          ) : (
-            <Link href="/login" className={navItemClass('/login')}><span className="iconLabel"><FontAwesomeIcon icon={faRightToBracket} /> Login</span></Link>
           )}
         </nav>
       </header>

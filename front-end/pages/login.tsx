@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { LoginForm } from '../components/LoginForm';
 import { useSession } from '../lib/useSession';
 import { login } from '../services/authService';
@@ -11,7 +12,7 @@ export default function LoginPage() {
     <section className="authSection authSectionWide">
       <div className="authCard">
         <h2>Predefined Access</h2>
-        <p className="muted">Use one of these credentials for role-based testing. Guest pages are public and do not require login.</p>
+        <p className="muted">Use one of these credentials for role-based testing. Guests can browse home, login, and register without signing in.</p>
         <div className="tableWrap">
           <table>
             <thead>
@@ -28,6 +29,21 @@ export default function LoginPage() {
                 <td>admin</td>
               </tr>
               <tr>
+                <td>greetjej</td>
+                <td>greetjej123</td>
+                <td>user</td>
+              </tr>
+              <tr>
+                <td>elkes</td>
+                <td>elkes123</td>
+                <td>user</td>
+              </tr>
+              <tr>
+                <td>johanp</td>
+                <td>johanp123</td>
+                <td>user</td>
+              </tr>
+              <tr>
                 <td>Frank_De_Bleeckere</td>
                 <td>referee123</td>
                 <td>referee</td>
@@ -40,6 +56,7 @@ export default function LoginPage() {
             </tbody>
           </table>
         </div>
+        <p className="muted">Need a new account? <Link href="/register">Go to register</Link>.</p>
       </div>
 
       <LoginForm

@@ -1,5 +1,5 @@
 import { api } from '../lib/api';
-import { CompetitionOverview, Goal, GoalInput, Match, MatchStatus, Player, PlayerStatus, Round, RoundSimulationResult, TopScorerRow } from '../types';
+import { CompetitionOverview, Goal, GoalInput, Match, MatchStatus, Player, PlayerStatus, Round, RoundSimulationResult, TopScorerRow, TournamentResetResult } from '../types';
 
 export function getOverview(token?: string | null) {
   return api.get<CompetitionOverview>('/api/competition/overview', token);
@@ -11,6 +11,10 @@ export function getRounds(token?: string | null) {
 
 export function simulateRound(roundId: string, token: string) {
   return api.post<RoundSimulationResult>(`/api/competition/rounds/${roundId}/simulate`, {}, token);
+}
+
+export function resetMatches(token: string) {
+  return api.post<TournamentResetResult>('/api/competition/reset-matches', {}, token);
 }
 
 export function getMatch(matchId: string, token?: string | null) {

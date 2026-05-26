@@ -8,14 +8,29 @@ import { getOverview, simulateRound } from '../../services/competitionService';
 export default function RoundDetailPage() {
   const router = useRouter();
   const { roundId } = router.query;
-  const { token, user } = useSession();
+  const { isAuthenticated, token, user } = useSession();
   const [busyAction, setBusyAction] = useState<'simulate' | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const canViewRound = isAuthenticated && user?.role !== 'GUEST';
 
   const { data: overview, error, isLoading, mutate } = useSWR(
-    router.isReady && typeof roundId === 'string' ? ['round-detail', roundId, token ?? 'public'] : null,
+    canViewRound && router.isReady && typeof roundId === 'string' ? ['round-detail', roundId, token ?? 'public'] : null,
     () => getOverview(token),
   );
+
+  if (!canViewRound) {
+    return (
+      <section className="heroCard">
+        <p className="eyebrow">Rounds</p>
+        <h2>Restricted access</h2>
+        <p className="muted">Login as a user to view round details and match links.</p>
+        <div className="rowButtons">
+          <Link href="/login" className="linkButton">Go to login</Link>
+          <Link href="/register" className="linkButton">Go to register</Link>
+        </div>
+      </section>
+    );
+  }
 
   if (!router.isReady) {
     return <p className="muted">Loading round...</p>;
@@ -93,30 +108,44 @@ export default function RoundDetailPage() {
         </section>
       )}
 
-      <section className="gridCols">
+      <section className="panelCard stack">
+        <p className="eyebrow">Matches</p>
         {roundMatches.length === 0 ? (
-          <article className="panelCard">
-            <p className="muted">No matches exist for this round yet.</p>
-          </article>
+          <p className="muted">No matches exist for this round yet.</p>
         ) : (
-          roundMatches.map((match) => {
-            const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-            const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
-            const homeName = homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD';
-            const awayName = awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD';
+          <div className="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fixture</th>
+                  <th>Date</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {roundMatches.map((match) => {
+                  const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
+                  const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+                  const homeName = homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : 'TBD';
+                  const awayName = awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : 'TBD';
 
-            return (
-              <article key={match.id} className="panelCard">
-                <h3>{homeName} vs {awayName}</h3>
-                <p className="muted">{new Date(match.matchDate).toLocaleString()}</p>
-                <p className="muted">Score: {match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
-                <p className="muted">Status: {match.status}</p>
-                <div className="rowButtons">
-                  <Link href={`/matches/${match.id}`} className="linkButton">Open match editor</Link>
-                </div>
-              </article>
-            );
-          })
+                  return (
+                    <tr key={match.id}>
+                      <td>{homeName} vs {awayName}</td>
+                      <td>{new Date(match.matchDate).toLocaleString()}</td>
+                      <td>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</td>
+                      <td>{match.status}</td>
+                      <td>
+                        <Link href={`/matches/${match.id}`} className="linkButton">Open match editor</Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </div>

@@ -4,10 +4,9 @@ import { Match } from '../model/match';
 import { Team } from '../model/team';
 import { Player } from '../model/player';
 import { Goal } from '../model/goal';
-import { CompetitionOverviewResponse, GoalInputDto, MatchResponse, RoundResponse, RoundSimulationResponse, StandingRow, TopScorerRow } from '../types';
+import { CompetitionOverviewResponse, GoalInputDto, MatchResponse, RoundResponse, RoundSimulationResponse, StandingRow, TopScorerRow, TournamentResetResponse } from '../types';
 import { NotFoundError, ValidationError } from '../util/errors';
 import { createNextRoundMatchesIfReady } from './roundProgressionService';
-import { getCountryFlagFromShortName } from '../util/country';
 
 function roundIdFromOrder(orderNumber: number): string {
   return String(orderNumber);
@@ -228,7 +227,7 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
     prisma.match.findMany({ orderBy: { matchDate: 'asc' } }),
     prisma.player.findMany({ orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }] }),
     prisma.goal.findMany({ orderBy: { createdAt: 'asc' } }),
-    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true, countryShortName: true } }),
+    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true } }),
   ]);
 
   const teamModels = teams.map((team) => Team.from(team));
@@ -260,7 +259,6 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
       awayTeamId: match.awayTeamId,
       refereeId: match.refereeId,
       refereeName: match.refereeId ? (refereeById.get(match.refereeId)?.username.replace(/_/g, ' ') ?? null) : null,
-      refereeCountryFlag: match.refereeId ? getCountryFlagFromShortName(refereeById.get(match.refereeId)?.countryShortName) : null,
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       matchDate: match.matchDate.toISOString(),
@@ -372,7 +370,7 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
   await createNextRoundMatchesIfReady(roundIdFromOrder(activeRound.orderNumber));
 
   const [referees] = await Promise.all([
-    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true, countryShortName: true } }),
+    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true } }),
   ]);
 
   const refereeNameById = new Map(referees.map((referee) => [referee.id, referee.username.replace(/_/g, ' ')]));
@@ -397,4 +395,43 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
     })),
     goalsCreated,
   };
+}
+
+export async function resetTournamentMatches(): Promise<TournamentResetResponse> {
+  const firstRoundOrder = fixedRounds.reduce((minimum, round) => Math.min(minimum, round.orderNumber), Number.POSITIVE_INFINITY);
+
+  if (!Number.isFinite(firstRoundOrder)) {
+    throw new ValidationError('No rounds are configured for this tournament.');
+  }
+
+  const resetResult = await prisma.$transaction(async (transaction) => {
+    const goalsDeletion = await transaction.goal.deleteMany();
+    const firstRoundReset = await transaction.match.updateMany({
+      where: { roundOrderNumber: firstRoundOrder },
+      data: {
+        homeScore: null,
+        awayScore: null,
+        status: 'IN_PROGRESS',
+      },
+    });
+
+    const futureRoundsReset = await transaction.match.updateMany({
+      where: { roundOrderNumber: { gt: firstRoundOrder } },
+      data: {
+        homeTeamId: null,
+        awayTeamId: null,
+        homeScore: null,
+        awayScore: null,
+        status: 'PLANNED',
+      },
+    });
+
+    return {
+      goalsDeleted: goalsDeletion.count,
+      firstRoundMatchesReset: firstRoundReset.count,
+      futureRoundMatchesReset: futureRoundsReset.count,
+    };
+  });
+
+  return resetResult;
 }

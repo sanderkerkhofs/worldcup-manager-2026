@@ -3,7 +3,7 @@ import { UserRole } from '../types';
 import { ValidationError } from '../util/errors';
 
 function isUserRole(role: string): role is UserRole {
-  return role === 'ADMIN' || role === 'REFEREE' || role === 'GUEST';
+  return role === 'ADMIN' || role === 'REFEREE' || role === 'USER' || role === 'GUEST';
 }
 
 export class User {
@@ -11,7 +11,6 @@ export class User {
   public readonly username: string;
   public readonly passwordHash: string;
   public readonly role: UserRole;
-  public readonly countryShortName: string | null;
   public readonly teamId: string | null;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
@@ -21,7 +20,6 @@ export class User {
     username,
     passwordHash,
     role,
-    countryShortName = null,
     teamId = null,
     createdAt,
     updatedAt,
@@ -30,7 +28,6 @@ export class User {
     username: string;
     passwordHash: string;
     role: UserRole;
-    countryShortName?: string | null;
     teamId?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
@@ -51,7 +48,6 @@ export class User {
     this.username = username;
     this.passwordHash = passwordHash;
     this.role = role;
-    this.countryShortName = countryShortName;
     this.teamId = teamId;
     this.createdAt = createdAt ?? new Date();
     this.updatedAt = updatedAt ?? new Date();
@@ -69,7 +65,6 @@ export class User {
       username: prismaUser.username,
       passwordHash: prismaUser.passwordHash,
       role,
-      countryShortName: prismaUser.countryShortName,
       teamId: prismaUser.teamId,
       createdAt: prismaUser.createdAt,
       updatedAt: prismaUser.updatedAt,

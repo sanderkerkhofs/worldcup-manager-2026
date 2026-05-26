@@ -1,11 +1,6 @@
-FROM node:20-bookworm-slim
+FROM node:20-bookworm
 
 WORKDIR /app
-
-# Prisma needs OpenSSL runtime libraries in slim images.
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends openssl ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 RUN npm ci

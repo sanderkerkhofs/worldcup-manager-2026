@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'REFEREE' | 'GUEST';
+export type UserRole = 'ADMIN' | 'REFEREE' | 'USER' | 'GUEST';
 export type PlayerStatus = 'AVAILABLE' | 'UNAVAILABLE';
 export type MatchStatus = 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED';
 
@@ -6,8 +6,6 @@ export type AuthUser = {
   id: string;
   username: string;
   role: UserRole;
-  countryShortName: string | null;
-  countryFlag: string | null;
   teamId: string | null;
 };
 
@@ -55,7 +53,6 @@ export type Match = {
   awayTeamId: string | null;
   refereeId: string | null;
   refereeName: string | null;
-  refereeCountryFlag?: string | null;
   homeScore: number | null;
   awayScore: number | null;
   matchDate: string;
@@ -91,6 +88,12 @@ export type RoundSimulationResult = {
   round: Round;
   matches: Match[];
   goalsCreated: number;
+};
+
+export type TournamentResetResult = {
+  goalsDeleted: number;
+  firstRoundMatchesReset: number;
+  futureRoundMatchesReset: number;
 };
 
 export type StandingRow = {

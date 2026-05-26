@@ -23,7 +23,6 @@ erDiagram
         string username UK
         string passwordHash
         string role
-        string countryShortName
         string teamId FK
         datetime createdAt
         datetime updatedAt
