@@ -57,6 +57,7 @@ export type Match = {
   awayScore: number | null;
   matchDate: string;
   status: MatchStatus;
+  goals?: MatchGoal[];
   createdAt: string;
   updatedAt: string;
 };
@@ -66,6 +67,16 @@ export type Goal = {
   matchId: string;
   playerId: string;
   teamId: string;
+  createdAt: string;
+};
+
+export type MatchGoal = {
+  id: string;
+  playerId: string;
+  teamId: string;
+  playerName: string;
+  teamName: string;
+  teamCountryFlag: string;
   createdAt: string;
 };
 

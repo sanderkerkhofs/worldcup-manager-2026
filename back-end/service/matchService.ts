@@ -43,6 +43,24 @@ async function assertRoundUnlocked(match: { roundOrderNumber: number }) {
   }
 }
 
+function assertStatusTransition(matchStatus: MatchStatus, nextStatus: MatchStatus, actor: RequestUser) {
+  if (actor.role !== 'REFEREE') {
+    return;
+  }
+
+  if (nextStatus !== 'IN_PROGRESS' && nextStatus !== 'FINISHED') {
+    throw new ValidationError('Referees can only set a match to IN_PROGRESS or FINISHED.');
+  }
+
+  if (nextStatus === 'IN_PROGRESS' && matchStatus !== 'PLANNED' && matchStatus !== 'NOT_STARTED') {
+    throw new ValidationError('Referees can only set IN_PROGRESS from PLANNED or NOT_STARTED.');
+  }
+
+  if (nextStatus === 'FINISHED' && matchStatus !== 'IN_PROGRESS') {
+    throw new ValidationError('Referees can only set FINISHED from IN_PROGRESS.');
+  }
+}
+
 async function validateGoalInput(matchId: string, goal: GoalInputDto) {
   const match = await loadMatch(matchId);
 
@@ -88,14 +106,56 @@ export async function listMatches() {
 }
 
 export async function getMatch(matchId: string) {
-  const match = await loadMatch(matchId);
-  return Match.from(match);
+  const match = await prisma.match.findUnique({
+    where: { id: matchId },
+    include: {
+      goals: {
+        include: {
+          player: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          team: {
+            select: {
+              id: true,
+              countryFlag: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'asc' },
+      },
+    },
+  });
+
+  if (!match) {
+    throw new NotFoundError('Match was not found.');
+  }
+
+  const baseMatch = Match.from(match);
+
+  return {
+    ...baseMatch,
+    goals: match.goals.map((goal) => ({
+      id: goal.id,
+      playerId: goal.playerId,
+      teamId: goal.teamId,
+      playerName: `${goal.player.firstName} ${goal.player.lastName}`,
+      teamName: goal.team.name,
+      teamCountryFlag: goal.team.countryFlag,
+      createdAt: goal.createdAt,
+    })),
+  };
 }
 
 export async function updateMatchStatus(matchId: string, status: MatchStatus, actor: RequestUser) {
   const match = await loadMatch(matchId);
   assertMatchAccess(actor, match.refereeId);
   await assertRoundUnlocked(match);
+  assertStatusTransition(match.status as MatchStatus, status, actor);
 
   if ((status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'FINISHED' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
@@ -115,6 +175,10 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
     where: { id: matchId },
     data: { status },
   });
+
+  if (status === 'FINISHED' || status === 'COMPLETED') {
+    await createNextRoundMatchesIfReady(String(updated.roundOrderNumber));
+  }
 
   return Match.from(updated);
 }

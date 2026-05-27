@@ -25,6 +25,7 @@ export default function MatchEditorPage() {
   const [awayGoalPlayerId, setAwayGoalPlayerId] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [goalMessages, setGoalMessages] = useState<string[]>([]);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   useEffect(() => {
     if (match) {
@@ -76,10 +77,32 @@ export default function MatchEditorPage() {
   const isAdmin = user?.role === 'ADMIN';
   const isAssignedReferee = user?.role === 'REFEREE' && (match.refereeId === user?.id || overviewMatch?.refereeId === user?.id);
   const canEdit = isAdmin || isAssignedReferee;
+  const isRefereeEditor = isAssignedReferee && !isAdmin;
   const hasPlayableTeams = !!match.homeTeamId && !!match.awayTeamId;
   const roundName = overview.rounds.find((round) => round.id === match.roundId)?.name ?? 'Round';
   const dateLabel = new Date(match.matchDate).toLocaleString();
   const statusLabel = getMatchStatusLabel(match.status);
+  const canRefereeSetInProgress = hasPlayableTeams && (match.status === 'PLANNED' || match.status === 'NOT_STARTED');
+  const canRefereeSetFinished = hasPlayableTeams && match.status === 'IN_PROGRESS';
+  const scorerRows = match.goals ?? [];
+
+  const changeRefereeStatus = async (nextStatus: 'IN_PROGRESS' | 'FINISHED') => {
+    if (!token) {
+      return;
+    }
+
+    try {
+      setIsUpdatingStatus(true);
+      setMessage(null);
+      await updateMatchStatus(match.id, nextStatus, token);
+      setMessage(`Match status updated to ${getMatchStatusLabel(nextStatus)}.`);
+      await mutateMatch();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Failed to update match status.');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   const registerGoalForTeam = async (teamId: string | null, playerId: string, clearSelection: () => void) => {
     if (!token || !teamId || !playerId) {
@@ -112,27 +135,53 @@ export default function MatchEditorPage() {
       <section className="panelCard matchOverviewCard stack">
         <p className="eyebrow">Match Details & Info</p>
         <h2>{homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'Home'} vs {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'Away'}</h2>
-        <div className="matchMetaGrid">
-          <article className="matchMetaItem">
-            <p className="matchMetaLabel">Round</p>
-            <p className="matchMetaValue">{roundName}</p>
-          </article>
-          <article className="matchMetaItem">
-            <p className="matchMetaLabel">Date</p>
-            <p className="matchMetaValue">{dateLabel}</p>
-          </article>
-          <article className="matchMetaItem">
-            <p className="matchMetaLabel">Referee</p>
-            <p className="matchMetaValue">{overviewMatch?.refereeName ?? 'Unassigned'}</p>
-          </article>
-          <article className="matchMetaItem">
-            <p className="matchMetaLabel">Status</p>
-            <p className="matchMetaValue">{statusLabel}</p>
-          </article>
-          <article className="matchMetaItem">
-            <p className="matchMetaLabel">Current score</p>
-            <p className="matchMetaValue">{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
-          </article>
+        <div className="matchInfoSplit">
+          <div className="matchInfoBlock">
+            <h4>Pre-game info</h4>
+            <div className="matchMetaGrid">
+              <article className="matchMetaItem">
+                <p className="matchMetaLabel">Round</p>
+                <p className="matchMetaValue">{roundName}</p>
+              </article>
+              <article className="matchMetaItem">
+                <p className="matchMetaLabel">Date</p>
+                <p className="matchMetaValue">{dateLabel}</p>
+              </article>
+              <article className="matchMetaItem">
+                <p className="matchMetaLabel">Referee</p>
+                <p className="matchMetaValue">{overviewMatch?.refereeName ?? 'Unassigned'}</p>
+              </article>
+            </div>
+          </div>
+
+          <div className="matchInfoBlock">
+            <h4>Match details</h4>
+            <div className="matchMetaGrid">
+              <article className="matchMetaItem">
+                <p className="matchMetaLabel">Status</p>
+                <p className="matchMetaValue">{statusLabel}</p>
+              </article>
+              <article className="matchMetaItem">
+                <p className="matchMetaLabel">Current score</p>
+                <p className="matchMetaValue">{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
+              </article>
+            </div>
+            <div className="scorerListCard">
+              <p className="matchMetaLabel">Players who scored</p>
+              {scorerRows.length === 0 ? (
+                <p className="muted">No goals recorded yet.</p>
+              ) : (
+                <ul className="scorerList">
+                  {scorerRows.map((goal, index) => (
+                    <li key={goal.id}>
+                      <span>{index + 1}. {goal.teamCountryFlag} {goal.playerName}</span>
+                      <small>{goal.teamName}</small>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
         {!hasPlayableTeams && <p className="muted">Teams are not assigned to this match yet.</p>}
       </section>
@@ -147,44 +196,69 @@ export default function MatchEditorPage() {
             <div className="matchEditHeader">
               <h4>Edit match status</h4>
             </div>
-            <div className="formGrid">
-              <label>
-                Match status
-                <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!hasPlayableTeams}>
-                  <option value="PLANNED">PLANNED</option>
-                  <option value="NOT_STARTED">NOT_STARTED</option>
-                  <option value="IN_PROGRESS">IN_PROGRESS</option>
-                  <option value="FINISHED">FINISHED</option>
-                  <option value="COMPLETED">COMPLETED</option>
-                </select>
-              </label>
-              <label>
-                Home score
-                <input type="number" min={0} value={homeScore} onChange={(event) => setHomeScore(event.target.value)} disabled={!hasPlayableTeams} />
-              </label>
-              <label>
-                Away score
-                <input type="number" min={0} value={awayScore} onChange={(event) => setAwayScore(event.target.value)} disabled={!hasPlayableTeams} />
-              </label>
-            </div>
-            <div className="rowButtons">
-              <button
-                className="smallButton"
-                disabled={!hasPlayableTeams}
-                onClick={async () => {
-                  if (!token) return;
-                  setMessage(null);
-                  await updateMatchStatus(match.id, status as 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED', token);
-                  if (homeScore !== '' && awayScore !== '') {
-                    await updateMatchResult(match.id, Number(homeScore), Number(awayScore), token);
-                  }
-                  setMessage('Match updated successfully.');
-                  await mutateMatch();
-                }}
-              >
-                Save match
-              </button>
-            </div>
+            {isRefereeEditor ? (
+              <div className="rowButtons statusActionRow">
+                <button
+                  className="smallButton"
+                  disabled={!canRefereeSetInProgress || isUpdatingStatus}
+                  onClick={async () => {
+                    await changeRefereeStatus('IN_PROGRESS');
+                  }}
+                >
+                  Set In Progress
+                </button>
+                <button
+                  className="smallButton"
+                  disabled={!canRefereeSetFinished || isUpdatingStatus}
+                  onClick={async () => {
+                    await changeRefereeStatus('FINISHED');
+                  }}
+                >
+                  Set Finished
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="formGrid">
+                  <label>
+                    Match status
+                    <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!hasPlayableTeams}>
+                      <option value="PLANNED">PLANNED</option>
+                      <option value="NOT_STARTED">NOT_STARTED</option>
+                      <option value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option value="FINISHED">FINISHED</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                  </label>
+                  <label>
+                    Home score
+                    <input type="number" min={0} value={homeScore} onChange={(event) => setHomeScore(event.target.value)} disabled={!hasPlayableTeams} />
+                  </label>
+                  <label>
+                    Away score
+                    <input type="number" min={0} value={awayScore} onChange={(event) => setAwayScore(event.target.value)} disabled={!hasPlayableTeams} />
+                  </label>
+                </div>
+                <div className="rowButtons">
+                  <button
+                    className="smallButton"
+                    disabled={!hasPlayableTeams}
+                    onClick={async () => {
+                      if (!token) return;
+                      setMessage(null);
+                      await updateMatchStatus(match.id, status as 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED', token);
+                      if (homeScore !== '' && awayScore !== '') {
+                        await updateMatchResult(match.id, Number(homeScore), Number(awayScore), token);
+                      }
+                      setMessage('Match updated successfully.');
+                      await mutateMatch();
+                    }}
+                  >
+                    Save match
+                  </button>
+                </div>
+              </>
+            )}
             {message && <p className="muted">{message}</p>}
           </div>
 

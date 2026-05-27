@@ -38,6 +38,10 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   });
 
   if (nextRoundMatches.length === 0) {
+    await prisma.match.updateMany({
+      where: { roundOrderNumber: completedRoundOrderNumber, status: 'FINISHED' },
+      data: { status: 'COMPLETED' },
+    });
     return;
   }
 
