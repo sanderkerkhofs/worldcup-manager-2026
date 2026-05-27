@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import useSWR from 'swr';
+import { useI18n } from '../lib/i18n';
 import { useSession } from '../lib/useSession';
 import { getOverview, resetMatches, simulateRound } from '../services/competitionService';
 import { deleteUser, listUsers } from '../services/authService';
 
 export default function AdminPage() {
+  const { t } = useI18n();
   const { token, user } = useSession();
   const { data: overview, error, isLoading, mutate: mutateOverview } = useSWR(token ? ['admin-overview', token] : null, () => getOverview(token));
   const { data: users, mutate: mutateUsers } = useSWR(token ? ['admin-users', token] : null, () => listUsers(token!));
@@ -19,24 +21,24 @@ export default function AdminPage() {
 
     return (
       <section className="heroCard">
-        <p className="eyebrow">Admin Area</p>
-        <h2>Restricted access</h2>
+        <p className="eyebrow">{t('pageAdminArea')}</p>
+        <h2>{t('restrictedAccessTitle')}</h2>
         <p className="muted">
           {isLoggedIn
-            ? 'Not authorised: only admins can access this page.'
-            : 'Login as admin to manage matches and rounds.'}
+            ? t('adminNotAuthorized')
+            : t('adminLoginHint')}
         </p>
-        {!isLoggedIn && <Link href="/login" className="linkButton">Go to login</Link>}
+        {!isLoggedIn && <Link href="/login" className="linkButton">{t('goToLogin')}</Link>}
       </section>
     );
   }
 
   if (isLoading) {
-    return <p className="muted">Loading admin workspace...</p>;
+    return <p className="muted">{t('adminLoadingWorkspace')}</p>;
   }
 
   if (error || !overview) {
-    return <p className="errorText">Failed to load admin workspace.</p>;
+    return <p className="errorText">{t('adminFailedLoadWorkspace')}</p>;
   }
 
   const sortedUsers = [...(users ?? [])].sort((left, right) => {
@@ -73,12 +75,12 @@ export default function AdminPage() {
     <div className="stack">
       <section className="stack">
         <article className="panelCard stack">
-          <p className="eyebrow">Tournament Management</p>
+          <p className="eyebrow">{t('adminTournamentManagement')}</p>
           <div className="tableWrap">
             <table>
               <tbody>
                 <tr>
-                  <td className="muted">Reset all match scores and goals.</td>
+                  <td className="muted">{t('adminResetMatchesHint')}</td>
                   <td className="tournamentActionCell">
                     <div className="rowButtons tournamentActions">
                       <button
@@ -95,15 +97,18 @@ export default function AdminPage() {
                           try {
                             const result = await resetMatches(token);
                             await mutateOverview();
-                            setMessage(`Tournament reset. Cleared ${result.goalsDeleted} goals and reset ${result.firstRoundMatchesReset + result.futureRoundMatchesReset} matches.`);
+                            setMessage(t('adminResetSuccess', {
+                              goals: result.goalsDeleted,
+                              matches: result.firstRoundMatchesReset + result.futureRoundMatchesReset,
+                            }));
                           } catch (resetError) {
-                            setMessage(resetError instanceof Error ? resetError.message : 'Unable to reset tournament matches.');
+                            setMessage(resetError instanceof Error ? resetError.message : t('adminUnableReset'));
                           } finally {
                             setResettingMatches(false);
                           }
                         }}
                       >
-                        {resettingMatches ? 'Resetting...' : 'Reset matches'}
+                        {resettingMatches ? t('actionResetting') : t('actionResetMatches')}
                       </button>
                     </div>
                   </td>
@@ -114,17 +119,17 @@ export default function AdminPage() {
         </article>
 
         <article className="panelCard stack">
-          <p className="eyebrow">Round Management</p>
+          <p className="eyebrow">{t('adminRoundManagement')}</p>
           <div className="tableWrap">
             <table>
               <thead>
                 <tr>
-                  <th>Round</th>
-                  <th>Matches</th>
-                  <th>Finished</th>
-                  <th>Completed</th>
-                  <th>Current round</th>
-                  <th>Action</th>
+                  <th>{t('colRound')}</th>
+                  <th>{t('colMatches')}</th>
+                  <th>{t('colFinished')}</th>
+                  <th>{t('colCompleted')}</th>
+                  <th>{t('colCurrentRound')}</th>
+                  <th>{t('colAction')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -133,8 +138,8 @@ export default function AdminPage() {
                     <td>{round.orderNumber}. {round.name}</td>
                     <td>{matchCount}</td>
                     <td>{finishedCount}/{matchCount}</td>
-                    <td>{isCompleted ? 'Yes' : 'No'}</td>
-                    <td>{isCurrentRound ? 'Yes' : 'No'}</td>
+                    <td>{isCompleted ? t('labelYes') : t('labelNo')}</td>
+                    <td>{isCurrentRound ? t('labelYes') : t('labelNo')}</td>
                     <td>
                       <button
                         className="smallButton"
@@ -150,15 +155,15 @@ export default function AdminPage() {
                           try {
                             await simulateRound(round.id, token);
                             await mutateOverview();
-                            setMessage(`Simulated ${round.name}.`);
+                            setMessage(t('adminSimulateSuccess', { round: round.name }));
                           } catch (simulationError) {
-                            setMessage(simulationError instanceof Error ? simulationError.message : 'Unable to simulate round.');
+                            setMessage(simulationError instanceof Error ? simulationError.message : t('adminUnableSimulate'));
                           } finally {
                             setSimulatingRoundId(null);
                           }
                         }}
                       >
-                        {simulatingRoundId === round.id ? 'Simulating...' : 'Simulate round'}
+                        {simulatingRoundId === round.id ? t('actionSimulating') : t('actionSimulateRound')}
                       </button>
                     </td>
                   </tr>
@@ -169,14 +174,14 @@ export default function AdminPage() {
         </article>
 
         <article className="panelCard stack">
-          <p className="eyebrow">User Management</p>
+          <p className="eyebrow">{t('adminUserManagement')}</p>
           <div className="tableWrap">
             <table>
               <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Role</th>
-                  <th>Action</th>
+                  <th>{t('colUsername')}</th>
+                  <th>{t('colRole')}</th>
+                  <th>{t('colAction')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -199,15 +204,15 @@ export default function AdminPage() {
                           try {
                             await deleteUser(managedUser.id, token);
                             await mutateUsers();
-                            setMessage(`Deleted user ${managedUser.username}.`);
+                            setMessage(t('adminDeleteSuccess', { username: managedUser.username }));
                           } catch (deleteError) {
-                            setMessage(deleteError instanceof Error ? deleteError.message : 'Unable to delete user.');
+                            setMessage(deleteError instanceof Error ? deleteError.message : t('adminUnableDelete'));
                           } finally {
                             setBusyUserId(null);
                           }
                         }}
                       >
-                        {busyUserId === managedUser.id ? 'Deleting...' : 'Delete'}
+                        {busyUserId === managedUser.id ? t('actionDeleting') : t('actionDelete')}
                       </button>
                     </td>
                   </tr>

@@ -3,11 +3,14 @@ import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { getMatchStatusLabel } from '../../lib/matchStatus';
+import { useI18n } from '../../lib/i18n';
 import { useSession } from '../../lib/useSession';
 import { addGoal, getMatch, getOverview, getPlayers, updateMatchResult, updateMatchStatus } from '../../services/competitionService';
+import { MatchStatus } from '../../types';
 
 export default function MatchEditorPage() {
   const router = useRouter();
+  const { locale, t } = useI18n();
   const { matchId } = router.query;
   const { isAuthenticated, token, user } = useSession();
   const isReady = typeof matchId === 'string';
@@ -52,23 +55,23 @@ export default function MatchEditorPage() {
   if (!canViewMatch) {
     return (
       <section className="heroCard">
-        <p className="eyebrow">Match Details</p>
-        <h2>Restricted access</h2>
-        <p className="muted">Login as a user to view match details and editing tools.</p>
+        <p className="eyebrow">{t('matchDetails')}</p>
+        <h2>{t('restrictedAccessTitle')}</h2>
+        <p className="muted">{t('matchRestrictedHint')}</p>
         <div className="rowButtons">
-          <Link href="/login" className="linkButton">Go to login</Link>
-          <Link href="/register" className="linkButton">Go to register</Link>
+          <Link href="/login" className="linkButton">{t('goToLogin')}</Link>
+          <Link href="/register" className="linkButton">{t('goToRegister')}</Link>
         </div>
       </section>
     );
   }
 
   if (!isReady) {
-    return <p className="muted">Loading match details...</p>;
+    return <p className="muted">{t('matchLoadingDetails')}</p>;
   }
 
   if (!match || !overview) {
-    return <p className="muted">Loading match details...</p>;
+    return <p className="muted">{t('matchLoadingDetails')}</p>;
   }
 
   const homeTeam = overview.teams.find((team) => team.id === match.homeTeamId);
@@ -79,9 +82,9 @@ export default function MatchEditorPage() {
   const canEdit = isAdmin || isAssignedReferee;
   const isRefereeEditor = isAssignedReferee && !isAdmin;
   const hasPlayableTeams = !!match.homeTeamId && !!match.awayTeamId;
-  const roundName = overview.rounds.find((round) => round.id === match.roundId)?.name ?? 'Round';
-  const dateLabel = new Date(match.matchDate).toLocaleString();
-  const statusLabel = getMatchStatusLabel(match.status);
+  const roundName = overview.rounds.find((round) => round.id === match.roundId)?.name ?? t('colRound');
+  const dateLabel = new Date(match.matchDate).toLocaleString(locale);
+  const statusLabel = getMatchStatusLabel(match.status, locale);
   const canRefereeSetInProgress = hasPlayableTeams && (match.status === 'PLANNED' || match.status === 'NOT_STARTED');
   const canRefereeSetFinished = hasPlayableTeams && match.status === 'IN_PROGRESS';
   const scorerRows = match.goals ?? [];
@@ -95,10 +98,10 @@ export default function MatchEditorPage() {
       setIsUpdatingStatus(true);
       setMessage(null);
       await updateMatchStatus(match.id, nextStatus, token);
-      setMessage(`Match status updated to ${getMatchStatusLabel(nextStatus)}.`);
+      setMessage(t('matchStatusUpdatedTo', { status: getMatchStatusLabel(nextStatus, locale) }));
       await mutateMatch();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Failed to update match status.');
+      setMessage(error instanceof Error ? error.message : t('matchStatusUpdateFailed'));
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -122,10 +125,10 @@ export default function MatchEditorPage() {
 
     const scorerName = `${scorer.firstName} ${scorer.lastName}`;
     const scoringTeamName = teamId === match.homeTeamId
-      ? (homeTeam?.name ?? 'Home team')
-      : (awayTeam?.name ?? 'Away team');
+      ? (homeTeam?.name ?? t('labelHomeTeam'))
+      : (awayTeam?.name ?? t('labelAwayTeam'));
 
-    setGoalMessages((current) => [`Goal saved: ${scorerName} (${scoringTeamName}).`, ...current].slice(0, 4));
+    setGoalMessages((current) => [t('goalSavedMessage', { scorer: scorerName, team: scoringTeamName }), ...current].slice(0, 4));
     clearSelection();
     await mutateMatch();
   };
@@ -133,43 +136,43 @@ export default function MatchEditorPage() {
   return (
     <div className="matchEditorLayout">
       <section className="panelCard matchOverviewCard stack">
-        <p className="eyebrow">Match Details & Info</p>
-        <h2>{homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'Home'} vs {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'Away'}</h2>
+        <p className="eyebrow">{t('matchDetailsInfo')}</p>
+        <h2>{homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : t('labelHome')} vs {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : t('labelAway')}</h2>
         <div className="matchInfoSplit">
           <div className="matchInfoBlock">
-            <h4>Pre-game info</h4>
+            <h4>{t('preGameInfo')}</h4>
             <div className="matchMetaGrid">
               <article className="matchMetaItem">
-                <p className="matchMetaLabel">Round</p>
+                <p className="matchMetaLabel">{t('colRound')}</p>
                 <p className="matchMetaValue">{roundName}</p>
               </article>
               <article className="matchMetaItem">
-                <p className="matchMetaLabel">Date</p>
+                <p className="matchMetaLabel">{t('colDate')}</p>
                 <p className="matchMetaValue">{dateLabel}</p>
               </article>
               <article className="matchMetaItem">
-                <p className="matchMetaLabel">Referee</p>
-                <p className="matchMetaValue">{overviewMatch?.refereeName ?? 'Unassigned'}</p>
+                <p className="matchMetaLabel">{t('colReferee')}</p>
+                <p className="matchMetaValue">{overviewMatch?.refereeName ?? t('labelUnassigned')}</p>
               </article>
             </div>
           </div>
 
           <div className="matchInfoBlock">
-            <h4>Match details</h4>
+            <h4>{t('matchDetailsBlock')}</h4>
             <div className="matchMetaGrid">
               <article className="matchMetaItem">
-                <p className="matchMetaLabel">Status</p>
+                <p className="matchMetaLabel">{t('colStatus')}</p>
                 <p className="matchMetaValue">{statusLabel}</p>
               </article>
               <article className="matchMetaItem">
-                <p className="matchMetaLabel">Current score</p>
+                <p className="matchMetaLabel">{t('labelCurrentScore')}</p>
                 <p className="matchMetaValue">{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</p>
               </article>
             </div>
             <div className="scorerListCard">
-              <p className="matchMetaLabel">Players who scored</p>
+              <p className="matchMetaLabel">{t('playersWhoScored')}</p>
               {scorerRows.length === 0 ? (
-                <p className="muted">No goals recorded yet.</p>
+                <p className="muted">{t('noGoalsRecorded')}</p>
               ) : (
                 <ul className="scorerList">
                   {scorerRows.map((goal, index) => (
@@ -183,18 +186,18 @@ export default function MatchEditorPage() {
             </div>
           </div>
         </div>
-        {!hasPlayableTeams && <p className="muted">Teams are not assigned to this match yet.</p>}
+        {!hasPlayableTeams && <p className="muted">{t('teamsNotAssignedYet')}</p>}
       </section>
 
       {canEdit && (
         <section className="panelCard matchOverviewCard stack">
-          <p className="eyebrow">Edit Match</p>
-          <h3>Match status and score</h3>
-          <p className="muted">Only admins and the assigned referee can update this match.</p>
+          <p className="eyebrow">{t('editMatch')}</p>
+          <h3>{t('matchStatusAndScore')}</h3>
+          <p className="muted">{t('matchEditPermissionHint')}</p>
           <hr className="matchSectionDivider" />
           <div className="matchEditBlock">
             <div className="matchEditHeader">
-              <h4>Edit match status</h4>
+              <h4>{t('editMatchStatus')}</h4>
             </div>
             {isRefereeEditor ? (
               <div className="rowButtons statusActionRow">
@@ -205,7 +208,7 @@ export default function MatchEditorPage() {
                     await changeRefereeStatus('IN_PROGRESS');
                   }}
                 >
-                  Set In Progress
+                  {t('actionSetInProgress')}
                 </button>
                 <button
                   className="smallButton"
@@ -214,28 +217,28 @@ export default function MatchEditorPage() {
                     await changeRefereeStatus('FINISHED');
                   }}
                 >
-                  Set Finished
+                  {t('actionSetFinished')}
                 </button>
               </div>
             ) : (
               <>
                 <div className="formGrid">
                   <label>
-                    Match status
+                    {t('labelMatchStatus')}
                     <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!hasPlayableTeams}>
-                      <option value="PLANNED">PLANNED</option>
-                      <option value="NOT_STARTED">NOT_STARTED</option>
-                      <option value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option value="FINISHED">FINISHED</option>
-                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="PLANNED">{getMatchStatusLabel('PLANNED' as MatchStatus, locale)}</option>
+                      <option value="NOT_STARTED">{getMatchStatusLabel('NOT_STARTED' as MatchStatus, locale)}</option>
+                      <option value="IN_PROGRESS">{getMatchStatusLabel('IN_PROGRESS' as MatchStatus, locale)}</option>
+                      <option value="FINISHED">{getMatchStatusLabel('FINISHED' as MatchStatus, locale)}</option>
+                      <option value="COMPLETED">{getMatchStatusLabel('COMPLETED' as MatchStatus, locale)}</option>
                     </select>
                   </label>
                   <label>
-                    Home score
+                    {t('labelHomeScore')}
                     <input type="number" min={0} value={homeScore} onChange={(event) => setHomeScore(event.target.value)} disabled={!hasPlayableTeams} />
                   </label>
                   <label>
-                    Away score
+                    {t('labelAwayScore')}
                     <input type="number" min={0} value={awayScore} onChange={(event) => setAwayScore(event.target.value)} disabled={!hasPlayableTeams} />
                   </label>
                 </div>
@@ -250,11 +253,11 @@ export default function MatchEditorPage() {
                       if (homeScore !== '' && awayScore !== '') {
                         await updateMatchResult(match.id, Number(homeScore), Number(awayScore), token);
                       }
-                      setMessage('Match updated successfully.');
+                      setMessage(t('matchUpdatedSuccessfully'));
                       await mutateMatch();
                     }}
                   >
-                    Save match
+                    {t('actionSaveMatch')}
                   </button>
                 </div>
               </>
@@ -265,23 +268,23 @@ export default function MatchEditorPage() {
           <hr className="matchSectionDivider" />
           <div className="matchEditBlock">
             <div className="matchEditHeader">
-              <h4>Record goal scorer</h4>
-              <p className="muted">Left is home team, right is away team. Pick player and save goal.</p>
+              <h4>{t('recordGoalScorer')}</h4>
+              <p className="muted">{t('goalScorerHint')}</p>
             </div>
             <div className="goalSplitGrid">
               <article className="goalTeamCard">
                 <div className="goalTeamHeader">
-                  <h5>{homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'Home team'}</h5>
-                  <p className="goalTeamScore">Score: {match.homeScore ?? 0}</p>
+                  <h5>{homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : t('labelHomeTeam')}</h5>
+                  <p className="goalTeamScore">{t('colScore')}: {match.homeScore ?? 0}</p>
                 </div>
                 <label>
-                  Home players
+                  {t('labelHomePlayers')}
                   <select
                     value={homeGoalPlayerId}
                     onChange={(event) => setHomeGoalPlayerId(event.target.value)}
                     disabled={!hasPlayableTeams}
                   >
-                    <option value="">Select player</option>
+                    <option value="">{t('optionSelectPlayer')}</option>
                     {homeAvailablePlayers.map((player) => (
                       <option key={player.id} value={player.id}>
                         {player.firstName} {player.lastName} #{player.shirtNumber}
@@ -296,23 +299,23 @@ export default function MatchEditorPage() {
                     await registerGoalForTeam(match.homeTeamId, homeGoalPlayerId, () => setHomeGoalPlayerId(''));
                   }}
                 >
-                  Add home goal
+                  {t('actionAddHomeGoal')}
                 </button>
               </article>
 
               <article className="goalTeamCard">
                 <div className="goalTeamHeader">
-                  <h5>{awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'Away team'}</h5>
-                  <p className="goalTeamScore">Score: {match.awayScore ?? 0}</p>
+                  <h5>{awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : t('labelAwayTeam')}</h5>
+                  <p className="goalTeamScore">{t('colScore')}: {match.awayScore ?? 0}</p>
                 </div>
                 <label>
-                  Away players
+                  {t('labelAwayPlayers')}
                   <select
                     value={awayGoalPlayerId}
                     onChange={(event) => setAwayGoalPlayerId(event.target.value)}
                     disabled={!hasPlayableTeams}
                   >
-                    <option value="">Select player</option>
+                    <option value="">{t('optionSelectPlayer')}</option>
                     {awayAvailablePlayers.map((player) => (
                       <option key={player.id} value={player.id}>
                         {player.firstName} {player.lastName} #{player.shirtNumber}
@@ -327,7 +330,7 @@ export default function MatchEditorPage() {
                     await registerGoalForTeam(match.awayTeamId, awayGoalPlayerId, () => setAwayGoalPlayerId(''));
                   }}
                 >
-                  Add away goal
+                  {t('actionAddAwayGoal')}
                 </button>
               </article>
             </div>

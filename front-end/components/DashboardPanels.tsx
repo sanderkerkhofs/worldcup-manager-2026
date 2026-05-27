@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { getMatchStatusLabel } from '../lib/matchStatus';
+import { useI18n } from '../lib/i18n';
 import { useSession } from '../lib/useSession';
 import {
   getRounds,
@@ -26,6 +27,7 @@ function RoundCard({ round, matches, canManageRound, blockedReason, token, onRef
   onRefresh: () => Promise<void>;
 }) {
   const [simulating, setSimulating] = useState(false);
+  const { t } = useI18n();
 
   return (
     <article className="panelCard">
@@ -45,11 +47,11 @@ function RoundCard({ round, matches, canManageRound, blockedReason, token, onRef
               }
             }}
           >
-            {simulating ? 'Simulating...' : 'Simulate'}
+            {simulating ? t('actionSimulating') : t('actionSimulateRound')}
           </button>
         </div>
       </div>
-      <p className="muted">Matches: {matches.length}</p>
+      <p className="muted">{t('pageMatches')}: {matches.length}</p>
       {!canManageRound && blockedReason && <p className="muted">{blockedReason}</p>}
     </article>
   );
@@ -76,6 +78,7 @@ function isRoundManageable(overview: CompetitionOverview, round: Round) {
 }
 
 export function AdminPanel({ overview, token, onRefresh }: Props) {
+  const { t } = useI18n();
   const { data: rounds } = useSWR(token ? ['rounds', token] : null, () => getRounds(token));
 
   if (!token) {
@@ -86,15 +89,15 @@ export function AdminPanel({ overview, token, onRefresh }: Props) {
     <section className="stack">
       <header className="sectionTitleCard">
         <div className="sectionTitleCopy">
-          <p className="eyebrow">Admin</p>
-          <h2>Admin Controls</h2>
+          <p className="eyebrow">{t('navAdmin')}</p>
+          <h2>{t('adminControls')}</h2>
         </div>
       </header>
       <div className="gridCols">
         {(rounds ?? overview.rounds).map((round) => {
           const canManageRound = isRoundManageable(overview, round);
           const blockedReason = round.orderNumber > 1 && !canManageRound
-            ? 'Requires previous round to be fully finished.'
+            ? t('roundsPreviousRoundMustFinish')
             : undefined;
 
           return (
@@ -116,6 +119,7 @@ export function AdminPanel({ overview, token, onRefresh }: Props) {
 
 export function RefereePanel({ overview, token, onRefresh }: Props) {
   const { user } = useSession();
+  const { locale, t } = useI18n();
   const [scoreInputs, setScoreInputs] = useState<Record<string, { home: string; away: string }>>({});
 
   const assignedMatches = useMemo(
@@ -131,33 +135,33 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
     <section className="stack">
       <header className="sectionTitleCard">
         <div className="sectionTitleCopy">
-          <p className="eyebrow">Referee</p>
-          <h2>Referee Controls</h2>
+          <p className="eyebrow">{t('navReferee')}</p>
+          <h2>{t('refereeControls')}</h2>
         </div>
       </header>
       {assignedMatches.length === 0 ? (
-        <p className="muted">No assigned matches for this referee.</p>
+        <p className="muted">{t('refereeNoAssignedMatches')}</p>
       ) : (
         <div className="gridCols">
           {assignedMatches.map((match) => {
-            const homeTeam = match.homeTeamId ? (overview.teams.find((team) => team.id === match.homeTeamId)?.name ?? 'TBD') : 'TBD';
-            const awayTeam = match.awayTeamId ? (overview.teams.find((team) => team.id === match.awayTeamId)?.name ?? 'TBD') : 'TBD';
+            const homeTeam = match.homeTeamId ? (overview.teams.find((team) => team.id === match.homeTeamId)?.name ?? t('labelTBD')) : t('labelTBD');
+            const awayTeam = match.awayTeamId ? (overview.teams.find((team) => team.id === match.awayTeamId)?.name ?? t('labelTBD')) : t('labelTBD');
             const hasPlayableTeams = !!match.homeTeamId && !!match.awayTeamId;
             const input = scoreInputs[match.id] ?? { home: '', away: '' };
 
             return (
               <article key={match.id} className="panelCard">
                 <h3>{homeTeam} vs {awayTeam}</h3>
-                <p className="muted">Status: {getMatchStatusLabel(match.status)}</p>
+                <p className="muted">{t('colStatus')}: {getMatchStatusLabel(match.status, locale)}</p>
                 <div className="rowButtons">
-                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'IN_PROGRESS', token); await onRefresh(); }}>Set IN_PROGRESS</button>
-                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'FINISHED', token); await onRefresh(); }}>Set FINISHED</button>
+                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'IN_PROGRESS', token); await onRefresh(); }}>{t('actionSetInProgress')}</button>
+                  <button className="smallButton" disabled={!hasPlayableTeams} onClick={async () => { await updateMatchStatus(match.id, 'FINISHED', token); await onRefresh(); }}>{t('actionSetFinished')}</button>
                 </div>
                 <div className="scoreInputs">
                   <input
                     type="number"
                     min={0}
-                    placeholder="Home"
+                    placeholder={t('labelHome')}
                     value={input.home}
                     disabled={!hasPlayableTeams}
                     onChange={(event) => setScoreInputs((current) => ({
@@ -168,7 +172,7 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
                   <input
                     type="number"
                     min={0}
-                    placeholder="Away"
+                    placeholder={t('labelAway')}
                     value={input.away}
                     disabled={!hasPlayableTeams}
                     onChange={(event) => setScoreInputs((current) => ({
@@ -191,7 +195,7 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
                       await onRefresh();
                     }}
                   >
-                    Save Score
+                    {t('actionSaveMatch')}
                   </button>
                 </div>
               </article>
@@ -204,19 +208,20 @@ export function RefereePanel({ overview, token, onRefresh }: Props) {
 }
 
 export function ScorePanel({ token }: { token: string | null }) {
+  const { t } = useI18n();
   const { data: topScorers } = useSWR(token ? ['topscorers', token] : 'topscorers-public', () => getTopScorers(token));
 
   return (
     <section className="stack">
       <article className="panelCard stack">
-        <p className="eyebrow">Goalscoring Leaderboard</p>
+        <p className="eyebrow">{t('goalscoringLeaderboard')}</p>
         <div className="tableWrap">
           <table>
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Team</th>
-                <th>Goals</th>
+                <th>{t('colPlayer')}</th>
+                <th>{t('colTeam')}</th>
+                <th>{t('colGoals')}</th>
               </tr>
             </thead>
             <tbody>
@@ -232,8 +237,8 @@ export function ScorePanel({ token }: { token: string | null }) {
                 <tr>
                   <td colSpan={3} className="tableEmptyCell">
                     <div className="tableEmptyState">
-                      <strong className="tableEmptyTitle">No scorers yet</strong>
-                      <span className="tableEmptyHint">Goals will appear here once matches start producing scorers.</span>
+                      <strong className="tableEmptyTitle">{t('scorePanelNoScorersYet')}</strong>
+                      <span className="tableEmptyHint">{t('scorePanelHint')}</span>
                     </div>
                   </td>
                 </tr>

@@ -1,10 +1,12 @@
 import { FormEvent, useState } from 'react';
+import { useI18n } from '../lib/i18n';
 
 type Props = {
   onSubmit: (username: string, password: string) => Promise<void>;
 };
 
 export function LoginForm({ onSubmit }: Props) {
+  const { t } = useI18n();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +20,7 @@ export function LoginForm({ onSubmit }: Props) {
     try {
       await onSubmit(username.trim(), password);
     } catch (submitError) {
-      const message = submitError instanceof Error ? submitError.message : 'Authentication failed.';
+      const message = submitError instanceof Error ? submitError.message : t('errorAuthenticationFailed');
       setError(message);
     } finally {
       setLoading(false);
@@ -27,10 +29,10 @@ export function LoginForm({ onSubmit }: Props) {
 
   return (
     <form className="authCard" onSubmit={handleSubmit}>
-      <h2>Sign In</h2>
+      <h2>{t('authSignIn')}</h2>
 
       <label>
-        Username
+        {t('labelUsername')}
         <input
           type="text"
           value={username}
@@ -41,7 +43,7 @@ export function LoginForm({ onSubmit }: Props) {
       </label>
 
       <label>
-        Password
+        {t('labelPassword')}
         <input
           type="password"
           value={password}
@@ -53,7 +55,7 @@ export function LoginForm({ onSubmit }: Props) {
 
       {error && <p className="errorText">{error}</p>}
 
-      <button type="submit" disabled={loading}>{loading ? 'Working...' : 'Login'}</button>
+      <button type="submit" disabled={loading}>{loading ? t('buttonWorking') : t('navLogin')}</button>
     </form>
   );
 }

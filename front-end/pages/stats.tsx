@@ -2,32 +2,34 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { ScorePanel } from '../components/DashboardPanels';
 import { useSession } from '../lib/useSession';
+import { useI18n } from '../lib/i18n';
 import { getOverview } from '../services/competitionService';
 
 export default function StatsPage() {
   const { isAuthenticated, user, token } = useSession();
+  const { t } = useI18n();
   const { data: overview, error, isLoading } = useSWR(['stats-overview', token ?? 'public'], () => getOverview(token));
 
   if (!isAuthenticated || user?.role === 'GUEST') {
     return (
       <section className="heroCard">
-        <p className="eyebrow">Goalscoring Leaderboard</p>
-        <h2>Restricted access</h2>
-        <p className="muted">Login as a user to view standings and score summaries.</p>
+        <p className="eyebrow">{t('goalscoringLeaderboard')}</p>
+        <h2>{t('restrictedAccessTitle')}</h2>
+        <p className="muted">{t('statsRestrictedHint')}</p>
         <div className="rowButtons">
-          <Link href="/login" className="linkButton">Go to login</Link>
-          <Link href="/register" className="linkButton">Go to register</Link>
+          <Link href="/login" className="linkButton">{t('goToLogin')}</Link>
+          <Link href="/register" className="linkButton">{t('goToRegister')}</Link>
         </div>
       </section>
     );
   }
 
   if (isLoading) {
-    return <p className="muted">Loading stats...</p>;
+    return <p className="muted">{t('statsLoading')}</p>;
   }
 
   if (error || !overview) {
-    return <p className="errorText">Unable to load stats.</p>;
+    return <p className="errorText">{t('statsUnableToLoad')}</p>;
   }
 
   const teamById = new Map(overview.teams.map((team) => [team.id, team]));
@@ -36,20 +38,20 @@ export default function StatsPage() {
     <div className="stack">
       <section className="stack">
         <article className="panelCard stack">
-          <p className="eyebrow">Tournament Standings</p>
+          <p className="eyebrow">{t('tournamentStandings')}</p>
           <div className="tableWrap">
             <table>
               <thead>
                 <tr>
-                  <th>Team</th>
+                  <th>{t('colTeam')}</th>
                   <th>P</th>
                   <th>W</th>
                   <th>D</th>
                   <th>L</th>
-                  <th>GF</th>
-                  <th>GA</th>
-                  <th>GD</th>
-                  <th>PTS</th>
+                  <th>{t('colGF')}</th>
+                  <th>{t('colGA')}</th>
+                  <th>{t('colGD')}</th>
+                  <th>{t('colPTS')}</th>
                 </tr>
               </thead>
               <tbody>

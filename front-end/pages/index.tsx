@@ -4,9 +4,11 @@ import useSWR from 'swr';
 import { getMatchStatusLabel } from '../lib/matchStatus';
 import { getOverview } from '../services/competitionService';
 import { useSession } from '../lib/useSession';
+import { useI18n } from '../lib/i18n';
 
 export default function HomePage() {
   const { token } = useSession();
+  const { locale, t } = useI18n();
   const { data: overview, error, isLoading } = useSWR(['overview', token ?? 'public'], () => getOverview(token));
 
   const rounds = overview?.rounds ?? [];
@@ -42,18 +44,18 @@ export default function HomePage() {
   const topFiveScorers = useMemo(() => [...topScorers].slice(0, 5), [topScorers]);
 
   if (isLoading) {
-    return <p className="muted">Loading competition data...</p>;
+    return <p className="muted">{t('homeLoadingCompetitionData')}</p>;
   }
 
   if (error || !overview) {
-    return <p className="errorText">Failed to load dashboard: {error instanceof Error ? error.message : 'Unknown error'}</p>;
+    return <p className="errorText">{t('homeFailedToLoadDashboard')}: {error instanceof Error ? error.message : t('unknownError')}</p>;
   }
 
   return (
     <div className="stack">
       <section className="stack">
         <article className="panelCard stack">
-          <p className="eyebrow">Current Round</p>
+          <p className="eyebrow">{t('homeCurrentRound')}</p>
           {currentRound ? (
             <>
               <div className="sectionTitleCard sectionTitleCardPlain">
@@ -63,18 +65,18 @@ export default function HomePage() {
               </div>
 
               {currentRoundMatches.length === 0 ? (
-                <p className="muted">No matches yet.</p>
+                <p className="muted">{t('homeNoMatchesYet')}</p>
               ) : (
                 <div className="tableWrap">
                   <table>
                     <thead>
                       <tr>
-                        <th>Fixture</th>
-                        <th>Score</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Referee</th>
-                        <th>Action</th>
+                        <th>{t('colFixture')}</th>
+                        <th>{t('colScore')}</th>
+                        <th>{t('colDate')}</th>
+                        <th>{t('colStatus')}</th>
+                        <th>{t('colReferee')}</th>
+                        <th>{t('colAction')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -85,15 +87,15 @@ export default function HomePage() {
                         return (
                           <tr key={match.id}>
                             <td>
-                              {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
-                              {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
+                              {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : t('labelTBD')} vs{' '}
+                              {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : t('labelTBD')}
                             </td>
                             <td>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</td>
-                            <td>{new Date(match.matchDate).toLocaleString()}</td>
-                            <td>{getMatchStatusLabel(match.status)}</td>
-                            <td>{match.refereeName ?? 'Unassigned'}</td>
+                            <td>{new Date(match.matchDate).toLocaleString(locale)}</td>
+                            <td>{getMatchStatusLabel(match.status, locale)}</td>
+                            <td>{match.refereeName ?? t('labelUnassigned')}</td>
                             <td>
-                              <Link href={`/matches/${match.id}`} className="linkButton">Open match</Link>
+                              <Link href={`/matches/${match.id}`} className="linkButton">{t('actionOpenMatch')}</Link>
                             </td>
                           </tr>
                         );
@@ -104,24 +106,24 @@ export default function HomePage() {
               )}
             </>
           ) : (
-            <p className="muted">No rounds found.</p>
+            <p className="muted">{t('homeNoRoundsFound')}</p>
           )}
         </article>
       </section>
 
       <section className="gridCols">
         <article className="panelCard stack">
-          <p className="eyebrow">Top 5 Standings</p>
+          <p className="eyebrow">{t('homeTop5Standings')}</p>
           <div className="tableWrap">
             <table>
               <thead>
                 <tr>
-                  <th>Team</th>
+                  <th>{t('colTeam')}</th>
                   <th>P</th>
                   <th>W</th>
                   <th>D</th>
                   <th>L</th>
-                  <th>PTS</th>
+                  <th>{t('colPTS')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,14 +143,14 @@ export default function HomePage() {
         </article>
 
         <article className="panelCard stack">
-          <p className="eyebrow">Top 5 Goalscorers</p>
+          <p className="eyebrow">{t('homeTop5Goalscorers')}</p>
           <div className="tableWrap">
             <table>
               <thead>
                 <tr>
-                  <th>Player</th>
-                  <th>Team</th>
-                  <th>Goals</th>
+                  <th>{t('colPlayer')}</th>
+                  <th>{t('colTeam')}</th>
+                  <th>{t('colGoals')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -164,8 +166,8 @@ export default function HomePage() {
                   <tr>
                     <td colSpan={3} className="tableEmptyCell">
                       <div className="tableEmptyState">
-                        <strong className="tableEmptyTitle">No scorers yet</strong>
-                        <span className="tableEmptyHint">This board fills up as soon as the first goals are registered.</span>
+                        <strong className="tableEmptyTitle">{t('homeNoScorersYet')}</strong>
+                        <span className="tableEmptyHint">{t('homeScorersHint')}</span>
                       </div>
                     </td>
                   </tr>

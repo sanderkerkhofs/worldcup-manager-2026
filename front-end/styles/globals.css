@@ -149,6 +149,36 @@ a {
   margin-left: auto;
 }
 
+.languageSwitch {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+
+.languageSwitchButton {
+  border: 0;
+  background: transparent;
+  color: var(--ink-0);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.32rem 0.55rem;
+  cursor: pointer;
+}
+
+.languageSwitchButton:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.languageSwitchButtonActive {
+  background: var(--ink-0);
+  color: #fff;
+}
+
 .userBadge {
   font-size: 0.85rem;
   border: 1px solid var(--line);

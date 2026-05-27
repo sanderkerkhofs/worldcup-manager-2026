@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import useSWR from 'swr';
 import { getMatchStatusLabel } from '../lib/matchStatus';
+import { useI18n } from '../lib/i18n';
 import { useSession } from '../lib/useSession';
 import { getOverview } from '../services/competitionService';
 
 export default function RefereePage() {
+  const { locale, t } = useI18n();
   const { token, user } = useSession();
   const { data: overview, isLoading } = useSWR(token ? ['referee-overview', token] : null, () => getOverview(token));
 
@@ -13,25 +15,25 @@ export default function RefereePage() {
 
     return (
       <section className="heroCard">
-        <p className="eyebrow">Referee Area</p>
-        <h2>Restricted access</h2>
+        <p className="eyebrow">{t('pageRefereeArea')}</p>
+        <h2>{t('restrictedAccessTitle')}</h2>
         <p className="muted">
           {isLoggedIn
-            ? 'Not authorised: only referees can access this page.'
-            : 'Login as a seeded referee to update your assigned match.'}
+            ? t('refereeNotAuthorized')
+            : t('refereeLoginHint')}
         </p>
-        {!isLoggedIn && <Link href="/login" className="linkButton">Go to login</Link>}
+        {!isLoggedIn && <Link href="/login" className="linkButton">{t('goToLogin')}</Link>}
       </section>
     );
   }
 
   if (isLoading || !overview) {
-    return <p className="muted">Loading referee workspace...</p>;
+    return <p className="muted">{t('refereeLoadingWorkspace')}</p>;
   }
 
   const teamById = new Map(overview.teams.map((team) => [team.id, team]));
   const assignedMatches = overview.matches.filter((match) => match.refereeId === user.id);
-  const assignedMatchesHeading = `Assigned Matches (${user.username})`;
+  const assignedMatchesHeading = `${t('refereeAssignedMatches')} (${user.username})`;
 
   return (
     <div className="stack">
@@ -46,12 +48,12 @@ export default function RefereePage() {
           <table>
             <thead>
               <tr>
-                <th>Round</th>
-                <th>Fixture</th>
-                <th>Date</th>
-                <th>Score</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>{t('colRound')}</th>
+                <th>{t('colFixture')}</th>
+                <th>{t('colDate')}</th>
+                <th>{t('colScore')}</th>
+                <th>{t('colStatus')}</th>
+                <th>{t('colAction')}</th>
               </tr>
             </thead>
             <tbody>
@@ -63,14 +65,14 @@ export default function RefereePage() {
                   <tr key={match.id}>
                     <td>{match.roundName}</td>
                     <td>
-                      {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : 'TBD'} vs{' '}
-                      {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : 'TBD'}
+                      {homeTeam ? `${homeTeam.countryFlag} ${homeTeam.name}` : t('labelTBD')} vs{' '}
+                      {awayTeam ? `${awayTeam.countryFlag} ${awayTeam.name}` : t('labelTBD')}
                     </td>
-                    <td>{new Date(match.matchDate).toLocaleString()}</td>
+                    <td>{new Date(match.matchDate).toLocaleString(locale)}</td>
                     <td>{match.homeScore ?? '-'} : {match.awayScore ?? '-'}</td>
-                    <td>{getMatchStatusLabel(match.status)}</td>
+                    <td>{getMatchStatusLabel(match.status, locale)}</td>
                     <td>
-                      <Link href={`/matches/${match.id}`} className="linkButton">Open match page</Link>
+                      <Link href={`/matches/${match.id}`} className="linkButton">{t('actionOpenMatchPage')}</Link>
                     </td>
                   </tr>
                 );
@@ -78,7 +80,7 @@ export default function RefereePage() {
               {assignedMatches.length === 0 && (
                 <tr>
                   <td colSpan={6} className="tableEmptyCell">
-                    <p className="muted">No assigned matches found for this referee.</p>
+                    <p className="muted">{t('refereeNoAssignedMatches')}</p>
                   </td>
                 </tr>
               )}
