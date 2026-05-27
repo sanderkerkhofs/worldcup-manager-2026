@@ -22,6 +22,7 @@ This folder is the clean source-of-truth documentation to recreate the full proj
 - `08-seed-and-environments.md`
 - `09-ai-rebuild-playbook.md`
 - `10-definition-of-done-checklist.md`
+- `11-recreation-analysis.md`
 
 ## Design intent
 
