@@ -67,8 +67,6 @@
   - full match/player control
 - Referee:
   - update status/result/goals only for assigned matches
-- Coach:
-  - update player availability for own team only
 - User/Guest:
   - read-only access according to page policy
 

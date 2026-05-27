@@ -7,7 +7,7 @@
 - id (PK, string)
 - username (unique)
 - passwordHash
-- role (`ADMIN`, `COACH`, `REFEREE`, `USER`, `GUEST`)
+- role (`ADMIN`, `REFEREE`, `USER`, `GUEST`)
 - teamId (nullable FK -> Team.id)
 - createdAt
 - updatedAt
@@ -19,7 +19,6 @@
 - country
 - countryShortName
 - countryFlag
-- coach
 - createdAt
 - updatedAt
 
@@ -67,7 +66,6 @@
 - Match 1 -> N Goal
 - Player 1 -> N Goal
 - Team 1 -> N Goal
-- Team 1 -> N User (coach users)
 
 ## 3. Logical constraints
 
@@ -87,7 +85,6 @@ erDiagram
   MATCH ||--o{ GOAL : records
   PLAYER ||--o{ GOAL : scores
   TEAM ||--o{ GOAL : belongs_to
-  TEAM ||--o{ USER : coach_context
 ```
 
 ## 5. Logical ERD (Mermaid)
@@ -110,7 +107,6 @@ erDiagram
     STRING country
     STRING countryShortName
     STRING countryFlag
-    STRING coach
     DATETIME createdAt
     DATETIME updatedAt
   }
@@ -157,7 +153,6 @@ erDiagram
   MATCH ||--o{ GOAL : records
   PLAYER ||--o{ GOAL : scores
   TEAM ||--o{ GOAL : belongs_to
-  TEAM ||--o{ USER : coach_context
 ```
 
 ## 6. Why no Round table

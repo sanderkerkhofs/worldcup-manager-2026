@@ -47,13 +47,13 @@ Use this list to verify the rebuilt project is complete and consistent.
 
 ## i18n
 
-- [ ] At least 3 pages localized
-- [ ] At least 2 locales available
+- [ ] localized where possible but keep it simple
+- [ ] ENG default, NL, FR
 - [ ] Locale switch persists in storage
 
 ## Seed and environment
 
-- [ ] Docker run works
+- [ ] Local PostgreSQL is reachable via configured `DATABASE_URL`
 - [ ] Seed creates all required entities
 - [ ] Demo credentials available and documented
 

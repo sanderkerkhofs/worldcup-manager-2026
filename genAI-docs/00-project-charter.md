@@ -11,14 +11,13 @@ Build a full-stack tournament manager for one fixed World Cup style knockout com
 The app must support:
 
 - tournament progression from 8th Final to Final
-- role-based actions (admin, coach, referee, user, guest)
+- role-based actions (admin, referee, user, guest)
 - match management, scoring, and goal scorer tracking
 - public competition overview, bracket state, and statistics
 
 ## Primary users
 
 - Admin: manages tournament flow and users
-- Coach: manages player availability for own team
 - Referee: manages assigned match status/results/goals
 - User: authenticated viewer (same read rights as guest plus protected pages if required)
 - Guest: public read-only access
@@ -33,7 +32,7 @@ The app must support:
 - Automated winner progression to next stage
 - Top scorers from goal events
 - Role-based backend authorization and frontend route visibility
-- Dockerized local run setup
+- Local process run with pre-running PostgreSQL
 
 ### Out of scope
 

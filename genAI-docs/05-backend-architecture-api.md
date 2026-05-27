@@ -97,7 +97,7 @@ back-end/
 - `GET /api/players/:playerId`
 - `POST /api/players` (admin)
 - `PUT /api/players/:playerId` (admin)
-- `PATCH /api/players/:playerId/status` (admin or coach-own-team in clean version)
+- `PATCH /api/players/:playerId/status` (admin)
 - `DELETE /api/players/:playerId` (admin)
 
 ### Users

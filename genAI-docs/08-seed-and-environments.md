@@ -5,7 +5,7 @@
 ## Backend env
 
 - `APP_PORT`
-- `DATABASE_URL`
+- `DATABASE_URL=postgresql://tournament:tournament@localhost:5432/tournament_manager?schema=public`
 - `JWT_SECRET`
 - `JWT_EXPIRES_IN`
 - `CORS_ORIGIN`
@@ -14,15 +14,10 @@
 
 - `NEXT_PUBLIC_API_BASE_URL`
 
-## 2. Local run modes
+## 2. Runtime assumption
 
-### Database only
-
-Use docker compose file for PostgreSQL only.
-
-### Full stack
-
-Use full docker compose for database + backend + frontend.
+- PostgreSQL is already running locally and reachable with the configured `DATABASE_URL`.
+- Backend and frontend run as local processes (`npm start` / `npm run dev`).
 
 ## 3. Seed strategy
 
@@ -36,7 +31,7 @@ Use full docker compose for database + backend + frontend.
 
 ### Insert order
 
-1. users (admin, coaches, referees, users)
+1. users (admin, referees, users)
 2. teams (16 randomized)
 3. players (15/team)
 4. matches (all rounds pre-created)

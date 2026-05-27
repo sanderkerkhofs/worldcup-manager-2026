@@ -17,7 +17,7 @@ Prompt:
 
 - back-end: Express + Prisma + PostgreSQL + Jest + Swagger
 - front-end: Next.js Pages Router + SWR
-- docker-compose for postgres and fullstack
+- assume PostgreSQL is already running locally at `postgresql://tournament:tournament@localhost:5432/tournament_manager?schema=public`
   Use the architecture and constraints from genAI-docs/00-project-charter.md and genAI-docs/05-backend-architecture-api.md."
 
 Expected outcome:

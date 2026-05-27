@@ -70,17 +70,7 @@ Acceptance criteria:
 - Team/player mismatch is rejected.
 - Match score recalculates from goals when goals are used.
 
-## US-08 Coach manages own squad availability
-
-As a coach, I want to mark my players available/unavailable to prepare matches.
-
-Acceptance criteria:
-
-- Coach can only modify players from own team.
-- Availability changes persist.
-- Other team edits are forbidden.
-
-## US-09 Admin manages users
+## US-08 Admin manages users
 
 As an admin, I want to list and delete users for moderation.
 
@@ -90,7 +80,7 @@ Acceptance criteria:
 - Admin can delete users.
 - Admin cannot delete own account.
 
-## US-10 Match edit lock by round order
+## US-09 Match edit lock by round order
 
 As the system, I want to block edits of later-round matches until previous round is completed.
 

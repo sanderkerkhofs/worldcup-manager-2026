@@ -91,6 +91,5 @@ Return player name, team id/name/flag, goals.
 
 To keep the new clean build consistent:
 
-- keep one canonical role enum in backend, frontend, and DB (include `COACH`)
+- keep one canonical role enum in backend, frontend, and DB
 - align match status vocabulary across all docs and UI labels
-- ensure coach permissions are implemented end-to-end (not only documented)

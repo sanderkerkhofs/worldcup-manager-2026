@@ -17,25 +17,24 @@
 ## 3. Role model (canonical)
 
 - `ADMIN`
-- `COACH`
 - `REFEREE`
 - `USER`
 - `GUEST`
 
 ## 4. Permission matrix
 
-| Capability                          | Admin | Coach    | Referee       | User | Guest |
-| ----------------------------------- | ----- | -------- | ------------- | ---- | ----- |
-| View public competition             | Yes   | Yes      | Yes           | Yes  | Yes   |
-| View protected pages                | Yes   | Yes      | Yes           | Yes  | No    |
-| Simulate round                      | Yes   | No       | No            | No   | No    |
-| Reset tournament                    | Yes   | No       | No            | No   | No    |
-| Manage users                        | Yes   | No       | No            | No   | No    |
-| Update assigned match status/result | Yes   | No       | Yes           | No   | No    |
-| Update unassigned match             | Yes   | No       | No            | No   | No    |
-| Add/edit goals                      | Yes   | No       | Assigned only | No   | No    |
-| Update player availability          | Yes   | Own team | No            | No   | No    |
-| Create/delete players               | Yes   | No       | No            | No   | No    |
+| Capability                          | Admin | Referee       | User | Guest |
+| ----------------------------------- | ----- | ------------- | ---- | ----- |
+| View public competition             | Yes   | Yes           | Yes  | Yes   |
+| View protected pages                | Yes   | Yes           | Yes  | No    |
+| Simulate round                      | Yes   | No            | No   | No    |
+| Reset tournament                    | Yes   | No            | No   | No    |
+| Manage users                        | Yes   | No            | No   | No    |
+| Update assigned match status/result | Yes   | Yes           | No   | No    |
+| Update unassigned match             | Yes   | No            | No   | No    |
+| Add/edit goals                      | Yes   | Assigned only | No   | No    |
+| Update player availability          | Yes   | No            | No   | No    |
+| Create/delete players               | Yes   | No            | No   | No    |
 
 ## 5. Authorization rules
 
