@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 — Backend Architecture | Worldcup Manager Study Docs</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="brand">⚽ Worldcup Manager — Study Docs</span>
+  <a href="index.html">Home</a>
+  <a href="01-tech-stack.html">Tech Stack</a>
+  <a href="02-backend-architecture.html" class="active">Backend</a>
+  <a href="03-database-prisma.html">Database</a>
+  <a href="04-authentication.html">Auth</a>
+  <a href="05-frontend-nextjs.html">Frontend</a>
+  <a href="06-api-endpoints.html">API</a>
+  <a href="07-docker-deployment.html">Docker</a>
+  <a href="08-qa-presentation.html">Q&amp;A</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> › <span>Backend Architecture</span></div>
+
+  <div class="hero">
+    <p class="eyebrow">Chapter 02</p>
+    <h1>Backend Architecture</h1>
+    <p class="subtitle">How the server is organised in layers, and what each layer does.</p>
+  </div>
+
+  <h2>The Layered Architecture pattern</h2>
+
+  <p>The back-end is organised into <strong>4 layers</strong>. Each layer has one clear responsibility and only talks to the layer directly below it.</p>
+
+  <div class="card">
+    <div class="flow" style="flex-direction:column; align-items:flex-start; gap:.75rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div class="flow-step" style="min-width:160px; text-align:center">🌐 Controller Layer</div>
+        <span style="color:var(--muted)">← HTTP request comes in here</span>
+      </div>
+      <div style="padding-left:1rem;color:var(--muted)">⬇ calls</div>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div class="flow-step" style="min-width:160px; text-align:center">⚙️ Service Layer</div>
+        <span style="color:var(--muted)">← business logic lives here</span>
+      </div>
+      <div style="padding-left:1rem;color:var(--muted)">⬇ calls</div>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div class="flow-step" style="min-width:160px; text-align:center">🗃️ Repository / Prisma</div>
+        <span style="color:var(--muted)">← talks to the database</span>
+      </div>
+      <div style="padding-left:1rem;color:var(--muted)">⬇ maps to</div>
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div class="flow-step" style="min-width:160px; text-align:center">🏗️ Domain Model</div>
+        <span style="color:var(--muted)">← pure TypeScript classes with validation</span>
+      </div>
+    </div>
+  </div>
+
+  <p>Why separate layers? Because it makes code easier to <strong>test</strong>, <strong>change</strong>, and <strong>understand</strong>. If the database changes, only the repository layer needs to be updated. If a business rule changes, only the service layer changes.</p>
+
+  <!-- Controller -->
+  <h2>Layer 1: Controller (Routes)</h2>
+
+  <p>Files: <code>back-end/controller/</code></p>
+
+  <p>The controller layer is the <strong>entry point</strong> for every HTTP request. Its only jobs are:</p>
+  <ol>
+    <li>Define which URL / HTTP method maps to which handler function</li>
+    <li>Read data from the incoming request (<code>req.body</code>, <code>req.params</code>)</li>
+    <li>Call the appropriate service function</li>
+    <li>Send the response back to the client</li>
+    <li>Protect routes using middleware (authentication / authorisation)</li>
+  </ol>
+
+  <p>Controllers do <strong>not</strong> contain any business logic or database queries — that is the service layer's job.</p>
+
+<pre><code>// back-end/controller/matchController.ts
+
+// GET /api/matches — anyone can see the match list
+matchRouter.get('/', asyncHandler(async (_req, res) => {
+  const matches = await listMatches();   // ← calls service
+  res.json(matches);                     // ← sends JSON response
+}));
+
+// PATCH /api/matches/:matchId/status — only admins and referees
+matchRouter.patch(
+  '/:matchId/status',
+  authenticateToken,                            // ← middleware: must be logged in
+  requireRoles('ADMIN', 'REFEREE'),             // ← middleware: must have right role
+  asyncHandler(async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const match = await updateMatchStatus(      // ← calls service
+      req.params.matchId,                       // ← URL param
+      req.body.status,                          // ← request body
+      user
+    );
+    res.json(match);
+  })
+);</code></pre>
+
+  <h3>Controllers in this project</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>File</th><th>URL prefix</th><th>Responsibility</th></tr>
+      <tr><td><code>authController.ts</code></td><td><code>/api/auth</code></td><td>Register, login, get current user</td></tr>
+      <tr><td><code>tournamentController.ts</code></td><td><code>/api/competition</code></td><td>Competition overview, rounds, simulation, reset</td></tr>
+      <tr><td><code>matchController.ts</code></td><td><code>/api/matches</code></td><td>Match CRUD, goals, top scorers</td></tr>
+      <tr><td><code>playerController.ts</code></td><td><code>/api/players</code></td><td>Player listing, status updates</td></tr>
+      <tr><td><code>userController.ts</code></td><td><code>/api/users</code></td><td>Admin user management</td></tr>
+    </table>
+  </div>
+
+  <!-- Service -->
+  <h2>Layer 2: Service (Business Logic)</h2>
+
+  <p>Files: <code>back-end/service/</code></p>
+
+  <p>The service layer contains the <strong>real business logic</strong> of the application — the rules that make this a "World Cup manager" rather than just a generic data API. This is the most important layer.</p>
+
+  <p>Examples of business logic in the service layer:</p>
+  <ul>
+    <li>A referee can only update <em>their own assigned match</em></li>
+    <li>A match can only move from <code>NOT_STARTED</code> → <code>IN_PROGRESS</code> → <code>FINISHED</code> (not backwards)</li>
+    <li>A round is <em>locked</em> until all matches in the previous round are <code>COMPLETED</code></li>
+    <li>When a round is finished, the winners are automatically placed into the next round's matches</li>
+    <li>Knockout matches cannot end in a draw</li>
+  </ul>
+
+<pre><code>// back-end/service/matchService.ts
+
+// Referees can only move a match forward through the status flow they control.
+function assertStatusTransition(matchStatus, nextStatus, actor) {
+  if (actor.role !== 'REFEREE') return; // Admins can do anything
+
+  if (nextStatus !== 'IN_PROGRESS' && nextStatus !== 'FINISHED') {
+    throw new ValidationError('Referees can only set a match to IN_PROGRESS or FINISHED.');
+  }
+
+  if (nextStatus === 'IN_PROGRESS'
+      && matchStatus !== 'PLANNED'
+      && matchStatus !== 'NOT_STARTED') {
+    throw new ValidationError('Referees can only set IN_PROGRESS from PLANNED or NOT_STARTED.');
+  }
+
+  if (nextStatus === 'FINISHED' && matchStatus !== 'IN_PROGRESS') {
+    throw new ValidationError('Referees can only set FINISHED from IN_PROGRESS.');
+  }
+}</code></pre>
+
+  <h3>Services in this project</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>File</th><th>Responsibility</th></tr>
+      <tr><td><code>authService.ts</code></td><td>Register users, login, hash/verify passwords, issue JWT tokens</td></tr>
+      <tr><td><code>tournamentService.ts</code></td><td>Competition overview, standings calculation, round simulation, reset</td></tr>
+      <tr><td><code>matchService.ts</code></td><td>Match updates, goal tracking, score recalculation, top scorers</td></tr>
+      <tr><td><code>playerService.ts</code></td><td>Player listing and availability status updates</td></tr>
+      <tr><td><code>userService.ts</code></td><td>Admin user management (list, delete, assign roles)</td></tr>
+      <tr><td><code>roundProgressionService.ts</code></td><td>Automatically advances the knockout bracket when a round finishes</td></tr>
+    </table>
+  </div>
+
+  <!-- Domain -->
+  <h2>Layer 3: Domain Model (Classes)</h2>
+
+  <p>Files: <code>back-end/model/</code></p>
+
+  <p>The domain model is a set of <strong>TypeScript classes</strong> that represent the core business entities. Each class's <code>constructor</code> validates its own data — if you try to create an invalid object, it throws a <code>ValidationError</code> immediately.</p>
+
+  <p>This is called <strong>"rich domain model"</strong> — the objects know and enforce their own rules.</p>
+
+<pre><code>// back-end/model/player.ts (simplified)
+export class Player {
+  public readonly id: string;
+  public readonly shirtNumber: number;
+  // ... other fields
+
+  constructor({ id, shirtNumber, teamId, firstName, ...}: PlayerProps) {
+    // Validation — constructor throws if rules are violated
+    if (!teamId.trim()) {
+      throw new ValidationError('Player must belong to a team.');
+    }
+    if (!Number.isInteger(shirtNumber) || shirtNumber &lt;= 0) {
+      throw new ValidationError('Shirt number must be a positive integer.');
+    }
+
+    // Assign the values (all fields are readonly — cannot be changed after creation)
+    this.id = id;
+    this.shirtNumber = shirtNumber;
+    // ...
+  }
+
+  // Factory method: converts a Prisma database row into a Player object
+  static from(prismaPlayer: PrismaPlayer): Player {
+    return new Player({ ...prismaPlayer });
+  }
+}</code></pre>
+
+  <h3>Domain models in this project</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Class</th><th>Key validation rules</th></tr>
+      <tr><td><code>Team</code></td><td>Name, country, coach must not be blank</td></tr>
+      <tr><td><code>Player</code></td><td>Must belong to a team; shirt number must be positive integer; status must be AVAILABLE or UNAVAILABLE</td></tr>
+      <tr><td><code>Match</code></td><td>Teams must be different; scores must be non-negative; status must be a valid value; date must be valid</td></tr>
+      <tr><td><code>Goal</code></td><td>Must reference a valid match, player, and team</td></tr>
+      <tr><td><code>User</code></td><td>Username required; password hash required; role must be valid (ADMIN/REFEREE/USER/GUEST)</td></tr>
+    </table>
+  </div>
+
+  <!-- Repository -->
+  <h2>Layer 4: Repository / Prisma</h2>
+
+  <p>Files: <code>back-end/repository/prisma/</code></p>
+
+  <p>The repository layer is the thin bridge between the service layer and the actual database. In this project, it is implemented directly using the Prisma client — there is no extra wrapper code needed because Prisma already provides a clean, type-safe API.</p>
+
+<pre><code>// back-end/repository/prisma/client.ts
+import { PrismaClient } from '@prisma/client';
+
+// A single shared Prisma client instance used across the whole app
+export const prisma = new PrismaClient();</code></pre>
+
+  <p>All database operations in the service layer look like:</p>
+
+<pre><code>// Find one record
+const match = await prisma.match.findUnique({ where: { id: matchId } });
+
+// Find many with filters
+const matches = await prisma.match.findMany({
+  where: { roundOrderNumber: 1 },
+  orderBy: { matchDate: 'asc' },
+});
+
+// Create a record
+await prisma.user.create({
+  data: { username, passwordHash, role: 'USER' },
+});
+
+// Update a record
+await prisma.match.update({
+  where: { id: matchId },
+  data: { status: 'IN_PROGRESS' },
+});
+
+// Run multiple operations atomically (all succeed or all fail)
+await prisma.$transaction(async (tx) => {
+  await tx.match.update({ ... });
+  await tx.goal.deleteMany({ ... });
+});</code></pre>
+
+  <!-- Middleware -->
+  <h2>Middleware: the glue between layers</h2>
+
+  <p>File: <code>back-end/util/middleware.ts</code></p>
+
+  <p>Middleware functions run <em>between</em> the request arriving and the route handler. They can inspect / modify the request, then either pass it forward (<code>next()</code>) or reject it with an error.</p>
+
+  <h3>authenticateToken</h3>
+  <p>Reads the <code>Authorization: Bearer &lt;token&gt;</code> header, verifies the JWT, and attaches the decoded user to the request object.</p>
+
+<pre><code>export function authenticateToken(req, _res, next) {
+  const header = req.headers.authorization;
+
+  if (!header || !header.startsWith('Bearer ')) {
+    return next(new UnauthorizedError('You must send a Bearer token.'));
+  }
+
+  const token = header.slice('Bearer '.length);
+  const payload = verifyAccessToken(token); // throws if invalid/expired
+
+  req.user = {
+    id: payload.sub,
+    username: payload.username,
+    role: payload.role,
+    teamId: payload.teamId,
+  };
+
+  next(); // passes control to the next middleware or route handler
+}</code></pre>
+
+  <h3>requireRoles</h3>
+  <p>A <em>middleware factory</em> — you call it with the allowed roles, and it returns a middleware function that checks if the logged-in user has one of those roles.</p>
+
+<pre><code>export function requireRoles(...roles: string[]) {
+  return (req, _res, next) => {
+    if (!req.user) return next(new UnauthorizedError());
+    if (!roles.includes(req.user.role)) return next(new ForbiddenError());
+    next();
+  };
+}
+
+// Usage on a route:
+matchRouter.patch('/:id/status',
+  authenticateToken,              // step 1: must be logged in
+  requireRoles('ADMIN', 'REFEREE'), // step 2: must have right role
+  asyncHandler(handler)           // step 3: the actual logic
+);</code></pre>
+
+  <h3>asyncHandler</h3>
+  <p>Express doesn't automatically catch async errors. <code>asyncHandler</code> wraps an async function and forwards any thrown error to the error handler middleware.</p>
+
+<pre><code>export function asyncHandler(handler) {
+  return (req, res, next) => {
+    // If the async handler throws, .catch(next) sends the error to errorHandler
+    Promise.resolve(handler(req, res, next)).catch(next);
+  };
+}</code></pre>
+
+  <h3>errorHandler</h3>
+  <p>A global error handler. Every error thrown anywhere in the request pipeline ends up here. It returns a consistent JSON error response.</p>
+
+<pre><code>export function errorHandler(error, _req, res, _next) {
+  if (error instanceof ApplicationError) {
+    // Our custom errors have a specific status code (400, 401, 403, 404...)
+    res.status(error.statusCode).json({ error: error.message });
+    return;
+  }
+  // Unexpected errors → 500
+  res.status(500).json({ error: 'An unexpected error occurred.' });
+}</code></pre>
+
+  <!-- Errors -->
+  <h2>Custom Error Classes</h2>
+
+  <p>File: <code>back-end/util/errors.ts</code></p>
+
+  <p>Instead of returning arbitrary status codes everywhere, the project defines a hierarchy of error classes. Each class maps to an HTTP status code.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Class</th><th>HTTP Status</th><th>When used</th></tr>
+      <tr><td><code>ValidationError</code></td><td>400 Bad Request</td><td>Invalid input data</td></tr>
+      <tr><td><code>UnauthorizedError</code></td><td>401 Unauthorized</td><td>Not logged in / invalid token</td></tr>
+      <tr><td><code>ForbiddenError</code></td><td>403 Forbidden</td><td>Logged in but not allowed</td></tr>
+      <tr><td><code>NotFoundError</code></td><td>404 Not Found</td><td>Record doesn't exist in DB</td></tr>
+    </table>
+  </div>
+
+  <!-- Request flow -->
+  <h2>Complete request flow example</h2>
+
+  <p>Let's trace what happens when a referee sends <code>PATCH /api/matches/abc123/status</code> with <code>{ "status": "IN_PROGRESS" }</code>:</p>
+
+  <div class="card">
+    <ol style="line-height:2.5">
+      <li><strong>Express router</strong> matches the URL and method → calls the <code>matchRouter.patch</code> handler chain</li>
+      <li><strong>authenticateToken middleware</strong> reads the Bearer token, verifies it, attaches <code>req.user = { id, username, role: 'REFEREE', ... }</code></li>
+      <li><strong>requireRoles('ADMIN','REFEREE')</strong> checks <code>req.user.role</code> — passes because 'REFEREE' is in the list</li>
+      <li><strong>asyncHandler</strong> wraps the actual handler to catch async errors</li>
+      <li><strong>Controller handler</strong> reads <code>req.params.matchId</code> and <code>req.body.status</code>, calls <code>updateMatchStatus(matchId, 'IN_PROGRESS', user)</code></li>
+      <li><strong>Service function</strong> <code>updateMatchStatus</code>: loads the match, checks the round is unlocked, validates the status transition for a referee, updates the DB</li>
+      <li><strong>Prisma</strong> runs the SQL UPDATE against PostgreSQL</li>
+      <li>The updated match object is returned up through service → controller → <code>res.json(match)</code></li>
+    </ol>
+  </div>
+
+</div>
+</body>
+</html>

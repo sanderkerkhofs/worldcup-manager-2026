@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03 — Database & Prisma | Worldcup Manager Study Docs</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="brand">⚽ Worldcup Manager — Study Docs</span>
+  <a href="index.html">Home</a>
+  <a href="01-tech-stack.html">Tech Stack</a>
+  <a href="02-backend-architecture.html">Backend</a>
+  <a href="03-database-prisma.html" class="active">Database</a>
+  <a href="04-authentication.html">Auth</a>
+  <a href="05-frontend-nextjs.html">Frontend</a>
+  <a href="06-api-endpoints.html">API</a>
+  <a href="07-docker-deployment.html">Docker</a>
+  <a href="08-qa-presentation.html">Q&amp;A</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> › <span>Database &amp; Prisma</span></div>
+
+  <div class="hero">
+    <p class="eyebrow">Chapter 03</p>
+    <h1>Database &amp; Prisma</h1>
+    <p class="subtitle">How data is stored, structured, and accessed.</p>
+  </div>
+
+  <h2>What is a relational database?</h2>
+
+  <p>A <strong>relational database</strong> stores data in <em>tables</em> — like spreadsheets with columns (fields) and rows (records). Tables can <em>reference</em> each other through <strong>foreign keys</strong>.</p>
+
+  <p>Example: a <code>Goal</code> row has a <code>matchId</code> column pointing to a row in the <code>Match</code> table. This is called a <strong>relation</strong>. You can query "give me all goals for match X" by joining the tables on that key.</p>
+
+  <h2>The complete data model</h2>
+
+  <p>Here are all the tables (called <em>models</em> in Prisma) and how they relate:</p>
+
+  <div class="card" style="overflow-x:auto;">
+<pre style="margin:0; border:none; padding:0; background:none; font-size:.82rem;">
+┌─────────────┐         ┌──────────────────────────┐         ┌──────────────┐
+│    User     │         │         Match            │         │     Team     │
+│─────────────│    ┌───▶│──────────────────────────│◀────┐   │──────────────│
+│ id (PK)     │    │    │ id (PK)                  │     │   │ id (PK)      │
+│ username    │    │    │ roundOrderNumber          │     │   │ name         │
+│ passwordHash│    │    │ roundName                │     │   │ country      │
+│ role        │    │    │ homeTeamId (FK → Team)   │─────┘   │ countryShort │
+│ teamId (FK) │────┘    │ awayTeamId (FK → Team)   │─────┐   │ countryFlag  │
+└─────────────┘  referee│ refereeId  (FK → User)   │     │   │ coach        │
+                        │ homeScore                │     │   └──────────────┘
+                        │ awayScore                │     │          │
+                        │ matchDate                │     └──────────┘
+                        │ status                   │
+                        └──────────────────────────┘
+                                   │
+                                   │1:many
+                                   ▼
+                        ┌──────────────────┐
+                        │       Goal       │
+                        │──────────────────│
+                        │ id (PK)          │
+                        │ matchId (FK)     │
+                        │ playerId (FK)    │───▶  Player
+                        │ teamId  (FK)     │───▶  Team
+                        └──────────────────┘
+
+┌───────────────────────────────────┐
+│            Player                 │
+│───────────────────────────────────│
+│ id (PK)                           │
+│ teamId (FK → Team)                │
+│ firstName / lastName              │
+│ shirtNumber (unique per team)     │
+│ position                          │
+│ status (AVAILABLE/UNAVAILABLE)    │
+└───────────────────────────────────┘
+</pre>
+  </div>
+
+  <h2>The Prisma schema file</h2>
+
+  <p>File: <code>back-end/repository/prisma/schema.prisma</code></p>
+
+  <p>This one file defines your <em>entire database structure</em>. Prisma reads it and:</p>
+  <ol>
+    <li>Generates the SQL to create the database tables</li>
+    <li>Generates TypeScript types so you have full type-safety when querying</li>
+  </ol>
+
+  <h3>The User model</h3>
+<pre><code>model User {
+  id           String    @id @default(cuid())   // primary key, auto-generated ID
+  username     String    @unique                 // must be unique across all users
+  passwordHash String                            // bcrypt hash, never plain text!
+  role         UserRole  @default(GUEST)         // enum: ADMIN | REFEREE | USER | GUEST
+  teamId       String?                           // optional FK (? = nullable)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt              // auto-updated on every save
+
+  // Relations (Prisma builds the join queries for you)
+  team            Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  assignedMatches Match[] @relation("AssignedReferee")
+}</code></pre>
+
+  <h3>Key Prisma concepts</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Syntax</th><th>Meaning</th></tr>
+      <tr><td><code>@id</code></td><td>Marks this field as the primary key</td></tr>
+      <tr><td><code>@default(cuid())</code></td><td>Auto-generates a unique string ID like <code>clh3x...8</code></td></tr>
+      <tr><td><code>@unique</code></td><td>Database enforces uniqueness (no duplicate usernames)</td></tr>
+      <tr><td><code>String?</code></td><td>The <code>?</code> means the field is optional (can be NULL)</td></tr>
+      <tr><td><code>@default(now())</code></td><td>Sets createdAt to the current timestamp automatically</td></tr>
+      <tr><td><code>@updatedAt</code></td><td>Automatically updates the timestamp whenever the row changes</td></tr>
+      <tr><td><code>@relation(...)</code></td><td>Defines a foreign key relationship between two tables</td></tr>
+      <tr><td><code>@@index([field])</code></td><td>Creates a database index for faster queries on that field</td></tr>
+      <tr><td><code>@@unique([a, b])</code></td><td>Combination of two fields must be unique (e.g., team+shirtNumber)</td></tr>
+    </table>
+  </div>
+
+  <h3>The Match model</h3>
+<pre><code>model Match {
+  id               String      @id @default(cuid())
+  roundOrderNumber Int                             // 1 = Round of 16, 2 = QF, etc.
+  roundName        String                          // "8th Final", "Quarterfinal", ...
+  homeTeamId       String?                         // null = TBD (winner fills it in)
+  awayTeamId       String?
+  refereeId        String?                         // assigned referee user
+  homeScore        Int?                            // null until match is played
+  awayScore        Int?
+  matchDate        DateTime
+  status           MatchStatus @default(PLANNED)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  homeTeam  Team? @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeam  Team? @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  referee   User? @relation("AssignedReferee", fields: [refereeId], references: [id], onDelete: SetNull)
+  goals     Goal[]
+
+  @@index([roundOrderNumber])
+  @@index([refereeId])
+}</code></pre>
+
+  <p><strong>Why are homeTeamId and awayTeamId nullable?</strong> Because in a knockout tournament, you don't know the next round's teams until the current round finishes. A match is created with <code>null</code> teams and filled in once the winners are determined.</p>
+
+  <h3>Database Enums</h3>
+
+  <p>Enums are a special type that only allows specific values. They are enforced at the database level.</p>
+
+<pre><code>enum UserRole {
+  ADMIN    // can do anything in the system
+  COACH    // coach of a national team
+  REFEREE  // assigned to specific matches
+  USER     // regular fan/viewer
+  GUEST    // unauthenticated public viewer
+}
+
+enum MatchStatus {
+  PLANNED      // match is scheduled but not ready to start
+  NOT_STARTED  // teams are confirmed, waiting for kickoff
+  IN_PROGRESS  // match is currently being played
+  FINISHED     // final score is entered, winner determined
+  COMPLETED    // round advancement processed, bracket updated
+}
+
+enum PlayerStatus {
+  AVAILABLE    // player can be selected as goal scorer
+  UNAVAILABLE  // player is injured, suspended, etc.
+}</code></pre>
+
+  <h2>Working with Prisma</h2>
+
+  <h3>CRUD operations</h3>
+
+<pre><code>// CREATE — insert a new row
+const user = await prisma.user.create({
+  data: {
+    username: 'john_doe',
+    passwordHash: '$2b$10$...',
+    role: 'USER',
+  }
+});
+// user.id, user.createdAt etc. are filled in automatically
+
+// READ — find by primary key
+const match = await prisma.match.findUnique({
+  where: { id: 'clh3x8...' }
+});
+
+// READ — find many with filters
+const finishedMatches = await prisma.match.findMany({
+  where: { status: 'FINISHED' },
+  orderBy: { matchDate: 'desc' },
+  take: 10,  // limit to 10 results
+});
+
+// UPDATE — change specific fields
+const updated = await prisma.match.update({
+  where: { id: matchId },
+  data: { status: 'IN_PROGRESS', homeScore: 0, awayScore: 0 },
+});
+
+// DELETE
+await prisma.user.delete({ where: { id: userId } });
+
+// UPDATE MANY
+await prisma.match.updateMany({
+  where: { roundOrderNumber: 1, status: 'FINISHED' },
+  data: { status: 'COMPLETED' },
+});</code></pre>
+
+  <h3>Relations &amp; includes (JOINs)</h3>
+
+<pre><code>// Include related data (like a SQL JOIN)
+const match = await prisma.match.findUnique({
+  where: { id: matchId },
+  include: {
+    goals: {
+      include: {
+        player: { select: { id: true, firstName: true, lastName: true } },
+        team:   { select: { id: true, name: true, countryFlag: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+    },
+  },
+});
+// match.goals is now an array of goals with player and team data embedded</code></pre>
+
+  <h3>Transactions</h3>
+
+  <p>A <strong>transaction</strong> groups multiple operations so they either <em>all succeed</em> or <em>all fail together</em>. This prevents the database from ending up in a half-updated, inconsistent state.</p>
+
+<pre><code>// When advancing the bracket: update all next-round matches together
+await prisma.$transaction(async (tx) => {
+  for (let i = 0; i &lt; nextRoundMatches.length; i++) {
+    // Delete any old goals in that match slot
+    await tx.goal.deleteMany({ where: { matchId: nextRoundMatches[i].id } });
+
+    // Assign the winners from the previous round
+    await tx.match.update({
+      where: { id: nextRoundMatches[i].id },
+      data: { homeTeamId: winners[i*2], awayTeamId: winners[i*2+1] },
+    });
+  }
+  // If ANY of the above throws, ALL changes are rolled back
+});</code></pre>
+
+  <h2>Database seeding</h2>
+
+  <p>File: <code>back-end/util/seed.ts</code></p>
+
+  <p>Seeding means <em>populating the database with initial data</em> for development/testing. The seed script creates:</p>
+  <ul>
+    <li>16 national teams with their squads of players</li>
+    <li>The full knockout bracket (Round of 16 → QF → SF → Final)</li>
+    <li>User accounts (admin, referees, regular users)</li>
+  </ul>
+
+  <p>Run it with: <code>npm run db:seed</code> (this also resets the database first!)</p>
+
+  <h2>How rounds work in this tournament</h2>
+
+  <p>This is a <strong>knockout tournament</strong> with 4 rounds:</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Round order</th><th>Name</th><th>Matches</th><th>Teams</th></tr>
+      <tr><td>1</td><td>Round of 16 (8th Final)</td><td>8 matches</td><td>16 teams → 8 winners</td></tr>
+      <tr><td>2</td><td>Quarterfinal</td><td>4 matches</td><td>8 teams → 4 winners</td></tr>
+      <tr><td>3</td><td>Semifinal</td><td>2 matches</td><td>4 teams → 2 winners</td></tr>
+      <tr><td>4</td><td>Final</td><td>1 match</td><td>2 teams → 1 champion</td></tr>
+    </table>
+  </div>
+
+  <p>When all matches in round N are <code>COMPLETED</code>, the <code>roundProgressionService</code> automatically:</p>
+  <ol>
+    <li>Determines the winner of each match (higher score wins — draws are not allowed)</li>
+    <li>Assigns the winners as home/away teams for the next round's matches</li>
+    <li>Resets those next-round matches so they are ready to be played</li>
+  </ol>
+
+</div>
+</body>
+</html>

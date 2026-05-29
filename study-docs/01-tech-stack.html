@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 — Technology Stack | Worldcup Manager Study Docs</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="brand">⚽ Worldcup Manager — Study Docs</span>
+  <a href="index.html">Home</a>
+  <a href="01-tech-stack.html" class="active">Tech Stack</a>
+  <a href="02-backend-architecture.html">Backend</a>
+  <a href="03-database-prisma.html">Database</a>
+  <a href="04-authentication.html">Auth</a>
+  <a href="05-frontend-nextjs.html">Frontend</a>
+  <a href="06-api-endpoints.html">API</a>
+  <a href="07-docker-deployment.html">Docker</a>
+  <a href="08-qa-presentation.html">Q&amp;A</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> › <span>Tech Stack</span></div>
+
+  <div class="hero">
+    <p class="eyebrow">Chapter 01</p>
+    <h1>Technology Stack</h1>
+    <p class="subtitle">Every tool used in this project, explained in plain language.</p>
+  </div>
+
+  <!-- Big Picture -->
+  <h2>What is a "tech stack"?</h2>
+  <p>A <strong>tech stack</strong> is the collection of technologies (programming languages, frameworks, libraries, databases, tools) that together make an application work. Think of it like the ingredients of a recipe — each one plays a specific role.</p>
+  <p>This project is a <strong>full-stack web application</strong>: it has a <strong>back-end</strong> (server + database) and a <strong>front-end</strong> (the website the user sees).</p>
+
+  <h2>Big picture overview</h2>
+
+  <div class="flow">
+    <div class="flow-step">🖥️ Browser (User)</div>
+    <div class="flow-arrow">⟷ HTTP</div>
+    <div class="flow-step">⚛️ Next.js Front-end<br><small>port 8080</small></div>
+    <div class="flow-arrow">⟷ REST API</div>
+    <div class="flow-step">🟢 Express Back-end<br><small>port 3001</small></div>
+    <div class="flow-arrow">⟷ Prisma ORM</div>
+    <div class="flow-step">🐘 PostgreSQL<br><small>port 5432</small></div>
+  </div>
+
+  <p>All three pieces run together via <strong>Docker</strong>. You start everything with one command: <code>docker compose up</code>.</p>
+
+  <!-- TypeScript -->
+  <h2>Language: TypeScript</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>What it is</h3>
+      <p>A <strong>superset of JavaScript</strong> that adds <em>types</em>. Every valid JavaScript file is also valid TypeScript.</p>
+    </div>
+    <div class="card">
+      <h3>Why it matters</h3>
+      <p>Catches bugs <em>before</em> you run the code. Your editor shows errors instantly. Autocomplete becomes far more powerful.</p>
+    </div>
+  </div>
+
+  <p>JavaScript is very flexible — you can pass anything anywhere. TypeScript adds <strong>type annotations</strong> so the compiler knows what shape every piece of data must have:</p>
+
+<pre><code>// Plain JavaScript — no type safety
+function greet(name) {
+  return "Hello " + name;
+}
+
+// TypeScript — name MUST be a string
+function greet(name: string): string {
+  return "Hello " + name;
+}
+
+// TypeScript catches this mistake at compile time, not at runtime:
+greet(42); // ❌ Error: Argument of type 'number' is not assignable to 'string'</code></pre>
+
+  <div class="card info">
+    <p>TypeScript is <strong>compiled</strong> to plain JavaScript before running. The tools <code>ts-node</code> (for development) and <code>tsc</code> (for production builds) do this compilation automatically.</p>
+  </div>
+
+  <!-- Backend -->
+  <h2>Back-end Technologies</h2>
+
+  <h3>Node.js — the runtime</h3>
+  <p>Node.js lets you run JavaScript/TypeScript <strong>outside the browser</strong>, on a server. It is single-threaded but <em>non-blocking</em> (async/await), meaning one Node.js process can serve thousands of requests without freezing.</p>
+
+  <h3>Express.js — the web framework</h3>
+  <p>Express is a minimal, unopinionated web <strong>framework</strong> for Node.js. It provides:</p>
+  <ul>
+    <li><strong>Routing</strong> — map a URL + HTTP method to a function</li>
+    <li><strong>Middleware</strong> — intercept requests to add logic (e.g., auth check)</li>
+    <li><strong>Response helpers</strong> — easily send JSON, set status codes</li>
+  </ul>
+
+<pre><code>// back-end/app.ts — simplified
+const app = express();
+
+app.use(helmet());          // security headers
+app.use(cors({ ... }));     // allow cross-origin requests
+app.use(bodyParser.json()); // parse JSON request bodies
+
+app.get('/status', (req, res) => {
+  res.json({ message: 'Back-end is running...' });
+});
+
+app.use('/api/auth',        authRouter);       // login/register routes
+app.use('/api/competition', competitionRouter); // tournament routes
+app.use('/api/matches',     matchRouter);       // match routes
+app.use('/api/players',     playerRouter);      // player routes</code></pre>
+
+  <h3>Back-end library reference</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Library</th><th>Role</th></tr>
+      <tr><td><code>express</code></td><td>Web server framework — handles HTTP requests and responses</td></tr>
+      <tr><td><code>cors</code></td><td>Allows the front-end (on a different port) to call the API</td></tr>
+      <tr><td><code>helmet</code></td><td>Automatically adds security HTTP headers to every response</td></tr>
+      <tr><td><code>body-parser</code></td><td>Parses the JSON body of incoming POST/PUT/PATCH requests</td></tr>
+      <tr><td><code>jsonwebtoken</code></td><td>Creates and verifies JWT tokens (stateless login sessions)</td></tr>
+      <tr><td><code>bcrypt</code></td><td>Hashes passwords — passwords are never stored in plain text</td></tr>
+      <tr><td><code>prisma</code> / <code>@prisma/client</code></td><td>TypeScript ORM that talks to PostgreSQL</td></tr>
+      <tr><td><code>swagger-ui-express</code></td><td>Interactive API docs at <code>/api-docs</code></td></tr>
+      <tr><td><code>dotenv</code></td><td>Loads secret config from a <code>.env</code> file</td></tr>
+      <tr><td><code>nodemon</code></td><td>Restarts the server automatically when you save a file</td></tr>
+      <tr><td><code>date-fns</code></td><td>Date arithmetic and formatting</td></tr>
+    </table>
+  </div>
+
+  <!-- Database -->
+  <h2>Database</h2>
+
+  <h3>PostgreSQL — the database</h3>
+  <p>PostgreSQL is a <strong>relational database</strong>. Data lives in <em>tables</em> (like spreadsheets) and tables are linked together with <em>foreign keys</em>.</p>
+  <p>Example: a <code>Goal</code> row has a <code>matchId</code> column that references the <code>Match</code> table — so every goal "belongs to" a match.</p>
+
+  <h3>Prisma — the ORM</h3>
+  <p>An <strong>ORM</strong> (Object-Relational Mapper) lets you work with database records as regular TypeScript objects instead of writing raw SQL strings.</p>
+
+<pre><code>// Without Prisma — raw SQL (error-prone, no type checking)
+const rows = await db.query("SELECT * FROM users WHERE id = $1", [userId]);
+
+// With Prisma — type-safe TypeScript
+const user = await prisma.user.findUnique({ where: { id: userId } });
+//    ^ TypeScript knows the exact shape of 'user'</code></pre>
+
+  <p>Prisma reads <code>repository/prisma/schema.prisma</code> — a single file that defines all tables (called <em>models</em> in Prisma). From that file it generates TypeScript types automatically.</p>
+
+  <!-- Frontend -->
+  <h2>Front-end Technologies</h2>
+
+  <h3>React — the UI library</h3>
+  <p>React is a JavaScript library for building user interfaces using <strong>components</strong>. A component is a reusable piece of UI that has its own logic and can re-render automatically when data changes.</p>
+
+<pre><code>// A simple React component (TSX = TypeScript + JSX)
+function ScoreCard({ homeTeam, awayTeam, homeScore, awayScore }: Props) {
+  return (
+    &lt;div className="card"&gt;
+      &lt;span&gt;{homeTeam}&lt;/span&gt;
+      &lt;strong&gt;{homeScore} — {awayScore}&lt;/strong&gt;
+      &lt;span&gt;{awayTeam}&lt;/span&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <p>The JSX syntax (<code>&lt;div&gt;...&lt;/div&gt;</code> inside JS) looks like HTML but it is actually JavaScript. The React compiler transforms it into function calls.</p>
+
+  <h3>Next.js — the React framework</h3>
+  <p>Next.js builds on top of React and adds essential features for a real application:</p>
+  <ul>
+    <li><strong>File-based routing</strong> — <code>pages/login.tsx</code> automatically becomes the <code>/login</code> URL</li>
+    <li><strong>Server-side rendering (SSR)</strong> — pages can be rendered on the server for speed and SEO</li>
+    <li><strong>Image optimization</strong>, <strong>fast refresh</strong>, and much more</li>
+  </ul>
+
+  <h3>SWR — data fetching</h3>
+  <p>SWR is a React hook that fetches data from an API. It handles loading states, errors, and background re-fetching automatically.</p>
+
+<pre><code>// useSWR(cache-key, fetch-function)
+const { data: overview, isLoading, error } = useSWR(
+  ['overview', token ?? 'public'],
+  () => getOverview(token)
+);
+
+if (isLoading) return &lt;p&gt;Loading...&lt;/p&gt;;
+if (error)     return &lt;p&gt;Error!&lt;/p&gt;;
+
+// 'overview' now has the data from the API
+return &lt;p&gt;{overview.competition.name}&lt;/p&gt;;</code></pre>
+
+  <h3>Front-end library reference</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Library</th><th>Role</th></tr>
+      <tr><td><code>next</code></td><td>React framework: routing, SSR, build system</td></tr>
+      <tr><td><code>react</code> / <code>react-dom</code></td><td>UI component engine</td></tr>
+      <tr><td><code>swr</code></td><td>Data fetching with automatic caching &amp; revalidation</td></tr>
+      <tr><td><code>i18next</code> / <code>react-i18next</code></td><td>Internationalisation — NL / EN / FR translations</td></tr>
+      <tr><td><code>bootstrap</code></td><td>CSS grid and utility classes</td></tr>
+      <tr><td><code>tailwindcss</code></td><td>Utility-first CSS framework</td></tr>
+      <tr><td><code>dayjs</code></td><td>Lightweight date formatting library</td></tr>
+      <tr><td><code>@fortawesome/react-fontawesome</code></td><td>Icon components</td></tr>
+      <tr><td><code>react-datepicker</code></td><td>Calendar date picker component</td></tr>
+    </table>
+  </div>
+
+  <!-- DevOps -->
+  <h2>DevOps / Deployment</h2>
+
+  <h3>Docker</h3>
+  <p>Docker <strong>packages</strong> your application (code + all dependencies + runtime) into a <strong>container</strong> — a lightweight, isolated environment that runs the same on every machine.</p>
+  <p>Without Docker: every developer must manually install Node.js, PostgreSQL, configure environment variables...</p>
+  <p>With Docker: one command — <code>docker compose up</code> — starts everything.</p>
+
+  <h3>Docker Compose</h3>
+  <p>Docker Compose orchestrates <em>multiple containers</em> as a group. Your <code>docker-compose-fullstack.yml</code> defines three services:</p>
+
+<pre><code>services:
+  database:
+    image: postgres:16-alpine       # Official PostgreSQL image
+    environment:
+      POSTGRES_DB: tournament_manager
+
+  backend:
+    build: ./back-end               # Build from the back-end Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy  # Only starts after DB is ready
+
+  frontend:
+    build: ./front-end              # Build from the front-end Dockerfile</code></pre>
+
+  <!-- Testing -->
+  <h2>Testing</h2>
+
+  <h3>Jest — the test framework</h3>
+  <p>Jest is a JavaScript testing framework. You write test cases that <em>describe expected behavior</em>, run <code>npm test</code>, and Jest tells you which tests pass or fail.</p>
+
+<pre><code>// back-end/test/domain.test.ts
+describe('Team domain validation', () => {
+  it('creates a valid team', () => {
+    const team = new Team({ name: 'Argentina', ... });
+    expect(team.name).toBe('Argentina'); // ✅ passes if name equals 'Argentina'
+  });
+
+  it('rejects an empty team name', () => {
+    expect(
+      () => new Team({ name: '   ', ... })  // whitespace-only name
+    ).toThrow('Team name is required.');     // ✅ passes if it throws this error
+  });
+});</code></pre>
+
+  <p>The tests in this project verify the <strong>domain model validation rules</strong> — making sure a Team without a name, a Player with shirt number 0, etc., are all rejected with clear error messages.</p>
+
+  <!-- Summary -->
+  <h2>Complete technology summary</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Technology</th><th>Category</th><th>Where used</th></tr>
+      <tr><td>TypeScript</td><td><span class="badge badge-blue">Language</span></td><td>Back-end + Front-end</td></tr>
+      <tr><td>Node.js</td><td><span class="badge badge-green">Runtime</span></td><td>Back-end</td></tr>
+      <tr><td>Express.js</td><td><span class="badge badge-green">Framework</span></td><td>Back-end</td></tr>
+      <tr><td>Prisma</td><td><span class="badge badge-purple">ORM</span></td><td>Back-end</td></tr>
+      <tr><td>PostgreSQL</td><td><span class="badge badge-yellow">Database</span></td><td>Back-end</td></tr>
+      <tr><td>Next.js</td><td><span class="badge badge-blue">Framework</span></td><td>Front-end</td></tr>
+      <tr><td>React</td><td><span class="badge badge-blue">UI Library</span></td><td>Front-end</td></tr>
+      <tr><td>SWR</td><td><span class="badge badge-blue">Data Fetching</span></td><td>Front-end</td></tr>
+      <tr><td>JWT</td><td><span class="badge badge-red">Auth</span></td><td>Both</td></tr>
+      <tr><td>bcrypt</td><td><span class="badge badge-red">Security</span></td><td>Back-end</td></tr>
+      <tr><td>Docker / Compose</td><td><span class="badge badge-yellow">DevOps</span></td><td>Infra</td></tr>
+      <tr><td>Jest</td><td><span class="badge badge-green">Testing</span></td><td>Back-end</td></tr>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04 — Authentication & Security | Worldcup Manager Study Docs</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="brand">⚽ Worldcup Manager — Study Docs</span>
+  <a href="index.html">Home</a>
+  <a href="01-tech-stack.html">Tech Stack</a>
+  <a href="02-backend-architecture.html">Backend</a>
+  <a href="03-database-prisma.html">Database</a>
+  <a href="04-authentication.html" class="active">Auth</a>
+  <a href="05-frontend-nextjs.html">Frontend</a>
+  <a href="06-api-endpoints.html">API</a>
+  <a href="07-docker-deployment.html">Docker</a>
+  <a href="08-qa-presentation.html">Q&amp;A</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> › <span>Authentication &amp; Security</span></div>
+
+  <div class="hero">
+    <p class="eyebrow">Chapter 04</p>
+    <h1>Authentication &amp; Security</h1>
+    <p class="subtitle">How users log in, how sessions work, and how the app stays secure.</p>
+  </div>
+
+  <h2>Authentication vs Authorisation</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>🔑 Authentication</h3>
+      <p><em>"Who are you?"</em></p>
+      <p>Verifying that the user is who they claim to be. In this project: checking a username + password and issuing a token.</p>
+    </div>
+    <div class="card">
+      <h3>🛡️ Authorisation</h3>
+      <p><em>"Are you allowed to do this?"</em></p>
+      <p>Checking if the authenticated user has the <strong>role</strong> required for the action they want to perform.</p>
+    </div>
+  </div>
+
+  <h2>Password security: bcrypt</h2>
+
+  <p>Passwords are <strong>never stored in plain text</strong>. Instead, they are <strong>hashed</strong> using bcrypt before being saved to the database.</p>
+
+  <h3>What is hashing?</h3>
+  <p>A hash function takes input (your password) and produces a fixed-length output (the hash). It is a <strong>one-way process</strong> — you cannot reverse a hash back to the original password.</p>
+
+<pre><code>// back-end/util/password.ts
+
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 12; // higher = slower but more secure
+
+// When user registers: hash the password before storing
+export async function hashPassword(plainText: string): Promise<string> {
+  return bcrypt.hash(plainText, SALT_ROUNDS);
+}
+// "password123" → "$2b$12$5K9BrwJl5YYR5..." (irreversible)
+
+// When user logs in: compare the entered password with the stored hash
+export async function comparePassword(plainText: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(plainText, hash); // returns true or false
+}</code></pre>
+
+  <div class="card warn">
+    <h4>Why not just use a regular hash like SHA256?</h4>
+    <p>SHA256 is very fast — an attacker with a list of common passwords can hash all of them in seconds and compare. bcrypt is <em>intentionally slow</em> (controlled by the "salt rounds"). This makes brute-force attacks impractical. The salt also means the same password always produces a <em>different</em> hash, defeating rainbow table attacks.</p>
+  </div>
+
+  <h2>JWT — JSON Web Tokens</h2>
+
+  <p>Once a user logs in, the server issues a <strong>JWT</strong>. The client stores this token and sends it with every subsequent request to prove their identity — <em>without</em> the server needing to look up a session in the database.</p>
+
+  <h3>What does a JWT look like?</h3>
+  <p>A JWT is three base64-encoded parts separated by dots:</p>
+  <pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9   ← Header (algorithm)
+.eyJzdWIiOiJ1c2VyLTEyMyIsInVzZXJuYW1lIjoiam9obiIsInJvbGUiOiJVU0VSIn0
+                                          ← Payload (your data)
+.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                                          ← Signature (proves it's untampered)</code></pre>
+
+  <p>The <strong>payload</strong> (middle part) can be decoded by anyone — it is just base64, not encrypted. The <strong>signature</strong> is the security: it proves the token was created by the server using a secret key and has not been modified.</p>
+
+  <h3>JWT in this project</h3>
+<pre><code>// back-end/util/jwt.ts
+
+// What gets stored inside the token
+export type JwtPayload = {
+  sub: string;        // the user's ID ("subject")
+  username: string;
+  role: string;       // 'ADMIN' | 'REFEREE' | 'USER' | 'GUEST'
+  teamId: string | null;
+};
+
+// Called when user logs in successfully → creates a new token
+export function signAccessToken(payload: JwtPayload): string {
+  const secret = process.env.JWT_SECRET; // secret key from .env
+  return jwt.sign(payload, secret, { expiresIn: '7d' }); // valid for 7 days
+}
+
+// Called on every protected request → verifies the token is valid
+export function verifyAccessToken(token: string): JwtPayload {
+  try {
+    return jwt.verify(token, secret) as JwtPayload;
+  } catch {
+    throw new UnauthorizedError('Your session token is invalid or expired.');
+  }
+}</code></pre>
+
+  <h3>The complete login flow</h3>
+
+  <div class="flow" style="flex-direction:column;align-items:flex-start;gap:.75rem">
+    <div class="flow-step">1. User fills in username + password on the login page</div>
+    <div class="flow-arrow" style="padding-left:.5rem">⬇</div>
+    <div class="flow-step">2. Front-end sends POST /api/auth/login with { username, password }</div>
+    <div class="flow-arrow" style="padding-left:.5rem">⬇</div>
+    <div class="flow-step">3. Back-end finds the user in DB, runs bcrypt.compare(password, hash)</div>
+    <div class="flow-arrow" style="padding-left:.5rem">⬇</div>
+    <div class="flow-step">4. If valid: jwt.sign(payload, secret) creates a token</div>
+    <div class="flow-arrow" style="padding-left:.5rem">⬇</div>
+    <div class="flow-step">5. Back-end returns { user, token } to the front-end</div>
+    <div class="flow-arrow" style="padding-left:.5rem">⬇</div>
+    <div class="flow-step">6. Front-end stores token in localStorage, updates React state</div>
+    <div class="flow-arrow" style="padding-left:.5rem">⬇</div>
+    <div class="flow-step">7. All future API requests include: Authorization: Bearer &lt;token&gt;</div>
+  </div>
+
+  <h3>The authentication flow (subsequent requests)</h3>
+<pre><code>// On every protected API request the front-end sends:
+fetch('/api/matches/abc/status', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': `Bearer ${token}`, // ← the stored JWT
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ status: 'IN_PROGRESS' }),
+});</code></pre>
+
+  <h2>User Roles and Permissions</h2>
+
+  <p>This project uses <strong>Role-Based Access Control (RBAC)</strong>. Every user has one role, and each role has specific permissions.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Role</th><th>Who is this?</th><th>Permissions</th></tr>
+      <tr>
+        <td><span class="badge badge-red">ADMIN</span></td>
+        <td>System administrator</td>
+        <td>Everything: manage users, assign referees, simulate rounds, reset tournament, update any match</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">REFEREE</span></td>
+        <td>Match official</td>
+        <td>Can only update <em>their assigned matches</em>: set status to IN_PROGRESS or FINISHED, add/edit goals</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">USER</span></td>
+        <td>Registered fan</td>
+        <td>Can view matches, standings, stats. Cannot modify anything.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-yellow">GUEST</span></td>
+        <td>Unregistered visitor</td>
+        <td>Very limited read access. Cannot view match details or stats without logging in.</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>How roles are enforced in the API</h3>
+<pre><code>// In the controller, routes are protected with requireRoles()
+matchRouter.patch('/:matchId/status',
+  authenticateToken,              // check: must have a valid JWT
+  requireRoles('ADMIN', 'REFEREE'), // check: role must be ADMIN or REFEREE
+  asyncHandler(async (req, res) => {
+    // ... only reaches here if both checks pass
+  })
+);
+
+// In the service, additional fine-grained checks exist
+function assertMatchAccess(actor: RequestUser, refereeId: string | null) {
+  if (actor.role === 'ADMIN') return; // admins bypass everything
+
+  if (actor.role === 'REFEREE' && actor.id === refereeId) return; // own match
+
+  throw new ForbiddenError('Only the assigned referee or admin can update this match.');
+}</code></pre>
+
+  <h2>Security headers: Helmet</h2>
+
+  <p>The <code>helmet</code> middleware automatically sets security-related HTTP response headers:</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Header set by Helmet</th><th>Protects against</th></tr>
+      <tr><td><code>X-Content-Type-Options: nosniff</code></td><td>MIME-type sniffing attacks</td></tr>
+      <tr><td><code>X-Frame-Options: DENY</code></td><td>Clickjacking (embedding in iframes)</td></tr>
+      <tr><td><code>Strict-Transport-Security</code></td><td>Forces HTTPS connections</td></tr>
+      <tr><td><code>Content-Security-Policy</code></td><td>Cross-site scripting (XSS)</td></tr>
+      <tr><td><code>X-XSS-Protection</code></td><td>Old browser XSS filters</td></tr>
+    </table>
+  </div>
+
+<pre><code>// back-end/app.ts
+app.use(helmet()); // one line adds all these headers</code></pre>
+
+  <h2>CORS — Cross-Origin Resource Sharing</h2>
+
+  <p>Browsers block requests to a different domain/port by default (the <em>same-origin policy</em>). Since the front-end runs on port 8080 and the back-end on port 3001, the back-end must explicitly allow this.</p>
+
+<pre><code>// back-end/app.ts
+app.use(cors({
+  origin: process.env.CORS_ORIGIN?.split(',') ?? '*',
+  // In .env: CORS_ORIGIN=http://localhost:8080
+  credentials: true, // allow cookies / auth headers
+}));</code></pre>
+
+  <div class="card warn">
+    <p>In development <code>CORS_ORIGIN</code> is set to <code>http://localhost:8080</code>. In production it should be your actual domain. Setting it to <code>*</code> (wildcard) means any website could call your API — avoid that in production.</p>
+  </div>
+
+  <h2>Environment variables &amp; secrets</h2>
+
+  <p>Sensitive values like the JWT secret and database password are <em>never</em> hardcoded in the source code. They come from <strong>environment variables</strong> loaded from a <code>.env</code> file (which is excluded from git).</p>
+
+<pre><code># back-end/.env (never commit this file!)
+APP_PORT=3000
+DATABASE_URL=postgresql://tournament:tournament@localhost:5432/tournament_manager
+JWT_SECRET=your-super-secret-key-change-this
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:8080</code></pre>
+
+  <p>The code reads them with:</p>
+<pre><code>import * as dotenv from 'dotenv';
+dotenv.config(); // loads .env file
+
+const secret = process.env.JWT_SECRET; // reads the value</code></pre>
+
+  <h2>Session management on the front-end</h2>
+
+  <p>File: <code>front-end/lib/session.ts</code> and <code>front-end/lib/useSession.tsx</code></p>
+
+  <p>The front-end stores the JWT in <code>localStorage</code> and manages it through a <strong>React Context</strong> called <code>SessionContext</code>.</p>
+
+<pre><code>// lib/useSession.tsx — the React session context
+export function SessionProvider({ children }) {
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
+
+  // On page load, restore from localStorage
+  useEffect(() => {
+    setToken(readStoredToken());
+    setUser(readStoredUser());
+  }, []);
+
+  const value = {
+    token,
+    user,
+    isAuthenticated: Boolean(token && user),
+    setSession: (token, user) => { storeSession(token, user); setToken(token); setUser(user); },
+    logout: () => { clearSession(); setToken(null); setUser(null); },
+  };
+
+  return &lt;SessionContext.Provider value={value}&gt;{children}&lt;/SessionContext.Provider&gt;;
+}
+
+// In any component:
+const { token, user, isAuthenticated, logout } = useSession();</code></pre>
+
+</div>
+</body>
+</html>

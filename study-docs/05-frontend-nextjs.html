@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 — Frontend & Next.js | Worldcup Manager Study Docs</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="brand">⚽ Worldcup Manager — Study Docs</span>
+  <a href="index.html">Home</a>
+  <a href="01-tech-stack.html">Tech Stack</a>
+  <a href="02-backend-architecture.html">Backend</a>
+  <a href="03-database-prisma.html">Database</a>
+  <a href="04-authentication.html">Auth</a>
+  <a href="05-frontend-nextjs.html" class="active">Frontend</a>
+  <a href="06-api-endpoints.html">API</a>
+  <a href="07-docker-deployment.html">Docker</a>
+  <a href="08-qa-presentation.html">Q&amp;A</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="breadcrumb"><a href="index.html">Home</a> › <span>Frontend &amp; Next.js</span></div>
+
+  <div class="hero">
+    <p class="eyebrow">Chapter 05</p>
+    <h1>Frontend &amp; Next.js</h1>
+    <p class="subtitle">How the user interface is built with React and Next.js.</p>
+  </div>
+
+  <h2>How the front-end is structured</h2>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Folder / File</th><th>Purpose</th></tr>
+      <tr><td><code>pages/</code></td><td>Each file = one page/route in the app</td></tr>
+      <tr><td><code>components/</code></td><td>Reusable UI building blocks</td></tr>
+      <tr><td><code>services/</code></td><td>Functions that call the back-end API</td></tr>
+      <tr><td><code>lib/</code></td><td>Shared utilities: session management, i18n, API client, helpers</td></tr>
+      <tr><td><code>styles/</code></td><td>Global CSS styles</td></tr>
+      <tr><td><code>types/</code></td><td>TypeScript type definitions for front-end data shapes</td></tr>
+      <tr><td><code>public/</code></td><td>Static files (images, icons) served directly</td></tr>
+    </table>
+  </div>
+
+  <h2>Pages (file-based routing)</h2>
+
+  <p>In Next.js, every <code>.tsx</code> file inside the <code>pages/</code> folder automatically becomes a URL route. No router configuration needed.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>File</th><th>URL</th><th>Who can see it</th></tr>
+      <tr><td><code>pages/index.tsx</code></td><td><code>/</code></td><td>Everyone (public)</td></tr>
+      <tr><td><code>pages/login.tsx</code></td><td><code>/login</code></td><td>Unauthenticated users</td></tr>
+      <tr><td><code>pages/register.tsx</code></td><td><code>/register</code></td><td>Unauthenticated users</td></tr>
+      <tr><td><code>pages/matches/</code></td><td><code>/matches/*</code></td><td>Logged-in users (USER+)</td></tr>
+      <tr><td><code>pages/rounds/</code></td><td><code>/rounds/*</code></td><td>Logged-in users</td></tr>
+      <tr><td><code>pages/tournaments/</code></td><td><code>/tournaments/*</code></td><td>Logged-in users</td></tr>
+      <tr><td><code>pages/stats.tsx</code></td><td><code>/stats</code></td><td>Logged-in users</td></tr>
+      <tr><td><code>pages/referee.tsx</code></td><td><code>/referee</code></td><td>REFEREE role only</td></tr>
+      <tr><td><code>pages/admin.tsx</code></td><td><code>/admin</code></td><td>ADMIN role only</td></tr>
+      <tr><td><code>pages/_app.tsx</code></td><td>(root wrapper)</td><td>Wraps every page with Layout + SessionProvider</td></tr>
+    </table>
+  </div>
+
+  <h3>The _app.tsx wrapper</h3>
+  <p>This special file wraps <em>every page</em> with shared providers and the Layout component:</p>
+
+<pre><code>// pages/_app.tsx
+export default function App({ Component, pageProps }) {
+  return (
+    &lt;SessionProvider&gt;       {/* makes login state available everywhere */}
+      &lt;I18nProvider&gt;         {/* makes translations available everywhere */}
+        &lt;Layout&gt;             {/* the navbar + page wrapper */}
+          &lt;Component {...pageProps} /&gt;   {/* the actual page */}
+        &lt;/Layout&gt;
+      &lt;/I18nProvider&gt;
+    &lt;/SessionProvider&gt;
+  );
+}</code></pre>
+
+  <h2>React fundamentals used in this project</h2>
+
+  <h3>Components</h3>
+  <p>A React component is a function that returns JSX (HTML-like syntax). Components can accept <strong>props</strong> (input data) and maintain <strong>state</strong> (internal data that can change).</p>
+
+<pre><code>// A simple component with props
+function TeamBadge({ flag, name }: { flag: string; name: string }) {
+  return (
+    &lt;span className="team-badge"&gt;
+      {flag} {name}
+    &lt;/span&gt;
+  );
+}
+
+// Using it in another component
+function MatchCard({ match }) {
+  return (
+    &lt;div&gt;
+      &lt;TeamBadge flag={match.homeTeam.flag} name={match.homeTeam.name} /&gt;
+      &lt;span&gt;{match.homeScore} — {match.awayScore}&lt;/span&gt;
+      &lt;TeamBadge flag={match.awayTeam.flag} name={match.awayTeam.name} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h3>useState — local state</h3>
+  <p><code>useState</code> lets a component remember a value between re-renders and update the UI when it changes.</p>
+
+<pre><code>// From admin.tsx
+const [message, setMessage] = useState&lt;string | null&gt;(null);
+const [resettingMatches, setResettingMatches] = useState(false);
+
+// When the reset button is clicked:
+async function handleReset() {
+  setResettingMatches(true);   // shows a loading indicator
+  try {
+    await resetMatches(token!);
+    setMessage('Tournament reset successfully!');
+    mutateOverview(); // re-fetches the overview data
+  } catch (err) {
+    setMessage(err.message);
+  } finally {
+    setResettingMatches(false); // hides loading indicator
+  }
+}</code></pre>
+
+  <h3>useEffect — side effects</h3>
+  <p><code>useEffect</code> runs code <em>after</em> the component renders. Typically used for: fetching data, reading localStorage, setting up timers.</p>
+
+<pre><code>// From useSession.tsx — load stored session on first render
+useEffect(() => {
+  setToken(readStoredToken()); // read from localStorage
+  setUser(readStoredUser());
+}, []); // empty [] = only run once when component mounts</code></pre>
+
+  <h3>useMemo — expensive calculations</h3>
+  <p><code>useMemo</code> caches a computed value and only recalculates when its dependencies change. Useful for sorting/filtering large lists.</p>
+
+<pre><code>// From index.tsx — sorted rounds, only recalculates when 'rounds' changes
+const orderedRounds = useMemo(
+  () => [...rounds].sort((a, b) => a.orderNumber - b.orderNumber),
+  [rounds]
+);</code></pre>
+
+  <h2>Data fetching with SWR</h2>
+
+  <p>SWR is used throughout the front-end to fetch data from the API:</p>
+
+<pre><code>const { data: overview, error, isLoading, mutate } = useSWR(
+  token ? ['overview', token] : null,  // ← cache key (null = don't fetch yet)
+  () => getOverview(token)              // ← the actual fetch function
+);
+
+// 3 states to handle:
+if (isLoading) return &lt;p&gt;Loading...&lt;/p&gt;;
+if (error)     return &lt;p&gt;Error: {error.message}&lt;/p&gt;;
+if (!overview) return null;
+
+// Use the data:
+return &lt;p&gt;{overview.competition.name}&lt;/p&gt;;
+
+// After a mutation (e.g., updating a match), re-fetch:
+mutate(); // triggers SWR to re-call getOverview and update the UI</code></pre>
+
+  <h3>Why SWR instead of useEffect + fetch?</h3>
+  <ul>
+    <li><strong>Deduplication</strong> — multiple components using the same key only cause one request</li>
+    <li><strong>Caching</strong> — shows stale data immediately while re-fetching fresh data</li>
+    <li><strong>Auto-retry</strong> — automatically retries on network errors</li>
+    <li><strong>Less boilerplate</strong> — no manual loading/error state management</li>
+  </ul>
+
+  <h2>The API service layer</h2>
+
+  <p>Files: <code>front-end/services/</code> and <code>front-end/lib/api.ts</code></p>
+
+  <p>Instead of calling <code>fetch()</code> directly in components, all API calls go through a clean service layer:</p>
+
+<pre><code>// lib/api.ts — a thin wrapper around fetch
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+
+export const api = {
+  get: async &lt;T&gt;(path: string, token?: string | null): Promise&lt;T&gt; => {
+    const res = await fetch(BASE_URL + path, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) {
+      const body = await res.json();
+      throw new Error(body.error ?? 'Request failed');
+    }
+    return res.json();
+  },
+
+  post: async &lt;T&gt;(path: string, body: unknown, token?: string): Promise&lt;T&gt; => {
+    const res = await fetch(BASE_URL + path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(body),
+    });
+    // ...
+  }
+};</code></pre>
+
+<pre><code>// services/competitionService.ts — uses the api wrapper
+export function getOverview(token?: string | null) {
+  return api.get&lt;CompetitionOverview&gt;('/api/competition', token);
+}
+
+export function updateMatchStatus(matchId: string, status: MatchStatus, token: string) {
+  return api.patch&lt;Match&gt;(`/api/matches/${matchId}/status`, { status }, token);
+}</code></pre>
+
+  <h2>Internationalisation (i18n)</h2>
+
+  <p>File: <code>front-end/lib/i18n.tsx</code></p>
+
+  <p>The app supports three languages: Dutch (NL), English (EN), and French (FR). The current language is stored in <code>localStorage</code> and applied via a React Context.</p>
+
+<pre><code>// All text in the app goes through the t() function
+const { t, locale, setLocale } = useI18n();
+
+// Instead of hardcoded text:
+&lt;h2&gt;Huidige ronde&lt;/h2&gt;
+
+// You write:
+&lt;h2&gt;{t('homeCurrentRound')}&lt;/h2&gt;
+//       ^ this key maps to "Huidige ronde" in NL,
+//         "Current Round" in EN, "Tour Actuel" in FR</code></pre>
+
+<pre><code>// The translations are defined in a big object:
+const translations = {
+  nl: {
+    homeCurrentRound: 'Huidige ronde',
+    navMatches: 'Wedstrijden',
+    // ...
+  },
+  en: {
+    homeCurrentRound: 'Current Round',
+    navMatches: 'Matches',
+    // ...
+  },
+  fr: {
+    homeCurrentRound: 'Tour Actuel',
+    navMatches: 'Matchs',
+    // ...
+  }
+};</code></pre>
+
+  <h2>Role-based page access</h2>
+
+  <p>Pages that require a specific role render a "restricted access" message if the user doesn't have permission. This is a pattern used throughout the app:</p>
+
+<pre><code>// pages/admin.tsx
+export default function AdminPage() {
+  const { token, user } = useSession();
+
+  // Guard: if not logged in or not ADMIN, show restricted message
+  if (!token || user?.role !== 'ADMIN') {
+    const isLoggedIn = Boolean(token && user);
+    return (
+      &lt;section&gt;
+        &lt;h2&gt;Restricted Access&lt;/h2&gt;
+        &lt;p&gt;{isLoggedIn ? 'You are not authorized.' : 'Please log in.'}&lt;/p&gt;
+        {!isLoggedIn &amp;&amp; &lt;Link href="/login"&gt;Go to Login&lt;/Link&gt;}
+      &lt;/section&gt;
+    );
+  }
+
+  // Only reaches here if user is ADMIN
+  return &lt;div&gt;...admin content...&lt;/div&gt;;
+}</code></pre>
+
+  <div class="card info">
+    <p>Note: This front-end check is a UX convenience, <em>not</em> a security measure. The real security is the <code>requireRoles</code> middleware on the back-end. Even if someone bypasses the front-end check, the API will still reject their requests.</p>
+  </div>
+
+  <h2>The Layout component</h2>
+
+  <p>File: <code>front-end/components/Layout.tsx</code></p>
+
+  <p>The Layout wraps every page with a navigation bar and a consistent page container. It reads the session to show different nav links depending on the user's role.</p>
+
+  <ul>
+    <li>Logged out: shows <em>Login</em> and <em>Register</em></li>
+    <li>USER: shows <em>Matches</em>, <em>Stats</em>, <em>Logout</em></li>
+    <li>REFEREE: shows the above + <em>Referee</em> area</li>
+    <li>ADMIN: shows the above + <em>Admin</em> area</li>
+  </ul>
+
+</div>
+</body>
+</html>
