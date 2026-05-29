@@ -1,5 +1,5 @@
-import { Router, Request } from 'express';
-import { asyncHandler, authenticateToken, RequestUser } from '../util/middleware';
+import { Router } from 'express';
+import { asyncHandler, authenticateToken, getAuthenticatedUser } from '../util/middleware';
 import { getCurrentUser, loginUser, registerGuestUser } from '../service/authService';
 
 export const authRouter = Router();
@@ -15,12 +15,7 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
 }));
 
 authRouter.get('/me', authenticateToken, asyncHandler(async (req, res) => {
-  const user = (req as Request & { user?: RequestUser }).user;
-
-  if (!user) {
-    throw new Error('Missing authenticated user.');
-  }
-
+  const user = getAuthenticatedUser(req);
   const currentUser = await getCurrentUser(user.id);
   res.json(currentUser);
 }));

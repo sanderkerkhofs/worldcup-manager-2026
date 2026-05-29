@@ -27,268 +27,707 @@
 
       .wrap {
         width: min(1100px, 94vw);
-        margin: 2rem auto;
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 1.5rem;
-      }
+        <!doctype html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Worldcup Manager 2026 - Detailed Project Guide</title>
+            <style>
+              :root {
+                --bg: #f1f4f8;
+                --panel: #ffffff;
+                --ink: #102033;
+                --muted: #54657a;
+                --accent: #0c7a63;
+                --accent-2: #1d4ed8;
+                --line: #d7dee8;
+                --soft: #f8fafc;
+              }
 
-      h1, h2, h3 {
-        margin: 0.2rem 0 0.6rem;
-        line-height: 1.2;
-      }
+              * {
+                box-sizing: border-box;
+              }
 
-      h1 {
-        font-size: 2rem;
-      }
+              html {
+                scroll-behavior: smooth;
+              }
 
-      h2 {
-        margin-top: 1.4rem;
-        font-size: 1.35rem;
-        border-bottom: 1px solid var(--line);
-        padding-bottom: 0.35rem;
-      }
+              body {
+                margin: 0;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                color: var(--ink);
+                background:
+                  radial-gradient(circle at top right, rgba(12, 122, 99, 0.11), transparent 28%),
+                  radial-gradient(circle at left bottom, rgba(29, 78, 216, 0.08), transparent 32%),
+                  linear-gradient(180deg, #eef3f7 0%, #f8fbfd 100%);
+              }
 
-      h3 {
-        margin-top: 1rem;
-        font-size: 1.05rem;
-      }
+              a {
+                color: var(--accent);
+                text-decoration: none;
+              }
 
-      p {
-        margin: 0.4rem 0 0.8rem;
-        color: var(--muted);
-      }
+              a:hover {
+                text-decoration: underline;
+              }
 
-      ul {
-        margin: 0.35rem 0 0.8rem 1.2rem;
-      }
+              .shell {
+                width: min(1180px, 94vw);
+                margin: 1.5rem auto 2rem;
+                display: grid;
+                gap: 1rem;
+              }
 
-      li {
-        margin: 0.2rem 0;
-      }
+              .hero,
+              .card {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 18px;
+                box-shadow: 0 12px 30px rgba(16, 32, 51, 0.06);
+              }
 
-      code {
-        background: #eef2f7;
-        border: 1px solid #dce6ef;
-        padding: 0.08rem 0.3rem;
-        border-radius: 6px;
-        font-family: "Consolas", "Courier New", monospace;
-        font-size: 0.92em;
-      }
+              .hero {
+                padding: 1.6rem;
+              }
 
-      pre {
-        margin: 0.6rem 0 1rem;
-        background: #101820;
-        color: #f4f7fa;
-        border-radius: 10px;
-        padding: 0.8rem;
-        overflow-x: auto;
-      }
+              .eyebrow {
+                display: inline-block;
+                margin: 0 0 0.75rem;
+                padding: 0.22rem 0.6rem;
+                border-radius: 999px;
+                background: #ecfdf5;
+                color: #126f58;
+                font-size: 0.82rem;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+              }
 
-      pre code {
-        background: transparent;
-        border: 0;
-        padding: 0;
-        color: inherit;
-      }
+              h1,
+              h2,
+              h3 {
+                line-height: 1.15;
+                margin: 0;
+              }
 
-      .badge {
-        display: inline-block;
-        border: 1px solid #b7f0da;
-        background: #e8fbf3;
-        color: #0f6b57;
-        border-radius: 999px;
-        padding: 0.15rem 0.55rem;
-        font-size: 0.82rem;
-        margin-bottom: 0.6rem;
-      }
+              h1 {
+                font-size: clamp(2rem, 4vw, 3rem);
+                margin-bottom: 0.65rem;
+              }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 0.5rem 0 1rem;
-      }
+              h2 {
+                font-size: 1.35rem;
+                margin-bottom: 0.85rem;
+                padding-bottom: 0.45rem;
+                border-bottom: 1px solid var(--line);
+              }
 
-      th,
-      td {
-        text-align: left;
-        border-bottom: 1px solid var(--line);
-        padding: 0.5rem 0.45rem;
-        vertical-align: top;
-      }
+              h3 {
+                font-size: 1.03rem;
+                margin-bottom: 0.4rem;
+              }
 
-      th {
-        color: #243b53;
-        background: #f8fafc;
-      }
+              p {
+                margin: 0.5rem 0 0.8rem;
+                color: var(--muted);
+                line-height: 1.6;
+              }
 
-      .small {
-        font-size: 0.92rem;
-        color: var(--muted);
-      }
+              .lead {
+                max-width: 78ch;
+                font-size: 1.03rem;
+              }
 
-      a {
-        color: var(--accent);
-      }
+              .heroGrid {
+                display: grid;
+                grid-template-columns: 1.45fr 0.85fr;
+                gap: 1rem;
+              }
 
-      @media (max-width: 700px) {
-        .wrap {
-          padding: 1rem;
-        }
+              .navGrid,
+              .twoCol,
+              .threeCol {
+                display: grid;
+                gap: 1rem;
+              }
 
-        h1 {
-          font-size: 1.6rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="wrap">
-      <span class="badge">Project Documentation</span>
-      <h1>Tournament Manager</h1>
-      <p>
-        Tournament Manager is a full-stack learning project for managing a football knockout tournament,
-        with role-based workflows for admin, coach, and referee users.
-      </p>
+              .navGrid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+              }
 
-      <h2>1. Technology Stack</h2>
-      <h3>Backend</h3>
-      <ul>
-        <li>Node.js + Express + TypeScript</li>
-        <li>Prisma ORM + PostgreSQL</li>
-        <li>JWT authentication and role-based authorization</li>
-        <li>Swagger/OpenAPI documentation</li>
-      </ul>
+              .twoCol {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              }
 
-      <h3>Frontend</h3>
-      <ul>
-        <li>Next.js (Pages Router) + React + TypeScript</li>
-        <li>SWR for API data fetching</li>
-      </ul>
+              .threeCol {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+              }
 
-      <h2>2. Project Structure</h2>
-      <ul>
-        <li><code>analysis/</code>: planning and school deliverables</li>
-        <li><code>back-end/</code>: API, services, models, Prisma, seed scripts</li>
-        <li><code>front-end/</code>: pages, components, client services, styles</li>
-        <li><code>docker-compose.yml</code>: local PostgreSQL setup</li>
-      </ul>
+              .card {
+                padding: 1rem 1.05rem;
+              }
 
-      <h2>3. Core Domain</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Entity</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>User</td><td>System account with role ADMIN, COACH, REFEREE, or GUEST.</td></tr>
-          <tr><td>Team</td><td>National team with country metadata and assigned coach.</td></tr>
-          <tr><td>Player</td><td>Team player with availability state.</td></tr>
-          <tr><td>Match</td><td>Fixture between teams with score, referee, status, and embedded stage metadata.</td></tr>
-          <tr><td>Goal</td><td>Scoring event linked to match, player, and minute.</td></tr>
-        </tbody>
-      </table>
+              .metaList,
+              ul,
+              ol {
+                margin: 0.4rem 0 0.85rem 1.2rem;
+                color: var(--muted);
+              }
 
-      <p><strong>Match statuses:</strong> <code>NOT_STARTED</code>, <code>IN_PROGRESS</code>, <code>COMPLETED</code></p>
+              li {
+                margin: 0.25rem 0;
+                line-height: 1.5;
+              }
 
-      <h2>4. Role-Based Access</h2>
-      <ul>
-        <li><strong>ADMIN</strong>: manages users, initiates/simulates stages, edits matches.</li>
-        <li><strong>COACH</strong>: updates own team player availability.</li>
-        <li><strong>REFEREE</strong>: updates assigned matches and goals.</li>
-        <li><strong>GUEST</strong>: public access to non-protected views.</li>
-      </ul>
+              code,
+              .mono {
+                font-family: "Consolas", "Courier New", monospace;
+                font-size: 0.94em;
+              }
 
-      <h2>5. Main Workflows</h2>
-      <h3>Competition progression</h3>
-      <ol>
-          <li>First-stage matches are seeded as IN_PROGRESS.</li>
-          <li>Referees/Admin update scores and goals.</li>
-          <li>Matches are completed.</li>
-          <li>Next-stage matches are auto-filled with winners.</li>
-          <li>Next-stage matches become IN_PROGRESS automatically.</li>
-      </ol>
+              code {
+                background: #eef4fb;
+                border: 1px solid #dce5f0;
+                padding: 0.08rem 0.28rem;
+                border-radius: 6px;
+              }
 
-      <h3>Match editing validation</h3>
-      <ul>
-        <li>Match teams must be known for active editing.</li>
-        <li>Knockout matches cannot end in a draw.</li>
-        <li>Only available players can be selected as scorers.</li>
-      </ul>
+              .tableWrap {
+                overflow-x: auto;
+                margin-top: 0.35rem;
+              }
 
-      <h2>6. API Summary</h2>
-      <p class="small">Base URL: <code>http://localhost:3000</code></p>
+              table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 620px;
+              }
 
-      <table>
-        <thead>
-          <tr>
-            <th>Area</th>
-            <th>Key Endpoints</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Auth</td>
-            <td><code>POST /api/auth/register</code>, <code>POST /api/auth/login</code>, <code>GET /api/auth/me</code></td>
-          </tr>
-          <tr>
-            <td>Competition</td>
-            <td><code>GET /api/competition/overview</code>, <code>GET /api/competition/rounds</code>, <code>POST /api/competition/rounds/:roundId/simulate</code></td>
-          </tr>
-          <tr>
-            <td>Teams</td>
-            <td><code>GET /api/teams</code>, <code>GET /api/teams/:teamId</code>, <code>GET /api/teams/:teamId/players</code>, admin CRUD</td>
-          </tr>
-          <tr>
-            <td>Players</td>
-            <td><code>GET /api/players</code>, <code>GET /api/players/:playerId</code>, admin CRUD, <code>PATCH /api/players/:playerId/status</code></td>
-          </tr>
-          <tr>
-            <td>Matches</td>
-            <td><code>GET /api/matches</code>, <code>GET /api/matches/:matchId</code>, status/result/goals updates</td>
-          </tr>
-          <tr>
-            <td>Users</td>
-            <td><code>GET /api/users</code>, <code>DELETE /api/users/:userId</code> (admin only)</td>
-          </tr>
-        </tbody>
-      </table>
+              th,
+              td {
+                text-align: left;
+                padding: 0.68rem 0.55rem;
+                border-bottom: 1px solid var(--line);
+                vertical-align: top;
+              }
 
-      <p>Swagger UI: <code>http://localhost:3000/api-docs</code></p>
-      <p><code>roundId</code> in competition routes is a stage identifier, not a persisted Round entity id.</p>
+              th {
+                background: var(--soft);
+                color: #22364d;
+              }
 
-      <h2>7. Local Setup</h2>
-      <h3>Start database</h3>
-      <pre><code>docker compose up -d postgres</code></pre>
+              .badgeRow {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin: 0.6rem 0 0;
+              }
 
-      <h3>Backend</h3>
-      <pre><code>cd back-end
-npm install
-npm run db:generate
-npm run db:seed
-npm start</code></pre>
+              .badge {
+                border-radius: 999px;
+                padding: 0.28rem 0.6rem;
+                border: 1px solid var(--line);
+                background: var(--soft);
+                color: #334155;
+                font-size: 0.84rem;
+              }
 
-      <h3>Frontend</h3>
-      <pre><code>cd front-end
-npm install
-npm run dev</code></pre>
+              .note {
+                background: linear-gradient(180deg, #f8fbff 0%, #fdfefe 100%);
+                border: 1px solid #dbe5f0;
+                border-radius: 14px;
+                padding: 0.95rem 1rem;
+              }
 
-      <h2>8. Seeded Example Accounts</h2>
-      <ul>
-        <li><code>admin</code> / <code>admin123</code></li>
-        <li><code>Domenico_Tedesco</code> / <code>coach123</code></li>
-        <li><code>Frank_De_Bleeckere</code> / <code>referee123</code></li>
-      </ul>
+              pre {
+                margin: 0.75rem 0 0.95rem;
+                background: #0f172a;
+                color: #e2e8f0;
+                border-radius: 12px;
+                padding: 1rem;
+                overflow-x: auto;
+              }
 
-      <h2>9. Quality Checks</h2>
-      <ul>
-        <li>Backend domain tests via Jest</li>
-        <li>Frontend production build validation via Next.js</li>
-        <li>Interactive API docs via Swagger</li>
-      </ul>
-    </main>
+              pre code {
+                background: transparent;
+                border: 0;
+                padding: 0;
+                color: inherit;
+              }
+
+              .toc a {
+                display: block;
+                padding: 0.2rem 0;
+              }
+
+              .splitTitle {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 1rem;
+                flex-wrap: wrap;
+              }
+
+              .small {
+                color: var(--muted);
+                font-size: 0.95rem;
+              }
+
+              .kpi {
+                display: grid;
+                gap: 0.25rem;
+              }
+
+              .kpi strong {
+                font-size: 1.1rem;
+              }
+
+              @media (max-width: 760px) {
+                .heroGrid {
+                  grid-template-columns: 1fr;
+                }
+
+                .shell {
+                  width: min(100%, 100vw);
+                  margin: 0;
+                  gap: 0.75rem;
+                }
+
+                .hero,
+                .card {
+                  border-radius: 0;
+                }
+
+                .hero {
+                  padding: 1.2rem;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <main class="shell">
+              <section class="hero">
+                <span class="eyebrow">Detailed project guide</span>
+                <div class="heroGrid">
+                  <div>
+                    <h1>Worldcup Manager 2026</h1>
+                    <p class="lead">
+                      Worldcup Manager 2026 is a learning project for managing a fixed football competition.
+                      The app is intentionally small enough to study, but still shows a realistic full-stack flow:
+                      authentication, role checks, API services, tournament progression, score handling, and a multilingual UI.
+                    </p>
+                    <div class="badgeRow">
+                      <span class="badge">Express + TypeScript backend</span>
+                      <span class="badge">Prisma + PostgreSQL</span>
+                      <span class="badge">Next.js frontend</span>
+                      <span class="badge">JWT auth + roles</span>
+                      <span class="badge">i18n: nl / en / fr</span>
+                    </div>
+                  </div>
+                  <div class="note kpi">
+                    <strong>What changed in the cleanup</strong>
+                    <span class="small">The codebase now uses one canonical competition route, removes dead dashboard exports, and documents the tournament flow more clearly.</span>
+                    <span class="small">Main overview route: <code>/api/competition</code></span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card toc">
+                <div class="splitTitle">
+                  <h2>Table of contents</h2>
+                  <span class="small">Use this page as the main presentation script.</span>
+                </div>
+                <div class="navGrid">
+                  <div>
+                    <a href="#stack">1. Technology stack</a>
+                    <a href="#structure">2. Folder structure</a>
+                    <a href="#domain">3. Domain model</a>
+                    <a href="#backend">4. Backend architecture</a>
+                  </div>
+                  <div>
+                    <a href="#security">5. Security and access control</a>
+                    <a href="#flows">6. Competition flow</a>
+                    <a href="#frontend">7. Frontend architecture</a>
+                    <a href="#i18n">8. Internationalisation</a>
+                  </div>
+                  <div>
+                    <a href="#setup">9. Local setup</a>
+                    <a href="#presentation">10. How to explain the code</a>
+                    <a href="#docs">11. Related documentation</a>
+                    <a href="#glossary">12. Glossary</a>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card" id="stack">
+                <h2>1. Technology Stack</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>Backend</h3>
+                    <ul>
+                      <li>Node.js with Express and TypeScript.</li>
+                      <li>Prisma ORM for database access and typed queries.</li>
+                      <li>PostgreSQL as the persistent data store.</li>
+                      <li>JWT-based authentication with role-aware middleware.</li>
+                      <li>Swagger UI for generated API documentation.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3>Frontend</h3>
+                    <ul>
+                      <li>Next.js Pages Router with React and TypeScript.</li>
+                      <li>SWR for client-side data fetching and cache revalidation.</li>
+                      <li>Custom i18n context with persisted language preference.</li>
+                      <li>Session state stored in localStorage and restored on load.</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card" id="structure">
+                <h2>2. Folder Structure</h2>
+                <div class="tableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Folder</th>
+                        <th>Purpose</th>
+                        <th>What to explain in class</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>analysis/</code></td>
+                        <td>School requirements, planning, ERDs, pitch, and business logic notes.</td>
+                        <td>These files show how the project was designed before implementation.</td>
+                      </tr>
+                      <tr>
+                        <td><code>back-end/</code></td>
+                        <td>Express app, controllers, services, Prisma schema, models, util helpers, and tests.</td>
+                        <td>Business rules live here, not in the frontend.</td>
+                      </tr>
+                      <tr>
+                        <td><code>front-end/</code></td>
+                        <td>Next.js pages, shared components, API clients, session and i18n helpers.</td>
+                        <td>The frontend renders state, but the backend remains the source of truth.</td>
+                      </tr>
+                      <tr>
+                        <td><code>documenation/</code></td>
+                        <td>HTML and Markdown study docs.</td>
+                        <td>This is the presentation material for the project.</td>
+                      </tr>
+                      <tr>
+                        <td><code>genAI-docs/</code></td>
+                        <td>Project reconstruction notes and generated guidance.</td>
+                        <td>Useful for auditability, but not required for runtime behaviour.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card" id="domain">
+                <h2>3. Domain Model</h2>
+                <p>
+                  The application models one fixed competition. The data is intentionally constrained so the logic stays readable for students.
+                </p>
+                <div class="threeCol">
+                  <div class="note">
+                    <h3>User</h3>
+                    <p>Represents a login account. Roles decide what the user can see or change.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Team</h3>
+                    <p>A national team with country metadata, flag, and competition statistics.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Player</h3>
+                    <p>Belongs to one team and can be marked available or unavailable.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Match</h3>
+                    <p>Stores the fixture, teams, referee, score, date, round, and status.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Goal</h3>
+                    <p>Links a scorer to a match so the score can be recalculated from the stored events.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Round</h3>
+                    <p>Derived from the fixed competition setup; rounds are not free-form user content.</p>
+                  </div>
+                </div>
+                <p class="small">The important match states are <code>NOT_STARTED</code>, <code>IN_PROGRESS</code>, <code>FINISHED</code>, and <code>COMPLETED</code>.</p>
+              </section>
+
+              <section class="card" id="backend">
+                <h2>4. Backend Architecture</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>Request flow</h3>
+                    <ol>
+                      <li><code>app.ts</code> configures Express, Helmet, CORS, JSON parsing, Swagger, and routers.</li>
+                      <li>Controllers translate HTTP requests into service calls.</li>
+                      <li>Services implement business rules, validation, and database access.</li>
+                      <li>Models normalise Prisma records into API-friendly response shapes.</li>
+                      <li>Utilities handle cross-cutting concerns such as JWT verification and error mapping.</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h3>Canonical backend route map</h3>
+                    <ul>
+                      <li><code>/status</code> for health checks.</li>
+                      <li><code>/api/auth</code> for login, register, and the current user.</li>
+                      <li><code>/api/competition</code> for the overview and round simulation.</li>
+                      <li><code>/api/players</code>, <code>/api/matches</code>, and <code>/api/users</code> for domain actions.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <h3>Why the layered structure matters</h3>
+                <p>
+                  The backend is split so the HTTP layer stays thin. That makes the business logic easier to test and easier to explain:
+                  controllers answer <em>what endpoint was called</em>, services answer <em>what the system is allowed to do</em>, and models answer <em>how records should look</em>.
+                </p>
+
+                <h3>Important backend files</h3>
+                <div class="tableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>File</th>
+                        <th>Role</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>back-end/app.ts</code></td><td>Starts the server and mounts middleware and routers.</td></tr>
+                      <tr><td><code>back-end/controller/*.ts</code></td><td>Expose the REST API.</td></tr>
+                      <tr><td><code>back-end/service/*.ts</code></td><td>Contain the real competition logic.</td></tr>
+                      <tr><td><code>back-end/model/*.ts</code></td><td>Validate and transform domain objects.</td></tr>
+                      <tr><td><code>back-end/util/*.ts</code></td><td>JWT, errors, middleware, competition config, and seeding.</td></tr>
+                      <tr><td><code>back-end/repository/prisma/schema.prisma</code></td><td>Database schema and generated Prisma client.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="note">
+                  <h3>Teacher explanation tip</h3>
+                  <p>
+                    If you are asked why the backend has models and services instead of putting everything in the controllers, say that the project is deliberately structured to separate transport concerns from domain rules.
+                    That keeps the app testable and stops the frontend from becoming the place where rules are enforced.
+                  </p>
+                </div>
+              </section>
+
+              <section class="card" id="security">
+                <h2>5. Security and Access Control</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>Authentication</h3>
+                    <ul>
+                      <li>Users log in with a username and password.</li>
+                      <li>The server returns a JWT token on success.</li>
+                      <li>The frontend stores the token and user in <code>localStorage</code>.</li>
+                      <li>On refresh, the session provider restores the stored values.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3>Authorization</h3>
+                    <ul>
+                      <li><code>authenticateToken</code> checks the bearer token header.</li>
+                      <li><code>requireRoles</code> blocks routes that do not match the user's role.</li>
+                      <li><code>getAuthenticatedUser</code> centralises the repeated request-user extraction.</li>
+                      <li>Admins and referees are protected on match editing routes.</li>
+                    </ul>
+                  </div>
+                </div>
+                <p>
+                  Extra security middleware such as Helmet and CORS is configured in <code>back-end/app.ts</code>. The CORS origin is environment-based, so the frontend can be locked down per setup.
+                </p>
+              </section>
+
+              <section class="card" id="flows">
+                <h2>6. Competition Flow</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>How the bracket progresses</h3>
+                    <ol>
+                      <li>The overview loads all rounds, teams, matches, goals, standings, and top scorers.</li>
+                      <li>Admins or referees update match status and scores on their allowed matches.</li>
+                      <li>When a round is fully complete, <code>createNextRoundMatchesIfReady</code> pushes the winners forward.</li>
+                      <li>If the next round still has no teams assigned, it is filled from the winners list inside a transaction.</li>
+                      <li>Completed rounds are marked as such so the UI can show clean stage progression.</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h3>Why simulation exists</h3>
+                    <p>
+                      Simulation is a learning helper. It lets a teacher or student show the full lifecycle without manually entering every score.
+                      The service simulates non-draw knockout results and assigns goal scorers from the players available for that team.
+                    </p>
+                  </div>
+                </div>
+                <div class="note">
+                  <h3>Rules that are intentionally enforced</h3>
+                  <ul>
+                    <li>Knockout matches cannot end in a draw.</li>
+                    <li>Goals can only be entered when a match is in progress.</li>
+                    <li>Referees can only act on their assigned matches.</li>
+                    <li>Previous rounds must be completed before later rounds can be edited or simulated.</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section class="card" id="frontend">
+                <h2>7. Frontend Architecture</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>Core pieces</h3>
+                    <ul>
+                      <li><code>pages/_app.tsx</code> wraps the app with i18n, session, and layout providers.</li>
+                      <li><code>lib/useSession.tsx</code> restores auth state from localStorage and exposes login/logout helpers.</li>
+                      <li><code>lib/i18n.tsx</code> stores the current language and translation map.</li>
+                      <li><code>services/*.ts</code> keep fetch logic out of the page components.</li>
+                      <li><code>components/DashboardPanels.tsx</code> now only exports the score leaderboard panel that the stats page needs.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3>Why the UI is easy to follow</h3>
+                    <p>
+                      Each page mostly decides what data to show and when to block access.
+                      The actual HTTP calls are in service files, so the page components stay readable and the data flow is easy to present.
+                    </p>
+                  </div>
+                </div>
+
+                <h3>Page responsibilities</h3>
+                <div class="tableWrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Page</th>
+                        <th>What it does</th>
+                        <th>Who uses it</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>pages/index.tsx</code></td><td>Dashboard with current round, top standings, and top scorers.</td><td>Guests and logged-in users.</td></tr>
+                      <tr><td><code>pages/matches/index.tsx</code></td><td>Lists matches and shows access gating.</td><td>Logged-in users.</td></tr>
+                      <tr><td><code>pages/matches/[matchId].tsx</code></td><td>Shows and edits a single match, depending on role.</td><td>Admins, referees, and users with permission.</td></tr>
+                      <tr><td><code>pages/rounds/index.tsx</code></td><td>Lists rounds.</td><td>Logged-in users.</td></tr>
+                      <tr><td><code>pages/rounds/[roundId].tsx</code></td><td>Shows round detail and simulation entry points.</td><td>Logged-in users and admins.</td></tr>
+                      <tr><td><code>pages/stats.tsx</code></td><td>Shows tournament standings and the top scorer panel.</td><td>Logged-in users.</td></tr>
+                      <tr><td><code>pages/admin.tsx</code></td><td>Admin workspace for match reset, round simulation, and user deletion.</td><td>Admins only.</td></tr>
+                      <tr><td><code>pages/referee.tsx</code></td><td>Lists matches assigned to the logged-in referee.</td><td>Referees only.</td></tr>
+                      <tr><td><code>pages/login.tsx</code> / <code>pages/register.tsx</code></td><td>Authentication flows.</td><td>Everyone.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card" id="i18n">
+                <h2>8. Internationalisation</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>Supported locales</h3>
+                    <ul>
+                      <li><code>nl</code> for Dutch.</li>
+                      <li><code>en</code> for English.</li>
+                      <li><code>fr</code> for French.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3>How the language state works</h3>
+                    <ul>
+                      <li>The selected locale is stored in <code>localStorage</code>.</li>
+                      <li><code>useI18n</code> provides <code>t()</code>, the locale, and a setter for the language.</li>
+                      <li>The language switcher updates the active locale without a full page reload.</li>
+                    </ul>
+                  </div>
+                </div>
+                <p>
+                  This is a good section to mention during presentation because it shows state that is not server-driven: the chosen language survives refresh, but the competition data itself still comes from the backend.
+                </p>
+              </section>
+
+              <section class="card" id="setup">
+                <h2>9. Local Setup</h2>
+                <div class="twoCol">
+                  <div>
+                    <h3>Backend</h3>
+                    <ol>
+                      <li>Start PostgreSQL with Docker.</li>
+                      <li>Install backend dependencies.</li>
+                      <li>Generate the Prisma client.</li>
+                      <li>Seed the database.</li>
+                      <li>Start the backend server.</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h3>Frontend</h3>
+                    <ol>
+                      <li>Set <code>NEXT_PUBLIC_API_BASE_URL</code> if the backend runs on a custom port.</li>
+                      <li>Install frontend dependencies.</li>
+                      <li>Run the Next.js dev server.</li>
+                    </ol>
+                  </div>
+                </div>
+                <div class="note">
+                  <p>
+                    The repo memory notes already capture one important setup detail: if port 3000 is occupied, move the backend to another port and keep the frontend API base URL aligned.
+                  </p>
+                </div>
+              </section>
+
+              <section class="card" id="presentation">
+                <h2>10. How to Explain the Code</h2>
+                <div class="threeCol">
+                  <div class="note">
+                    <h3>Start with the problem</h3>
+                    <p>The app manages a competition with users, teams, matches, scores, and roles.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Then explain the split</h3>
+                    <p>The backend owns the rules, the frontend owns the presentation, and the database stores the state.</p>
+                  </div>
+                  <div class="note">
+                    <h3>Finish with the flow</h3>
+                    <p>Login, load overview, inspect matches, edit a match, complete a round, and advance winners.</p>
+                  </div>
+                </div>
+                <p>
+                  If a teacher asks why the code is structured this way, the short answer is that the project is intentionally layered so the rules are visible, testable, and easy to walk through on screen.
+                </p>
+              </section>
+
+              <section class="card" id="docs">
+                <h2>11. Related Documentation</h2>
+                <ul>
+                  <li><a href="index.html">Documentation index</a> with links to the smaller study chapters.</li>
+                  <li><a href="01-architecture.html">Architecture chapter</a> for a more visual overview.</li>
+                  <li><a href="03-backend-api-rules.html">Backend API rules</a> for endpoint and validation details.</li>
+                  <li><a href="04-frontend-state-ui.html">Frontend state and UI</a> for the page flow.</li>
+                  <li><a href="05-workflows-sequences.html">Workflows and sequences</a> for step-by-step process diagrams.</li>
+                </ul>
+              </section>
+
+              <section class="card" id="glossary">
+                <h2>12. Glossary</h2>
+                <div class="twoCol">
+                  <div>
+                    <p><strong>Source of truth:</strong> the backend and database are the authoritative state for matches, goals, and users.</p>
+                    <p><strong>Role guard:</strong> backend check that allows or blocks a request based on the authenticated user's role.</p>
+                    <p><strong>Revalidation:</strong> SWR refetches data after a mutation so the UI stays in sync.</p>
+                  </div>
+                  <div>
+                    <p><strong>Bracket progression:</strong> automatic creation and population of the next round after a round finishes.</p>
+                    <p><strong>i18n:</strong> internationalisation, the mechanism used here for Dutch, English, and French translations.</p>
+                    <p><strong>Lean refactor:</strong> the cleanup that removed duplicate routes and dead dashboard exports.</p>
+                  </div>
+                </div>
+              </section>
+            </main>
+          </body>
+        </html>
   </body>
 </html>

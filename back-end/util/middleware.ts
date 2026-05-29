@@ -9,6 +9,16 @@ export type RequestUser = {
     teamId: string | null;
 };
 
+export function getAuthenticatedUser(req: Request): RequestUser {
+    const user = (req as Request & { user?: RequestUser }).user;
+
+    if (!user) {
+        throw new UnauthorizedError('Missing authenticated user.');
+    }
+
+    return user;
+}
+
 export function authenticateToken(req: Request, _res: Response, next: NextFunction): void {
     const header = req.headers.authorization;
 

@@ -6,6 +6,7 @@ import { GoalInputDto, MatchResultDto, MatchStatus } from '../types';
 import { RequestUser } from '../util/middleware';
 import { createNextRoundMatchesIfReady } from './roundProgressionService';
 
+// Admins can update any match; referees are limited to the match assigned to them.
 function assertMatchAccess(actor: RequestUser, refereeId: string | null): void {
   if (actor.role === 'ADMIN') {
     return;
@@ -28,6 +29,7 @@ async function loadMatch(matchId: string) {
   return match;
 }
 
+// A round stays locked until the previous round has been fully completed.
 async function assertRoundUnlocked(match: { roundOrderNumber: number }) {
   if (match.roundOrderNumber <= 1) {
     return;
@@ -43,6 +45,7 @@ async function assertRoundUnlocked(match: { roundOrderNumber: number }) {
   }
 }
 
+// Referees can only move a match forward through the status flow they control.
 function assertStatusTransition(matchStatus: MatchStatus, nextStatus: MatchStatus, actor: RequestUser) {
   if (actor.role !== 'REFEREE') {
     return;
@@ -61,6 +64,7 @@ function assertStatusTransition(matchStatus: MatchStatus, nextStatus: MatchStatu
   }
 }
 
+// Goal input must always match the actual teams and an available player in this match.
 async function validateGoalInput(matchId: string, goal: GoalInputDto) {
   const match = await loadMatch(matchId);
 
@@ -87,6 +91,7 @@ async function validateGoalInput(matchId: string, goal: GoalInputDto) {
   }
 }
 
+// Recalculate the score from stored goals so the match summary stays the single source of truth.
 async function recalculateMatchScores(matchId: string) {
   const match = await loadMatch(matchId);
   const goals = await prisma.goal.findMany({ where: { matchId } });
@@ -308,11 +313,13 @@ export async function getTopScorers() {
   const players = await prisma.player.findMany();
   const teams = await prisma.team.findMany();
 
-  const scorerMap = new Map<string, { playerId: string; playerName: string; teamId: string; teamName: string; goals: number }>();
+  const playerById = new Map(players.map((player) => [player.id, player]));
+  const teamById = new Map(teams.map((team) => [team.id, team]));
+  const scorerMap = new Map<string, { playerId: string; playerName: string; teamId: string; teamName: string; teamCountryFlag: string; goals: number }>();
 
   for (const goal of goals) {
-    const player = players.find((candidate) => candidate.id === goal.playerId);
-    const team = teams.find((candidate) => candidate.id === goal.teamId);
+    const player = playerById.get(goal.playerId);
+    const team = teamById.get(goal.teamId);
 
     if (!player || !team) {
       continue;
@@ -331,5 +338,6 @@ export async function getTopScorers() {
     scorerMap.set(player.id, existing);
   }
 
+  // Keep the leaderboard simple for students: most goals first.
   return Array.from(scorerMap.values()).sort((left, right) => right.goals - left.goals);
 }

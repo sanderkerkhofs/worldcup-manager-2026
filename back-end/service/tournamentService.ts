@@ -12,6 +12,9 @@ function roundIdFromOrder(orderNumber: number): string {
   return String(orderNumber);
 }
 
+/**
+ * Accepts a numeric round order like "2" or a label like "round-2" / "Quarterfinal".
+ */
 function resolveRoundByIdentifier(roundId: string) {
   const numericId = Number.parseInt(roundId.replace(/^round-/i, ''), 10);
 
@@ -97,6 +100,7 @@ function calculateStandings(matches: Match[], teams: Team[]): StandingRow[] {
       ...row,
       goalDifference: row.goalsFor - row.goalsAgainst,
     }))
+    // Keep the leaderboard rule easy to explain: points first, then goal difference.
     .sort((left, right) => {
       if (right.points !== left.points) {
         return right.points - left.points;
@@ -107,11 +111,13 @@ function calculateStandings(matches: Match[], teams: Team[]): StandingRow[] {
 }
 
 function calculateTopScorers(goals: Goal[], players: Player[], teams: Team[]): TopScorerRow[] {
+  const playerById = new Map(players.map((player) => [player.id, player]));
+  const teamById = new Map(teams.map((team) => [team.id, team]));
   const scorerMap = new Map<string, TopScorerRow>();
 
   for (const goal of goals) {
-    const player = players.find((candidate) => candidate.id === goal.playerId);
-    const team = teams.find((candidate) => candidate.id === goal.teamId);
+    const player = playerById.get(goal.playerId);
+    const team = teamById.get(goal.teamId);
 
     if (!player || !team) {
       continue;
@@ -159,6 +165,7 @@ function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>):
   let homeScore = 0;
   let awayScore = 0;
 
+  // Knockout matches must end with a winner, so the simulation retries until the score is not a draw.
   do {
     const totalGoals = randomInt(1, 6);
     homeScore = randomInt(0, totalGoals);

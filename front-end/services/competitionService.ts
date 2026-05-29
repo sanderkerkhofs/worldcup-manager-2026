@@ -2,7 +2,7 @@ import { api } from '../lib/api';
 import { CompetitionOverview, Goal, GoalInput, Match, MatchStatus, Player, PlayerStatus, Round, RoundSimulationResult, TopScorerRow, TournamentResetResult } from '../types';
 
 export function getOverview(token?: string | null) {
-  return api.get<CompetitionOverview>('/api/competition/overview', token);
+  return api.get<CompetitionOverview>('/api/competition', token);
 }
 
 export function getRounds(token?: string | null) {

@@ -75,7 +75,7 @@ back-end/
 ### Competition
 
 - `GET /api/competition`
-- `GET /api/competition/overview`
+- `GET /api/competition`
 - `GET /api/competition/bracket`
 - `GET /api/competition/rounds`
 - `POST /api/competition/rounds/:roundId/simulate` (admin)

@@ -60,3 +60,8 @@ Example referee login:
 - Backend status: `http://localhost:3000/status`
 - Swagger UI: `http://localhost:3000/api-docs`
 - Frontend: `http://localhost:8080`
+
+## Study Documentation
+
+- Main HTML guide: `documenation/project-documentation.html`
+- Documentation index: `documenation/index.html`

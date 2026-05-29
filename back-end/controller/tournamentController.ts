@@ -3,19 +3,8 @@ import { asyncHandler, authenticateToken, requireRoles } from '../util/middlewar
 import { getCompetitionOverview, listRounds, resetTournamentMatches, simulateRound } from '../service/tournamentService';
 
 export const competitionRouter = Router();
-export const tournamentRouter = competitionRouter;
 
 competitionRouter.get('/', asyncHandler(async (_req, res) => {
-  const overview = await getCompetitionOverview();
-  res.json(overview);
-}));
-
-competitionRouter.get('/overview', asyncHandler(async (_req, res) => {
-  const overview = await getCompetitionOverview();
-  res.json(overview);
-}));
-
-competitionRouter.get('/bracket', asyncHandler(async (_req, res) => {
   const overview = await getCompetitionOverview();
   res.json(overview);
 }));

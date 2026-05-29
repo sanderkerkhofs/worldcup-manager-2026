@@ -112,7 +112,7 @@ Base URL: `http://localhost:3000`
 
 ### Competition
 
-- `GET /api/competition/overview`
+- `GET /api/competition`
 - `GET /api/competition/rounds`
 - `POST /api/competition/rounds/:roundId/simulate` (ADMIN)
 

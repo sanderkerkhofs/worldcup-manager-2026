@@ -32,7 +32,6 @@ app.get('/status', (_req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/auth', authRouter);
 app.use('/api/competition', competitionRouter);
-app.use('/api/tournaments', competitionRouter);
 app.use('/api/players', playerRouter);
 app.use('/api/matches', matchRouter);
 app.use('/api/users', userRouter);

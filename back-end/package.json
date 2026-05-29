@@ -1,8 +1,8 @@
 {
-    "name": "courses_api",
+    "name": "worldcup_manager_2026",
     "version": "1.0.0",
-    "description": "Courses API",
-    "author": "johanpck",
+    "description": "Worldcup Manager 2026",
+    "author": "Sander Kerkhofs",
     "license": "ISC",
     "main": "app.ts",
     "prisma": {

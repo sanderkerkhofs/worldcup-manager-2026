@@ -1,6 +1,9 @@
 import { prisma } from '../repository/prisma/client';
 import { ValidationError } from '../util/errors';
 
+/**
+ * Round identifiers are stored by order number, with an optional "round-" prefix.
+ */
 function parseRoundIdentifier(roundId: string): number {
   const parsed = Number.parseInt(roundId.replace(/^round-/i, ''), 10);
 
@@ -22,6 +25,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
     return;
   }
 
+  // Only advance the bracket once every match in the current round has been scored and closed.
   const allMatchesCompleted = completedRoundMatches.every((match) => (
     (match.status === 'FINISHED' || match.status === 'COMPLETED')
       && typeof match.homeScore === 'number'
@@ -82,6 +86,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
     return;
   }
 
+  // The transaction keeps both rounds consistent if one next-round assignment fails.
   await prisma.$transaction(async (transaction) => {
     for (let index = 0; index < nextRoundMatches.length; index += 1) {
       const homeTeamId = winners[index * 2];

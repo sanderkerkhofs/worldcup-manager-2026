@@ -10,7 +10,7 @@
 
 ### Competition
 
-- `GET /api/competition/overview`
+- `GET /api/competition`
 - `GET /api/competition/rounds`
 - `POST /api/competition/rounds/:roundId/simulate` (ADMIN)
 

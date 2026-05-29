@@ -1,5 +1,5 @@
-import { Router, Request } from 'express';
-import { asyncHandler, authenticateToken, requireRoles, RequestUser } from '../util/middleware';
+import { Router } from 'express';
+import { asyncHandler, authenticateToken, getAuthenticatedUser, requireRoles } from '../util/middleware';
 import { deleteUserForAdmin, listUsersForAdmin } from '../service/userService';
 
 export const userRouter = Router();
@@ -10,12 +10,7 @@ userRouter.get('/', authenticateToken, requireRoles('ADMIN'), asyncHandler(async
 }));
 
 userRouter.delete('/:userId', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
-  const actor = (req as Request & { user?: RequestUser }).user;
-
-  if (!actor) {
-    throw new Error('Missing authenticated user.');
-  }
-
+  const actor = getAuthenticatedUser(req);
   await deleteUserForAdmin(req.params.userId, actor.id);
   res.status(204).send();
 }));

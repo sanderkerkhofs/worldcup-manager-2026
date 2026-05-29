@@ -57,7 +57,7 @@ UI and backend were aligned to this vocabulary.
 
 Examples:
 
-- `getOverview()` -> `/api/competition/overview`
+- `getOverview()` -> `/api/competition`
 - `updateMatchStatus()` -> `/api/matches/:matchId/status`
 - `updatePlayerStatus()` -> `/api/players/:playerId/status`
 - `simulateRound()` -> `/api/competition/rounds/:roundId/simulate`
