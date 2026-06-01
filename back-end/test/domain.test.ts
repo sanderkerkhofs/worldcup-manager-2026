@@ -38,11 +38,9 @@ describe('Player domain validation', () => {
       lastName: 'Messi',
       shirtNumber: 10,
       position: 'Forward',
-      status: 'AVAILABLE',
     });
 
     expect(player.shirtNumber).toBe(10);
-    expect(player.status).toBe('AVAILABLE');
   });
 
   it('rejects an invalid shirt number', () => {
@@ -53,7 +51,6 @@ describe('Player domain validation', () => {
       lastName: 'Player',
       shirtNumber: 0,
       position: 'Midfielder',
-      status: 'AVAILABLE',
     })).toThrow('Shirt number must be a positive integer.');
   });
 });

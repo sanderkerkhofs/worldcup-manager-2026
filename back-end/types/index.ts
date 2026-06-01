@@ -2,8 +2,6 @@ export type UserRole = 'ADMIN' | 'REFEREE' | 'USER' | 'GUEST';
 
 export type MatchStatus = 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED';
 
-export type PlayerStatus = 'AVAILABLE' | 'UNAVAILABLE';
-
 export type CompetitionMetadata = {
   name: string;
   year: number;
@@ -44,14 +42,9 @@ export type PlayerCreateDto = {
   lastName: string;
   shirtNumber: number;
   position: string;
-  status?: PlayerStatus;
 };
 
 export type PlayerUpdateDto = Partial<Omit<PlayerCreateDto, 'teamId'>>;
-
-export type PlayerStatusDto = {
-  status: PlayerStatus;
-};
 
 export type RoundCreateDto = {
   name: string;
@@ -120,7 +113,6 @@ export type PlayerResponse = {
   lastName: string;
   shirtNumber: number;
   position: string;
-  status: PlayerStatus;
   createdAt: string;
   updatedAt: string;
 };

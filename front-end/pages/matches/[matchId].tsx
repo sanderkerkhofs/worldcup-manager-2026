@@ -39,8 +39,7 @@ export default function MatchEditorPage() {
   }, [match]);
 
   const availablePlayers = useMemo(() => {
-    const players = [...(homePlayers ?? []), ...(awayPlayers ?? [])];
-    return players.filter((player) => player.status === 'AVAILABLE');
+    return [...(homePlayers ?? []), ...(awayPlayers ?? [])];
   }, [awayPlayers, homePlayers]);
 
   const homeAvailablePlayers = useMemo(

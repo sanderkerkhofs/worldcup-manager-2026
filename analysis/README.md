@@ -28,7 +28,7 @@ Last updated: 2026-05-24
 - Fixed bracket starts at 8th Final (8th Final -> Quarterfinal -> Semifinal -> Final).
 - Conceptual model keeps one fixed competition and does not store competition metadata as a database entity.
 - Stage lifecycle used across documentation: not started -> active -> completed.
-- Roles are explicitly modeled: admin (full CRUD), coach (player availability management), referee (match status/goals updates), guest (public read-only).
+- Roles are explicitly modeled: admin (full CRUD), referee (match status/goals updates), guest (public read-only).
 - Referee match updates include scored-by-player data for later top-scorer ranking.
 - Dedicated Player entity with unique player ID is part of the analysis model for top-scorer ranking.
 - Assigned referee can only update assigned match results; admin can update all match results.

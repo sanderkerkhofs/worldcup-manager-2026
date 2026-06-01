@@ -70,7 +70,6 @@ export const swaggerDocument = {
           lastName: { type: 'string' },
           shirtNumber: { type: 'integer' },
           position: { type: 'string' },
-          status: { type: 'string', enum: ['AVAILABLE', 'UNAVAILABLE'] },
         },
       },
       Round: {

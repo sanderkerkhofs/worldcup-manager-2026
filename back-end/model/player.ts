@@ -1,10 +1,5 @@
 import { Player as PrismaPlayer } from '@prisma/client';
-import { PlayerStatus } from '../types';
 import { ValidationError } from '../util/errors';
-
-function isPlayerStatus(status: string): status is PlayerStatus {
-  return status === 'AVAILABLE' || status === 'UNAVAILABLE';
-}
 
 export class Player {
   public readonly id: string;
@@ -13,7 +8,6 @@ export class Player {
   public readonly lastName: string;
   public readonly shirtNumber: number;
   public readonly position: string;
-  public readonly status: PlayerStatus;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -24,7 +18,6 @@ export class Player {
     lastName,
     shirtNumber,
     position,
-    status,
     createdAt,
     updatedAt,
   }: {
@@ -34,7 +27,6 @@ export class Player {
     lastName: string;
     shirtNumber: number;
     position: string;
-    status: PlayerStatus;
     createdAt?: Date;
     updatedAt?: Date;
   }) {
@@ -54,28 +46,17 @@ export class Player {
       throw new ValidationError('Player position is required.');
     }
 
-    if (!isPlayerStatus(status)) {
-      throw new ValidationError('Player status is invalid.');
-    }
-
     this.id = id;
     this.teamId = teamId;
     this.firstName = firstName;
     this.lastName = lastName;
     this.shirtNumber = shirtNumber;
     this.position = position;
-    this.status = status;
     this.createdAt = createdAt ?? new Date();
     this.updatedAt = updatedAt ?? new Date();
   }
 
   static from(prismaPlayer: PrismaPlayer): Player {
-    const status = prismaPlayer.status as unknown as string;
-
-    if (!isPlayerStatus(status)) {
-      throw new ValidationError('Player status is invalid.');
-    }
-
     return new Player({
       id: prismaPlayer.id,
       teamId: prismaPlayer.teamId,
@@ -83,7 +64,6 @@ export class Player {
       lastName: prismaPlayer.lastName,
       shirtNumber: prismaPlayer.shirtNumber,
       position: prismaPlayer.position,
-      status,
       createdAt: prismaPlayer.createdAt,
       updatedAt: prismaPlayer.updatedAt,
     });

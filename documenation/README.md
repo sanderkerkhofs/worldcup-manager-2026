@@ -37,5 +37,5 @@ HTML version:
 - **Backend:** Express + TypeScript + Prisma + PostgreSQL
 - **Frontend:** Next.js + TypeScript + SWR
 - **Auth:** JWT-based, role-aware access
-- **Main roles:** ADMIN, COACH, REFEREE, GUEST
+- **Main roles:** ADMIN, REFEREE, GUEST
 - **Match statuses:** NOT_STARTED, IN_PROGRESS, COMPLETED

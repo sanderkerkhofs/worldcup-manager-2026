@@ -3,8 +3,8 @@
 ## 1. Core Entities
 
 - **User**: platform account with role and optional team assignment.
-- **Team**: national team metadata, coach name, flag, short code.
-- **Player**: belongs to a team, has shirt number and availability state.
+- **Team**: national team metadata, flag, short code.
+- **Player**: belongs to a team, has shirt number and position.
 - **Match**: fixture that stores round metadata directly (`roundOrderNumber`, `roundName`), links teams and referee, and stores score/status.
 - **Goal**: event in a match by a player at a minute.
 
@@ -34,7 +34,6 @@ erDiagram
         string country
         string countryShortName
         string countryFlag
-        string coach
         datetime createdAt
         datetime updatedAt
     }
@@ -46,7 +45,6 @@ erDiagram
         string lastName
         int shirtNumber
         string position
-        string status
         datetime createdAt
         datetime updatedAt
     }
@@ -79,7 +77,6 @@ erDiagram
     TEAM ||--o{ MATCH : homeTeam
     TEAM ||--o{ MATCH : awayTeam
     USER ||--o{ MATCH : assignedReferee
-    USER o|--|| TEAM : coachUserOptional
     MATCH ||--o{ GOAL : contains
     PLAYER ||--o{ GOAL : scores
     TEAM ||--o{ GOAL : creditedTo
@@ -118,4 +115,4 @@ This separation is useful for reporting and auditability.
 - Round ordering is preserved through `Match.roundOrderNumber`.
 - Match status lifecycle supports operational workflow.
 - Goal events support detailed score reconstruction.
-- Team/player separation enables coach-driven availability control.
+- Team and player separation enables clear role-based access control.

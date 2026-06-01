@@ -179,14 +179,12 @@ function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>):
 
   return goalTeams.map((teamId) => {
     const teamPlayers = playersByTeam.get(teamId) ?? [];
-    const availablePlayers = teamPlayers.filter((player) => player.status === 'AVAILABLE');
-    const scorerPool = availablePlayers.length > 0 ? availablePlayers : teamPlayers;
 
-    if (scorerPool.length === 0) {
+    if (teamPlayers.length === 0) {
       throw new ValidationError('Unable to simulate a goal without players for one of the teams.');
     }
 
-    const scorer = scorerPool[randomInt(0, scorerPool.length - 1)];
+    const scorer = teamPlayers[randomInt(0, teamPlayers.length - 1)];
 
     return {
       playerId: scorer.id,

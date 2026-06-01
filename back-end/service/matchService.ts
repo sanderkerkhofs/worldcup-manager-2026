@@ -82,10 +82,6 @@ async function validateGoalInput(matchId: string, goal: GoalInputDto) {
     throw new ValidationError('Goal team must match the selected player team.');
   }
 
-  if (player.status !== 'AVAILABLE') {
-    throw new ValidationError('Only available players can be used as goal scorers.');
-  }
-
   if (goal.teamId !== match.homeTeamId && goal.teamId !== match.awayTeamId) {
     throw new ValidationError('Goal team must be one of the teams in the match.');
   }

@@ -1,5 +1,5 @@
 import { api } from '../lib/api';
-import { CompetitionOverview, Goal, GoalInput, Match, MatchStatus, Player, PlayerStatus, Round, RoundSimulationResult, TopScorerRow, TournamentResetResult } from '../types';
+import { CompetitionOverview, Goal, GoalInput, Match, MatchStatus, Player, Round, RoundSimulationResult, TopScorerRow, TournamentResetResult } from '../types';
 
 export function getOverview(token?: string | null) {
   return api.get<CompetitionOverview>('/api/competition', token);
@@ -23,10 +23,6 @@ export function getMatch(matchId: string, token?: string | null) {
 
 export function getPlayers(teamId: string, token?: string | null) {
   return api.get<Player[]>(`/api/players?teamId=${encodeURIComponent(teamId)}`, token);
-}
-
-export function updatePlayerStatus(playerId: string, status: PlayerStatus, token: string) {
-  return api.patch<Player>(`/api/players/${playerId}/status`, { status }, token);
 }
 
 export function updateMatchStatus(matchId: string, status: MatchStatus, token: string) {

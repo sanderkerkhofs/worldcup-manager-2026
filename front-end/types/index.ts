@@ -1,5 +1,4 @@
 export type UserRole = 'ADMIN' | 'REFEREE' | 'USER' | 'GUEST';
-export type PlayerStatus = 'AVAILABLE' | 'UNAVAILABLE';
 export type MatchStatus = 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED';
 
 export type AuthUser = {
@@ -31,7 +30,6 @@ export type Player = {
   lastName: string;
   shirtNumber: number;
   position: string;
-  status: PlayerStatus;
   createdAt: string;
   updatedAt: string;
 };

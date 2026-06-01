@@ -38,7 +38,7 @@ Practice these mini-presentations:
 
 1. "How a stage moves from NOT_STARTED to COMPLETED"
 2. "How a referee updates a match safely"
-3. "How a coach changes player availability"
+3. "How referees update match results and goals"
 4. "How role-based access is enforced"
 
 ## Phase 5 - Self-Check Questions

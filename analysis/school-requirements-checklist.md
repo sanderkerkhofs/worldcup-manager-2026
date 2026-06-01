@@ -47,7 +47,7 @@ This checklist translates the additional school requirements into implementation
 - Existing update flow: service -> domain validation -> persistence
 - Team and player base data seeded in the database for lecturer/demo usage
 - Dedicated `Player` table included with unique `player_id`
-- Each team has at least 15 players with a simple availability status
+- Each team has at least 15 seeded players
 - Fixed stages (8th Final, Quarterfinal, Semifinal, Final) seeded in the database
 - Multiple referee users seeded and assignable to matches
 
@@ -84,7 +84,7 @@ This checklist translates the additional school requirements into implementation
 - Passwords hashed with bcrypt
 - JWT token-based authentication active on protected routes
 - Public exceptions: login, register, status, swagger docs, and explicit project-specific exceptions
-- 4 distinct roles in domain model: admin, coach, referee, guest
+- 3 distinct roles in domain model: admin, referee, guest
 - At least 1 route with role-dependent behavior
 - Most frontend pages protected by authentication
 - At least 1 frontend page with role-dependent content
@@ -92,9 +92,7 @@ This checklist translates the additional school requirements into implementation
 - Browser storage used to identify user (temporary requirement)
 - At least 2 values stored and reused via browser storage
 - Admin has full CRUD permissions on competition management entities
-- Coach can only manage own team context (player availability with available/unavailable)
-- Goal scorer links use player IDs for stable top-scorer ranking logic
-- Referee can only select players with available status when registering goal scorers
+- Referee can select any player when registering goal scorers
 - Referee can insert/update match status
 - Referee can insert/update match goals
 - Assigned referee can only update their assigned matches
@@ -139,6 +137,6 @@ Not mandatory to apply in project now (may still be asked in defense):
 - Teams and match status are updated inside active stage matches instead of creating stage structures manually.
 - Match status vocabulary is standardized to: not started, active, completed.
 - Winner progression to the next stage happens only after required matches are completed.
-- Role simplification for demo value: admin = full CRUD, coach = team lineup, referee = match status/goals entry, guest = public read-only.
+- Role simplification for demo value: admin = full CRUD, referee = match status/goals entry, guest = public read-only.
 - Authorization rule: assigned referee can only update assigned match results; admin can update all match results.
 - Conceptual model uses one fixed competition and avoids storing competition metadata in database entities.

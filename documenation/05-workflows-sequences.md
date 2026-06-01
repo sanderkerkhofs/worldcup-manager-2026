@@ -48,23 +48,7 @@ sequenceDiagram
     BE-->>FE: Updated match
 ```
 
-## 4. Coach Availability Flow
-
-```mermaid
-sequenceDiagram
-    participant C as Coach
-    participant FE as Coach Workspace
-    participant BE as Player Service
-    participant DB as PostgreSQL
-
-    C->>FE: Toggle player status
-    FE->>BE: PATCH /api/players/:id/status
-    BE->>BE: Validate role/team scope
-    BE->>DB: Update player status
-    BE-->>FE: Updated player
-```
-
-## 5. End-to-End Bracket Progression
+## 4. End-to-End Bracket Progression
 
 ```mermaid
 flowchart TD

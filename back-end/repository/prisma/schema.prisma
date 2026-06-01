@@ -23,11 +23,6 @@ enum MatchStatus {
   COMPLETED
 }
 
-enum PlayerStatus {
-  AVAILABLE
-  UNAVAILABLE
-}
-
 model User {
   id              String    @id @default(cuid())
   username        String    @unique
@@ -81,16 +76,15 @@ model Match {
 }
 
 model Player {
-  id           String       @id @default(cuid())
+  id           String   @id @default(cuid())
   teamId       String
   firstName    String
   lastName     String
   shirtNumber  Int
   position     String
-  status       PlayerStatus @default(AVAILABLE)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   goals        Goal[]
 
   @@unique([teamId, shirtNumber])

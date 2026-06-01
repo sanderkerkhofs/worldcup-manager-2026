@@ -47,10 +47,6 @@ The seed script creates these login accounts for demo purposes:
 - `elkes` / `elkes123` (user, BEL)
 - `johanp` / `johanp123` (user, BEL)
 
-Example coach login:
-
-- `Domenico_Tedesco` / `coach123` (BEL, COACH, Belgium)
-
 Example referee login:
 
 - `Frank_De_Bleeckere` / `referee123` (BEL, REFEREE, Belgium)

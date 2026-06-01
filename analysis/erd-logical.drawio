@@ -17,7 +17,7 @@
           <mxGeometry x="430" y="240" width="340" height="220" as="geometry"/>
         </mxCell>
 
-        <mxCell id="L6" value="Player&#xa;PK player_id : INT&#xa;FK team_id : INT&#xa;first_name : VARCHAR(100)&#xa;last_name : VARCHAR(100)&#xa;shirt_number : INT&#xa;position : VARCHAR(50)&#xa;status : ENUM('available','unavailable')" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="L6" value="Player&#xa;PK player_id : INT&#xa;FK team_id : INT&#xa;first_name : VARCHAR(100)&#xa;last_name : VARCHAR(100)&#xa;shirt_number : INT&#xa;position : VARCHAR(50)" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="850" y="240" width="340" height="160" as="geometry"/>
         </mxCell>
 

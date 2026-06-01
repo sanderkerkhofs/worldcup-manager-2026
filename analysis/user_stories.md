@@ -111,39 +111,6 @@ As a referee, I want to enter and update match goals and goal scorers so that wi
 +------------------------------------------------------+
 ```
 
-## US-05 Coach Selects Players for Match
-
-As a coach, I want to mark my players as available or unavailable so that the referee can only use available players when registering goal scorers.
-
-### Acceptance Criteria
-
-- Coach can only manage players from their own team
-- Each team has at least 15 seeded players
-- Player status uses fixed values only: available, unavailable
-- Coach can update player status at any time
-- Status changes are stored on the player record
-- System blocks edits for teams not owned by the logged-in coach
-- Referee can only select players with status available when registering goal scorers
-
-### Wireframe
-
-```text
-+------------------------------------------------------+
-| Squad Status                                         |
-+------------------------------------------------------+
-| Team: Netherlands                                    |
-|                                                      |
-| Player                 Status                        |
-| Player A               available                     |
-| Player B               unavailable                   |
-| Player C               available                     |
-| ...                                                  |
-|                                                      |
-| [ Save Status ]                                      |
-| Error: You can only edit your own team.              |
-+------------------------------------------------------+
-```
-
 ## US-06 Progress Winners to Next Stage
 
 As an admin, I want winners to move to the next pre-created stage matches so that knockout progression is managed automatically.
@@ -219,7 +186,7 @@ As a guest, I want to view public competition information only so that private m
 | - Completed matches                                  |
 | - Bracket progress                                   |
 |                                                      |
-| [ Login as Admin, Coach, or Referee ]               |
+| [ Login as Admin or Referee ]                       |
 |                                                      |
 | Access denied: management actions require login.     |
 +------------------------------------------------------+

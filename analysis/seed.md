@@ -37,7 +37,7 @@ Delete order:
 
 Insert order:
 
-1. users (admin, coaches, multiple referees)
+1. users (admin, multiple referees)
 2. 16 teams (randomized selection from a larger pool)
 3. players (15 per team)
 4. precreated knockout matches for all stages
@@ -76,7 +76,6 @@ Notes:
 
 - 16 teams are seeded per run.
 - Each team has 15 players.
-- Player availability is prefilled (`AVAILABLE` for primary squad, `UNAVAILABLE` for remaining players).
 
 ## Match Status Vocabulary
 

@@ -24,7 +24,6 @@ Pages call typed service functions from `front-end/services`.
 ## 3. Role-Based Pages
 
 - `/admin`: user management and round access
-- `/coach`: player availability for coach team
 - `/referee`: assigned match queue and actions
 - `/matches/[matchId]`: detailed match editing
 - `/rounds/[roundId]`: stage controls and match list
@@ -59,7 +58,6 @@ Examples:
 
 - `getOverview()` -> `/api/competition`
 - `updateMatchStatus()` -> `/api/matches/:matchId/status`
-- `updatePlayerStatus()` -> `/api/players/:playerId/status`
 - `simulateRound()` -> `/api/competition/rounds/:roundId/simulate`
 
 The frontend still calls round endpoints, but `roundId` is a stage identifier rather than a persisted round entity id.

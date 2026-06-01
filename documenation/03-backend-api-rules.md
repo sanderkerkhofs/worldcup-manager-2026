@@ -47,7 +47,6 @@ Note: `roundId` is a stage identifier (derived from configured round order), not
 - Goal player must exist.
 - Goal team must match selected player's team.
 - Goal team must be one of the match teams.
-- Player must be `AVAILABLE`.
 
 ## 3. Security Model
 

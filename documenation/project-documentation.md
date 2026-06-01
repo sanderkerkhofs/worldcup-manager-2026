@@ -50,9 +50,9 @@ Primary goal:
 
 Main entities:
 
-- User: roles ADMIN, COACH, REFEREE, GUEST
-- Team: national team with country metadata and coach
-- Player: belongs to a team, has status AVAILABLE/UNAVAILABLE
+- User: roles ADMIN, REFEREE, GUEST
+- Team: national team with country metadata
+- Player: belongs to a team
 - Match: fixture between two teams with status and embedded stage metadata (`roundOrderNumber`, `roundName`)
 - Goal: goal events tied to a match/player/team
 
@@ -68,8 +68,6 @@ Match statuses:
   - Manage users
   - Initiate and simulate stages
   - Edit match status/results/goals
-- COACH:
-  - Update player availability for own team
 - REFEREE:
   - Update assigned match status/results/goals
 - GUEST:
@@ -93,12 +91,7 @@ Match statuses:
 - Validation ensures:
   - teams exist when required
   - no draw for knockout completion
-  - only available players can be selected for goals
-
-### 6.3 Coach Workspace
-
-- Coach sees team context
-- Player availability can be toggled
+  - valid player IDs for goal registration
 
 ## 7. API Surface (High-Level)
 
@@ -133,7 +126,6 @@ Note: `roundId` is a stage identifier in API routes and responses, not a persist
 - `GET /api/players/:playerId`
 - `POST /api/players` (ADMIN)
 - `PUT /api/players/:playerId` (ADMIN)
-- `PATCH /api/players/:playerId/status` (ADMIN/COACH)
 - `DELETE /api/players/:playerId` (ADMIN)
 
 ### Matches
@@ -188,7 +180,6 @@ npm run dev
 ## 9. Seeded Example Accounts
 
 - admin / admin123
-- Domenico_Tedesco / coach123 (coach example)
 - Frank_De_Bleeckere / referee123 (referee example)
 
 ## 10. Quality and Validation

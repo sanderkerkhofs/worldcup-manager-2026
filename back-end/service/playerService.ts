@@ -1,7 +1,7 @@
 import { prisma } from '../repository/prisma/client';
 import { NotFoundError, ValidationError } from '../util/errors';
 import { Player } from '../model/player';
-import { PlayerCreateDto, PlayerStatus, PlayerUpdateDto } from '../types';
+import { PlayerCreateDto, PlayerUpdateDto } from '../types';
 
 export async function listPlayers(teamId?: string) {
   const players = await prisma.player.findMany({
@@ -49,7 +49,6 @@ export async function createPlayer(input: PlayerCreateDto) {
       lastName: input.lastName,
       shirtNumber: input.shirtNumber,
       position: input.position,
-      status: input.status ?? 'AVAILABLE',
     },
   });
 
@@ -66,26 +65,10 @@ export async function updatePlayer(playerId: string, input: PlayerUpdateDto) {
       lastName: input.lastName ?? existingPlayer.lastName,
       shirtNumber: input.shirtNumber ?? existingPlayer.shirtNumber,
       position: input.position ?? existingPlayer.position,
-      status: input.status ?? existingPlayer.status,
     },
   });
 
   return Player.from(player);
-}
-
-export async function updatePlayerStatus(playerId: string, status: PlayerStatus) {
-  const player = await prisma.player.findUnique({ where: { id: playerId } });
-
-  if (!player) {
-    throw new NotFoundError('Player was not found.');
-  }
-
-  const updated = await prisma.player.update({
-    where: { id: playerId },
-    data: { status },
-  });
-
-  return Player.from(updated);
 }
 
 export async function deletePlayer(playerId: string) {

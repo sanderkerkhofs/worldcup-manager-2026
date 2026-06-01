@@ -2,7 +2,7 @@
 
 ## 1. Goal
 
-Build a full-stack web app named worldcup-manager-2026 that manages one fixed World Cup style knockout competition (starting from 8th Final) to final winner, using clear role-based permissions (admin, coach, referee, guest).
+Build a full-stack web app named worldcup-manager-2026 that manages one fixed World Cup style knockout competition (starting from 8th Final) to final winner, using clear role-based permissions (admin, referee, guest).
 
 ## 2. Deliverables for Project Analysis
 
@@ -26,7 +26,7 @@ Build a full-stack web app named worldcup-manager-2026 that manages one fixed Wo
 - Referee inserts and updates goals with scored-by-player data
 - Move winners to next round
 - View competition bracket progress
-- Role-based views for admin, coach, referee, and guest
+- Role-based views for admin, referee, and guest
 
 ## 4. Core Domain Model
 
@@ -54,7 +54,7 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 - Admin can assign/update teams in stage matches
 - Admin can schedule matches
 - Coach can select players for matches of their own team
-- Each team has at least 15 seeded players with a simple availability status
+- Each team has at least 15 seeded players
 - Referee can insert/update match status
 - Referee can insert/update match goals and scored-by-player registration
 - Referee can only select goal scorers who are marked available
@@ -67,7 +67,6 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 ## 5.1 Role Permissions Matrix
 
 - Admin: full CRUD rights for competition data, teams, matches, and public competition data.
-- Coach: can manage player availability for own team using available/unavailable.
 - Referee: can insert/update match status and match goals (including goal scorer registration) only for assigned matches.
 - Guest: read-only access to public competition information.
 
@@ -138,7 +137,7 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 - UI for knockout dashboard
 - Team and match management screens
 - Bracket and stage progression views
-- Role-specific screens/actions for admin, coach, referee, and guest
+- Role-specific screens/actions for admin, referee, and guest
 - Reusable API service layer + useSWR data fetching
 - Dynamic routing, forms with validation, login/register/logout, browser storage integration
 - Role-aware pages and unauthorized access messaging
@@ -167,10 +166,10 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 - Teams and players are seeded in the database for a quick project start
 - Each team contains at least 15 players
 - Each player has a dedicated player ID for stable goal-scoring references
-- Player status is limited to available/unavailable for simple lineup and scorer selection
+- Players are simple fixed imported data from seeded database
 - Pre-created stage matches are visible, with first stage active by default and next stages auto-activated when unlocked
 - Matches can be scheduled, status-updated, and scored
-- Coaches can select players for their own team matches
+- Coaches can view their own team context
 - Referee can insert/update match status and goals
 - Assigned referee can only update their assigned matches
 - Admin can update results of all matches

@@ -15,7 +15,6 @@ This document centralizes the analysis data model in one place:
 - team_id (PK)
 - name
 - country
-- coach
 
 ### Match
 
@@ -38,7 +37,6 @@ This document centralizes the analysis data model in one place:
 - last_name
 - shirt_number
 - position
-- status (available | unavailable)
 
 ### Goal
 
@@ -60,8 +58,6 @@ This document centralizes the analysis data model in one place:
 Business rule highlights:
 
 - each team has at least 15 players
-- player status is fixed to available/unavailable
-- referee can only select available players when registering goal scorers
 - stage progression uses Match.round_order_number ordering (no separate Round table)
 
 ## 3. UML Class Diagram
@@ -72,7 +68,6 @@ classDiagram
     +int team_id
     +string name
     +string country
-    +string coach
   }
 
   class Match {
@@ -95,8 +90,6 @@ classDiagram
     +string last_name
     +int shirt_number
     +string position
-    +PlayerStatus status
-    +setStatus(status)
   }
 
   class Goal {
@@ -132,7 +125,6 @@ erDiagram
     INT team_id PK
     VARCHAR name
     VARCHAR country
-    VARCHAR coach
   }
 
   MATCH {

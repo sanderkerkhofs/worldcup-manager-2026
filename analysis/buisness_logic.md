@@ -20,8 +20,6 @@
 - `REFEREE`
   - Update status and result for assigned matches
   - Add or update goals for assigned matches
-- `COACH`
-  - Update player availability for own team
 - `GUEST`
   - Read-only competition view
 
@@ -45,7 +43,6 @@
 - Goal scorer must:
   - exist
   - belong to the selected scoring team
-  - be `AVAILABLE`
 - Match scores are recalculated from goals when goals are supplied.
 
 ## Stage Actions
