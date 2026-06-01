@@ -82,7 +82,9 @@ Match statuses:
   - View current round fixtures only
   - Access to login/register pages
 
-## 6. MaTournament Simulation Flow
+## 6. Tournament Simulation Flow
+
+### 6.1 Round Simulation (Admin)
 
 1. Admin clicks "Simulate Round" for a round
 2. System validates previous round is complete (or is first round)
@@ -95,7 +97,7 @@ Match statuses:
 ### 6.2 Referee Match Update Flow
 
 1. Referee navigates to assigned match
-2. Referee sets match status through allowed transitions
+2. Referee sets match status through allowed transitions (PLANNED → NOT_STARTED → IN_PROGRESS → FINISHED)
 3. For FINISHED status, referee must provide final score and goals
 4. System validates no previous-round edits after current round has progressed
 5. System validates goal scorers belong to correct teams
@@ -106,23 +108,24 @@ Match statuses:
 1. Admin clicks "Reset Matches"
 2. All matches cleared to PLANNED state
 3. All goals removed
-4. Tournament can be re-simulated from beginning
+4. First-stage matches remain seeded with teams assigned
+5. Tournament can be re-simulated from beginning
 
-5. First-stage matches are seeded as IN_PROGRESS.
-6. Referees/Admin update scores and goals.
-7. Matches are completed.
-8. Next-stage matches are auto-filled with winners.
-9. Next-stage matches become IN_PROGRESS automatically.
+### 6.4 Match Editing (ADMIN/Assigned REFEREE)
 
-### 6.2 Match Editing
+Actions available:
 
-- Update status
+- Update status (with transition validation)
 - Update score
-- Add or edit goals
-- Validation ensures:
-  - teams exist when required
-  - no draw for knockout completion
-  - valid player IDs for goal registration
+- Add goals with scored-by-player data
+- Edit existing goals
+
+Validation ensures:
+
+- Teams exist when required
+- No draw result for knockout completion (one team must have higher score)
+- Valid player IDs belong to correct teams
+- Goal scorers are from the match's home or away team
 
 ## 7. API Surface (High-Level)
 

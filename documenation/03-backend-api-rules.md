@@ -1,98 +1,193 @@
 # 03 - Backend API and Business Rules
 
-## 1. API Areas
+## 1. Complete API Reference
 
-### Auth
+Base URL: `http://localhost:3000`
 
-- `POST /api/auth/register` - Create new USER account
-- `POST /api/auth/login` - Login (any role)
-- `GET /api/auth/me` - Get current authenticated user
+### 1.1 Authentication
 
-### Competition
+- `POST /api/auth/register` - Create new USER account (public)
+  - Body: `{ username: string, password: string }`
+  - Response: `{ user: { id, username, role }, token: string }`
 
-- `GET /api/competition` - Overview with all teams, rounds, matches (statistics visible to authenticated users only)
-- `GET /api/competition/rounds` - List of all rounds with match counts
-- `POST /api/competition/rounds/:roundId/simulate` (ADMIN) - Simulate a round with auto-generated results
-- `POST /api/competition/reset-matches` (ADMIN) - Reset all matches to initial state
+- `POST /api/auth/login` - Login (any role, public)
+  - Body: `{ username: string, password: string }`
+  - Response: `{ user: { id, username, role }, token: string }`
+  - Note: Username lookup is case-insensitive
 
-Note: `roundId` is a numeric stage identifier (1-4) or stage name, not a database `Round` row id.
+- `GET /api/auth/me` - Get current authenticated user (requires JWT)
+  - Response: `{ id, username, role, createdAt, updatedAt }`
 
-Statistics (standings, top scorers) are computed for all users but only displayed on frontend for authenticated users (ADMIN, REFEREE, USER).
+### 1.2 Competition / Tournament
 
-### Teams / Players / Matches / Users
+- `GET /api/competition` - Overview with all teams, rounds, matches (public)
+  - Response: Teams array, rounds array, matches array, standings, topScorers
+  - Note: Statistics only visible in frontend for authenticated users
 
-- Team, player, match, and admin user management endpoints exist under `/api/teams`, `/api/players`, `/api/matches`, `/api/users`.
+- `GET /api/competition/rounds` - List all rounds with match counts (public)
+  - Response: Array of rounds with roundOrderNumber, roundName, matchCount
+
+- `POST /api/competition/rounds/:roundId/simulate` (ADMIN only)
+  - URL: `/api/competition/rounds/1/simulate` or `/api/competition/rounds/quarterFinal/simulate`
+  - Response: Simulated round details with matches and generated results
+  - Actions: Auto-generates non-draw results, creates Goal records, advances winners to next round
+
+- `POST /api/competition/reset-matches` (ADMIN only)
+  - Response: Confirmation of reset
+  - Actions: Clears all matches to PLANNED, removes all goals
+
+### 1.3 Matches
+
+- `GET /api/matches` - List all matches with results (public)
+  - Query: optional filters
+  - Response: Array of matches with all details
+
+- `GET /api/matches/top-scorers` - Top scorers ranking (public)
+  - Response: Array of players with goal count, sorted descending
+
+- `GET /api/matches/:matchId` - Get specific match (public)
+  - Response: Match details with score, goals, teams, status
+
+- `PATCH /api/matches/:matchId/status` (ADMIN/assigned REFEREE)
+  - Body: `{ status: "NOT_STARTED" | "IN_PROGRESS" | "FINISHED" }`
+  - Response: Updated match
+  - Restrictions: Referees can only update assigned matches
+
+- `PUT /api/matches/:matchId/result` (ADMIN/assigned REFEREE)
+  - Body: `{ homeScore: number, awayScore: number }`
+  - Response: Updated match
+  - Restrictions: Referees can only update assigned matches; no draw allowed
+
+- `POST /api/matches/:matchId/goals` (ADMIN/assigned REFEREE)
+  - Body: `{ playerId: string, teamId: string, scoredMinute?: number }`
+  - Response: Created goal (201)
+  - Restrictions: Player must belong to the goal team; team must be in match
+
+- `PATCH /api/matches/:matchId/goals/:goalId` (ADMIN/assigned REFEREE)
+  - Body: `{ playerId: string, teamId: string, scoredMinute?: number }`
+  - Response: Updated goal
+  - Restrictions: Referees can only update goals in assigned matches
+
+### 1.4 Players
+
+- `GET /api/players` - List all players (public)
+  - Query: `?teamId=<teamId>` to filter by team
+  - Response: Array of players with names, shirt numbers, positions
+
+- `GET /api/players/:playerId` - Get specific player (public)
+  - Response: Player details with team information
+
+### 1.5 Users (Admin only)
+
+- `GET /api/users` (ADMIN only)
+  - Response: Array of all users with roles
+
+- `DELETE /api/users/:userId` (ADMIN only)
+  - Response: 204 No Content
+  - Restrictions: Admin cannot delete themselves
 
 ## 2. Key Business Rules
 
 ### 2.1 Match Status Lifecycle
 
-- All matches start as `PLANNED` (seeded)
-- Referee or Admin can move to `NOT_STARTED` (match initiated)
-- Referee can move to `IN_PROGRESS` (match started)
-- Referee can move to `FINISHED` (match completed with score)
-- Admin can manually transition or use simulate to auto-progress
-- Referees have restricted transitions (cannot directly to FINISHED, must go through IN_PROGRESS)
+All matches start as `PLANNED` (seeded at database initialization).
+
+Valid transitions:
+
+- PLANNED → NOT_STARTED: Initiated by ADMIN or assigned REFEREE
+- NOT_STARTED → IN_PROGRESS: Started by ADMIN or assigned REFEREE
+- IN_PROGRESS → FINISHED: Completed by ADMIN or assigned REFEREE
+- FINISHED → NOT_STARTED: ADMIN only (to retry/reset single match)
+
+Restrictions:
+
+- Referees cannot make all transitions; must follow required flow (no skip to FINISHED)
+- Admin can force any transition
+- FINISHED status requires valid score and goal records
 
 ### 2.2 Stage Simulation (Admin Only)
 
-- Admin calls simulate on a stage (roundId)
-- System validates previous stage is fully `FINISHED` (or is first stage)
-- System auto-generates non-draw results for all matches
-- System creates Goal records for each generated goal
-- System marks all matches as `FINISHED`
-- System auto-populates next stage teams from winners
-- Can be called multiple times to regenerate results (for testing)
+When admin calls `POST /api/competition/rounds/:roundId/simulate`:
 
-### 2.3 Match Update Rules
+1. System validates previous round is fully FINISHED (or is first round)
+2. System generates non-draw results for all matches in the round (winner always determined)
+3. System creates Goal records for each generated goal
+4. System marks all matches as FINISHED
+5. System auto-populates next round teams from winners (winner becomes home or away in next stage)
+6. Simulation can be called multiple times to regenerate results (for testing/demo)
 
-- Only ADMIN or assigned REFEREE can update match status/result/goals
-- For non-first rounds, edits are blocked until all previous-round matches are `FINISHED`
-- `IN_PROGRESS` and `FINISHED` require known teams assigned to match
-- `FINISHED` requires valid score and non-draw result
-- Referees have restricted status transitions (cannot set to NOT_STARTED if already IN_PROGRESS)
+### 2.3 Match Update Rules (ADMIN/REFEREE)
 
-### 2.4 Goal Rules
+- Only ADMIN or assigned REFEREE can call update endpoints
+- For non-first rounds, edits are blocked until all previous-round matches are FINISHED
+- FINISHED status requires valid score (no draw) and Goal records
+- Score cannot be equal (non-draw requirement for knockout)
+- When setting FINISHED, at least one goal must exist (or app allows 1-0, 2-1 type scores)
 
-- Goal player must exist in the system
-- Goal team must match selected player's team
+### 2.4 Goal Scoring Rules
+
+- Goal player (`playerId`) must exist in system
+- Goal team must match player's team
 - Goal team must be one of the match's home/away teams
+- Multiple goals by same player are allowed
+- Goals are persisted with optional `scoredMinute` metadata
 
-## 3. Security Model
+### 2.5 Referee Assignment & Access
 
-- JWT is validated on protected routes.
-- Route-level role checks block unauthorized actions.
-- Service-level checks enforce ownership/context (for referee actions).
+- Referees are assigned to first-stage matches only
+- Referees see their assigned matches in a queue on the referee page
+- Referees can only update (status, result, goals) on their assigned matches
+- Admin can update any match regardless of assignment
+- Referee role has restricted status transitions (no direct PLANNED → FINISHED)
 
-## 4. Error Strategy
+### 2.6 Round/Stage Progression
 
-The backend uses typed errors:
+- System internally uses numeric roundOrderNumber (1, 2, 3, 4) and text roundName (eighthFinal, quarterFinal, semiFinal, final)
+- API routes accept both `/api/competition/rounds/1/simulate` and `/api/competition/rounds/quarterFinal/simulate`
+- Round advancement is automatic when all matches in round are FINISHED
+- Next round matches are pre-created with winner team assignments
 
-- ValidationError
-- NotFoundError
-- ForbiddenError
-- UnauthorizedError
+## 3. Security & Authentication
 
-This keeps API responses consistent and easy for frontend handling.
+- JWT token required for protected routes
+- Token issued on login/register, stored in browser
+- Route-level role checks (requireRoles middleware) block unauthorized actions
+- Service-level checks enforce context (ownership, assignment, stage progression)
 
-## 6. Match Status Values
+## 4. Error Handling
 
-The implementation uses these standardized statuses:
+The backend uses typed errors for consistent API responses:
 
-- `PLANNED` - initial seeded state
-- `NOT_STARTED` - match initiated, ready to start
-- `IN_PROGRESS` - match in progress
-- `FINISHED` - match completed with final score
+- `ValidationError` (400) - Invalid input, business rule violation
+- `NotFoundError` (404) - Resource not found
+- `ForbiddenError` (403) - Permission denied (not authorized for action)
+- `UnauthorizedError` (401) - No valid JWT or token expired
 
-Note: Some documentation may reference `COMPLETED` which is equivalent to `FINISHED` in the implementation.
+All errors include `message` and optionally `details` for debugging.
 
-Username matching for login is case-insensitive in service lookup.
-This improves usability while preserving unique identity semantics.
+## 5. Data Types & Status Values
 
-## 7. Swagger As API Contract
+Match statuses (standardized):
 
-Swagger UI (`/api-docs`) reflects endpoint contracts and should be used by:
+- `PLANNED` - Initial seeded state, ready for start
+- `NOT_STARTED` - Match initiated, countdown phase
+- `IN_PROGRESS` - Match currently being played
+- `FINISHED` - Match completed with final score
 
-- frontend development
-- testing
-- demos and evaluation
+User roles:
+
+- `ADMIN` - Full system access (simulate, reset, user management)
+- `REFEREE` - Match update access (assigned matches only)
+- `USER` - Authenticated read-only
+- `GUEST` - Unauthenticated, limited home/fixture access
+
+## 6. Swagger as API Contract
+
+Swagger UI at `http://localhost:3000/api-docs` provides:
+
+- Live-executable API endpoints
+- Complete request/response schemas
+- Authentication flow demo
+- Try-it-out button for testing
+
+Frontend and QA should use Swagger as the source of truth for endpoint contracts.
