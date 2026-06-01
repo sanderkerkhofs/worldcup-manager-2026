@@ -1,6 +1,6 @@
 export type UserRole = 'ADMIN' | 'REFEREE' | 'USER' | 'GUEST';
 
-export type MatchStatus = 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED';
+export type MatchStatus = 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED';
 
 export type CompetitionMetadata = {
   name: string;

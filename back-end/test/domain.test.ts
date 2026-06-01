@@ -10,7 +10,6 @@ describe('Team domain validation', () => {
       country: 'Argentina',
       countryShortName: 'ARG',
       countryFlag: '🇦🇷',
-      coach: 'Lionel Scaloni',
     });
 
     expect(team.name).toBe('Argentina');
@@ -24,7 +23,6 @@ describe('Team domain validation', () => {
       country: 'Argentina',
       countryShortName: 'ARG',
       countryFlag: '🇦🇷',
-      coach: 'Coach',
     })).toThrow('Team name is required.');
   });
 });

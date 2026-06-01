@@ -40,8 +40,8 @@ async function assertRoundUnlocked(match: { roundOrderNumber: number }) {
     select: { status: true },
   });
 
-  if (previousRoundMatches.length === 0 || previousRoundMatches.some((item) => item.status !== 'COMPLETED')) {
-    throw new ValidationError('Cannot edit this match until all matches in the previous round are COMPLETED.');
+  if (previousRoundMatches.length === 0 || previousRoundMatches.some((item) => item.status !== 'FINISHED')) {
+    throw new ValidationError('Cannot edit this match until all matches in the previous round are FINISHED.');
   }
 }
 
@@ -158,11 +158,11 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
   await assertRoundUnlocked(match);
   assertStatusTransition(match.status as MatchStatus, status, actor);
 
-  if ((status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'FINISHED' || status === 'COMPLETED') && (!match.homeTeamId || !match.awayTeamId)) {
+  if ((status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'FINISHED') && (!match.homeTeamId || !match.awayTeamId)) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
-  if (status === 'FINISHED' || status === 'COMPLETED') {
+  if (status === 'FINISHED') {
     if (match.homeScore === null || match.awayScore === null) {
       throw new ValidationError('Provide a valid score before finishing the match.');
     }
@@ -177,7 +177,7 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
     data: { status },
   });
 
-  if (status === 'FINISHED' || status === 'COMPLETED') {
+  if (status === 'FINISHED') {
     await createNextRoundMatchesIfReady(String(updated.roundOrderNumber));
   }
 

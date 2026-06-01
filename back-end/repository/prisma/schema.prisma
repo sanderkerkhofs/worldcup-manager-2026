@@ -20,7 +20,6 @@ enum MatchStatus {
   NOT_STARTED
   IN_PROGRESS
   FINISHED
-  COMPLETED
 }
 
 model User {
@@ -41,11 +40,10 @@ model Team {
   country      String
   countryShortName String
   countryFlag  String
-  coach        String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   players      Player[]
-  coachUsers   User[]
+  users        User[]
   homeMatches  Match[]  @relation("HomeTeam")
   awayMatches  Match[]  @relation("AwayTeam")
   goals        Goal[]

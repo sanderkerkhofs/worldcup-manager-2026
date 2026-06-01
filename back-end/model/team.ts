@@ -7,7 +7,6 @@ export class Team {
   public readonly country: string;
   public readonly countryShortName: string;
   public readonly countryFlag: string;
-  public readonly coach: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -17,7 +16,6 @@ export class Team {
     country,
     countryShortName,
     countryFlag,
-    coach,
     createdAt,
     updatedAt,
   }: {
@@ -26,7 +24,6 @@ export class Team {
     country: string;
     countryShortName: string;
     countryFlag: string;
-    coach: string;
     createdAt?: Date;
     updatedAt?: Date;
   }) {
@@ -46,16 +43,11 @@ export class Team {
       throw new ValidationError('Team country flag is required.');
     }
 
-    if (!coach.trim()) {
-      throw new ValidationError('Team coach is required.');
-    }
-
     this.id = id;
     this.name = name;
     this.country = country;
     this.countryShortName = countryShortName;
     this.countryFlag = countryFlag;
-    this.coach = coach;
     this.createdAt = createdAt ?? new Date();
     this.updatedAt = updatedAt ?? new Date();
   }
@@ -67,7 +59,6 @@ export class Team {
       country: prismaTeam.country,
       countryShortName: prismaTeam.countryShortName,
       countryFlag: prismaTeam.countryFlag,
-      coach: prismaTeam.coach,
       createdAt: prismaTeam.createdAt,
       updatedAt: prismaTeam.updatedAt,
     });

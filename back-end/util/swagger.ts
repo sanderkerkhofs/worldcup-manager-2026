@@ -93,7 +93,7 @@ export const swaggerDocument = {
           homeScore: { type: ['integer', 'null'] },
           awayScore: { type: ['integer', 'null'] },
           matchDate: { type: 'string', format: 'date-time' },
-          status: { type: 'string', enum: ['PLANNED', 'NOT_STARTED', 'IN_PROGRESS', 'FINISHED', 'COMPLETED'] },
+          status: { type: 'string', enum: ['PLANNED', 'NOT_STARTED', 'IN_PROGRESS', 'FINISHED'] },
         },
       },
       Goal: {

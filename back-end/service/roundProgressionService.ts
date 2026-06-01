@@ -27,7 +27,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
 
   // Only advance the bracket once every match in the current round has been scored and closed.
   const allMatchesCompleted = completedRoundMatches.every((match) => (
-    (match.status === 'FINISHED' || match.status === 'COMPLETED')
+    match.status === 'FINISHED'
       && typeof match.homeScore === 'number'
       && typeof match.awayScore === 'number'
   ));
@@ -42,10 +42,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   });
 
   if (nextRoundMatches.length === 0) {
-    await prisma.match.updateMany({
-      where: { roundOrderNumber: completedRoundOrderNumber, status: 'FINISHED' },
-      data: { status: 'COMPLETED' },
-    });
+    // No next round exists - this round is the final round, so just leave matches as FINISHED
     return;
   }
 
@@ -79,10 +76,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   const hasAllTeamsAssigned = nextRoundMatches.every((match) => match.homeTeamId && match.awayTeamId);
 
   if (hasAllTeamsAssigned) {
-    await prisma.match.updateMany({
-      where: { roundOrderNumber: completedRoundOrderNumber, status: 'FINISHED' },
-      data: { status: 'COMPLETED' },
-    });
+    // All teams already assigned - no need to update current round
     return;
   }
 
@@ -105,10 +99,5 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
         },
       });
     }
-
-    await transaction.match.updateMany({
-      where: { roundOrderNumber: completedRoundOrderNumber, status: 'FINISHED' },
-      data: { status: 'COMPLETED' },
-    });
   });
 }

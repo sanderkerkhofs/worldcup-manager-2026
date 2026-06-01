@@ -20,8 +20,7 @@ function isMatchStatus(status: string): status is MatchStatus {
   return status === 'PLANNED'
     || status === 'NOT_STARTED'
     || status === 'IN_PROGRESS'
-    || status === 'FINISHED'
-    || status === 'COMPLETED';
+    || status === 'FINISHED';
 }
 
 export class Match {
