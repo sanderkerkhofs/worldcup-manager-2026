@@ -14,14 +14,21 @@
 ## Roles and Permissions
 
 - `ADMIN`
-  - Initiate a stage
-  - Simulate a stage
+  - Simulate stages (auto-initializes and progresses stages)
+  - Reset matches to initial state
   - Manage users (list and delete users, except self-delete)
 - `REFEREE`
   - Update status and result for assigned matches
   - Add or update goals for assigned matches
-- `GUEST`
-  - Read-only competition view
+  - View current round, matches, and statistics
+- `USER` (authenticated)
+  - View current round and matches
+  - View statistics (standings, top scorers)
+  - Read-only tournament access
+- `GUEST` (unauthenticated)
+  - View current round fixtures only
+  - Access to login/register pages
+  - No access to statistics or detailed match information
 
 ## Stage Progression Rules
 
@@ -36,6 +43,15 @@
   - match3 winner vs match4 winner
   - and so on
 
+## Match Status Lifecycle
+
+Match statuses progress in one direction:
+
+- `PLANNED` - initial state (precreated matches)
+- `NOT_STARTED` - after admin initiates/simulates or referee starts
+- `IN_PROGRESS` - while match is being played
+- `FINISHED` - when match is completed with final result
+
 ## Match Rules
 
 - Knockout matches cannot end in a draw.
@@ -47,13 +63,20 @@
 
 ## Stage Actions
 
-- `Initiate stage`
-  - Sets selected stage matches from `NOT_STARTED` to `IN_PROGRESS`.
-  - For non-first stages, this is allowed only when the previous stage is fully completed.
 - `Simulate stage`
-  - Creates non-draw goal events
-  - Sets each match to `COMPLETED`
-  - Auto-fills next-stage teams when ready
+  - Progresses stage through lifecycle automatically
+  - For first stage: ensures matches exist and have teams assigned
+  - For subsequent stages: validates previous stage is complete
+  - Creates realistic non-draw goal events for each match
+  - Sets each match to `FINISHED` with complete results
+  - Auto-fills next-stage teams when current stage completes
+  - Can be run multiple times to regenerate results (for testing)
+
+- `Reset matches`
+  - Clears all match results and goalsFINISHED`.
+- This lock is enforced for status updates, result updates, goal insertions, and goal edits.
+- The lock prevents accidental edits to early-stage results after progression
+  - Allows re-running simulations from the beginning
 
 ## Edit Lock Rule
 

@@ -54,11 +54,14 @@ This document centralizes the analysis data model in one place:
 - Team 1 -> N Goal
 - Match N -> 1 Team (home_team_id)
 - Match N -> 1 Team (away_team_id)
+- Match N -> 1 User (referee_id, optional)
 
 Business rule highlights:
 
 - each team has at least 15 players
 - stage progression uses Match.round_order_number ordering (no separate Round table)
+- matches are pre-created at database seed time with PLANNED status
+- teams are assigned to matches during seeding (first stage) or during simulation (subsequent stages)
 
 ## 3. UML Class Diagram
 

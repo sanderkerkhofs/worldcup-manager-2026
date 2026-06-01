@@ -7,14 +7,14 @@ import { useSession } from '../lib/useSession';
 import { useI18n } from '../lib/i18n';
 
 export default function HomePage() {
-  const { token } = useSession();
+  const { token, isAuthenticated } = useSession();
   const { locale, t } = useI18n();
   const { data: overview, error, isLoading } = useSWR(['overview', token ?? 'public'], () => getOverview(token));
 
   const rounds = overview?.rounds ?? [];
   const matches = overview?.matches ?? [];
-  const standings = overview?.standings ?? [];
-  const topScorers = overview?.topScorers ?? [];
+  const standings = isAuthenticated ? (overview?.standings ?? []) : [];
+  const topScorers = isAuthenticated ? (overview?.topScorers ?? []) : [];
 
   const teamById = new Map((overview?.teams ?? []).map((team) => [team.id, team]));
   const orderedRounds = useMemo(
@@ -112,70 +112,74 @@ export default function HomePage() {
       </section>
 
       <section className="gridCols">
-        <article className="panelCard stack">
-          <p className="eyebrow">{t('homeTop5Standings')}</p>
-          <div className="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>{t('colTeam')}</th>
-                  <th>P</th>
-                  <th>W</th>
-                  <th>D</th>
-                  <th>L</th>
-                  <th>{t('colPTS')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topFiveStandings.map((row) => (
-                  <tr key={row.teamId}>
-                    <td>{teamById.get(row.teamId)?.countryFlag ? `${teamById.get(row.teamId)?.countryFlag} ` : ''}{row.teamName}</td>
-                    <td>{row.played}</td>
-                    <td>{row.won}</td>
-                    <td>{row.drawn}</td>
-                    <td>{row.lost}</td>
-                    <td>{row.points}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </article>
-
-        <article className="panelCard stack">
-          <p className="eyebrow">{t('homeTop5Goalscorers')}</p>
-          <div className="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>{t('colPlayer')}</th>
-                  <th>{t('colTeam')}</th>
-                  <th>{t('colGoals')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topFiveScorers.length > 0 ? (
-                  topFiveScorers.map((row) => (
-                    <tr key={row.playerId}>
-                      <td>{row.playerName}</td>
-                      <td>{row.teamCountryFlag} {row.teamName}</td>
-                      <td>{row.goals}</td>
+        {isAuthenticated && (
+          <>
+            <article className="panelCard stack">
+              <p className="eyebrow">{t('homeTop5Standings')}</p>
+              <div className="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{t('colTeam')}</th>
+                      <th>P</th>
+                      <th>W</th>
+                      <th>D</th>
+                      <th>L</th>
+                      <th>{t('colPTS')}</th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={3} className="tableEmptyCell">
-                      <div className="tableEmptyState">
-                        <strong className="tableEmptyTitle">{t('homeNoScorersYet')}</strong>
-                        <span className="tableEmptyHint">{t('homeScorersHint')}</span>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </article>
+                  </thead>
+                  <tbody>
+                    {topFiveStandings.map((row) => (
+                      <tr key={row.teamId}>
+                        <td>{teamById.get(row.teamId)?.countryFlag ? `${teamById.get(row.teamId)?.countryFlag} ` : ''}{row.teamName}</td>
+                        <td>{row.played}</td>
+                        <td>{row.won}</td>
+                        <td>{row.drawn}</td>
+                        <td>{row.lost}</td>
+                        <td>{row.points}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article className="panelCard stack">
+              <p className="eyebrow">{t('homeTop5Goalscorers')}</p>
+              <div className="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{t('colPlayer')}</th>
+                      <th>{t('colTeam')}</th>
+                      <th>{t('colGoals')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topFiveScorers.length > 0 ? (
+                      topFiveScorers.map((row) => (
+                        <tr key={row.playerId}>
+                          <td>{row.playerName}</td>
+                          <td>{row.teamCountryFlag} {row.teamName}</td>
+                          <td>{row.goals}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={3} className="tableEmptyCell">
+                          <div className="tableEmptyState">
+                            <strong className="tableEmptyTitle">{t('homeNoScorersYet')}</strong>
+                            <span className="tableEmptyHint">{t('homeScorersHint')}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </>
+        )}
       </section>
     </div>
   );

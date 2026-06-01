@@ -84,7 +84,7 @@ This checklist translates the additional school requirements into implementation
 - Passwords hashed with bcrypt
 - JWT token-based authentication active on protected routes
 - Public exceptions: login, register, status, swagger docs, and explicit project-specific exceptions
-- 3 distinct roles in domain model: admin, referee, guest
+- 4 distinct roles in domain model: ADMIN, REFEREE, USER (authenticated), GUEST (unauthenticated)
 - At least 1 route with role-dependent behavior
 - Most frontend pages protected by authentication
 - At least 1 frontend page with role-dependent content
@@ -98,6 +98,9 @@ This checklist translates the additional school requirements into implementation
 - Assigned referee can only update their assigned matches
 - Admin can update results for all matches
 - Match result submission stores goal scorer player data
+- User role can view matches and statistics (read-only, authenticated)
+- Guest (unauthenticated) users can view limited home page with current round fixtures only
+- Statistics (standings, top scorers) visible only to authenticated users
 - Guest can access public read-only pages only
 
 ## 10. Lecturer Test Users

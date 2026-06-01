@@ -35,11 +35,12 @@ This separation makes the code easier to test, reason about, and extend.
 
 The frontend is organized by responsibility:
 
-- **pages/**: route-level pages (`/`, `/login`, `/rounds/[id]`, `/matches/[matchId]`, etc.). The `/rounds` overview route redirects to `/`.
-- **components/**: reusable panels/forms/layout pieces
-- **services/**: typed API calls (`getOverview`, `updateMatchStatus`, ...)
-- **lib/**: session state and helper utilities
-- **styles/**: global styling
+- **pages/**: route-level pages (`/`, `/login`, `/admin`, `/referee`, `/matches/[matchId]`, `/rounds/[roundId]`, `/stats`). The dashboard (`/`) is the central hub.
+- **components/**: reusable panels/forms/layout pieces (DashboardPanels, Layout, LoginForm, etc.)
+- **services/**: typed API calls organized by domain (`getOverview`, `simulateRound`, `updateMatchStatus`, etc.)
+- **lib/**: session state, i18n helpers, and session utilities
+- **types/**: shared DTO and response contracts
+- **styles/**: global styling with Tailwind CSS
 
 ## 4. Cross-Cutting Concerns
 

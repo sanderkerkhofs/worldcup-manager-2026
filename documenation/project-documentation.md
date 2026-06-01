@@ -44,13 +44,13 @@ Primary goal:
 - `analysis/`: school analysis and planning artifacts
 - `back-end/`: API, services, domain models, Prisma schema, seed script
 - `front-end/`: UI pages, components, client services, styles
-- `docker-compose.yml`: local PostgreSQL service definition
+- `docker-compose-*.yml`: local PostgreSQL service definitions
 
 ## 4. Core Domain Model
 
 Main entities:
 
-- User: roles ADMIN, REFEREE, GUEST
+- User: roles ADMIN, REFEREE, USER (authenticated), GUEST (unauthenticated)
 - Team: national team with country metadata
 - Player: belongs to a team
 - Match: fixture between two teams with status and embedded stage metadata (`roundOrderNumber`, `roundName`)
@@ -58,30 +58,61 @@ Main entities:
 
 Match statuses:
 
-- NOT_STARTED
-- IN_PROGRESS
-- COMPLETED
+- PLANNED (initial, pre-created)
+- NOT_STARTED (initiated by referee or simulation)
+- IN_PROGRESS (match in play)
+- FINISHED (match completed)
 
 ## 5. Roles and Access
 
 - ADMIN:
-  - Manage users
-  - Initiate and simulate stages
-  - Edit match status/results/goals
-- REFEREE:
+  - Simulate stages to progress tournament
+  - Reset all matches to restart tournament
+  - Manage users (list, delete)
+  - Update any match result or goals
+- REFEREE (authenticated):
   - Update assigned match status/results/goals
-- GUEST:
-  - Read-only/public browsing where allowed
+  - Change status only within allowed transitions
+  - View tournament data (standings, top scorers)
+- USER (authenticated):
+  - View current round and matches
+  - View statistics (standings, top scorers)
+  - Read-only tournament access
+- GUEST (unauthenticated):
+  - View current round fixtures only
+  - Access to login/register pages
 
-## 6. Main Workflows
+## 6. MaTournament Simulation Flow
 
-### 6.1 Competition Progression
+1. Admin clicks "Simulate Round" for a round
+2. System validates previous round is complete (or is first round)
+3. System generates non-draw results for all matches in the round
+4. System creates Goal records from the generated results
+5. System auto-populates next round teams from winners
+6. All matches in round marked as FINISHED
+7. Next round is ready for simulation
 
-1. First-stage matches are seeded as IN_PROGRESS.
-2. Referees/Admin update scores and goals.
-3. Matches are completed.
-4. Next-stage matches are auto-filled with winners.
-5. Next-stage matches become IN_PROGRESS automatically.
+### 6.2 Referee Match Update Flow
+
+1. Referee navigates to assigned match
+2. Referee sets match status through allowed transitions
+3. For FINISHED status, referee must provide final score and goals
+4. System validates no previous-round edits after current round has progressed
+5. System validates goal scorers belong to correct teams
+6. Results are persisted with scored-by-player data
+
+### 6.3 Reset Workflow
+
+1. Admin clicks "Reset Matches"
+2. All matches cleared to PLANNED state
+3. All goals removed
+4. Tournament can be re-simulated from beginning
+
+5. First-stage matches are seeded as IN_PROGRESS.
+6. Referees/Admin update scores and goals.
+7. Matches are completed.
+8. Next-stage matches are auto-filled with winners.
+9. Next-stage matches become IN_PROGRESS automatically.
 
 ### 6.2 Match Editing
 

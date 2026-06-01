@@ -11,3 +11,9 @@
 - All routes documented and executable
 - Controller-level component schemas are fully defined
 - At least one complete route exists for each method: GET, POST, PUT, DELETE
+
+## Testing Requirements (Jest)
+
+- All domain objects fully tested, including validation
+- All services fully tested
+- Controllers manually tested via Swagger (no separate controller tests required)

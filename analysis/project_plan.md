@@ -50,32 +50,31 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 - System uses fixed worldcup-manager-2026 metadata from app configuration (name, year, host country)
 - Teams are seeded automatically; admin does not manually register teams for MVP
 - System provides fixed knockout stages for the competition
-- System auto-activates the first stage and auto-activates next stages after winners are assigned
-- Admin can assign/update teams in stage matches
-- Admin can schedule matches
-- Coach can select players for matches of their own team
-- Each team has at least 15 seeded players
-- Referee can insert/update match status
+- System pre-creates all stage matches with round metadata but undefined teams
+- Admin can simulate stages to auto-progress competition flow
+- Admin can reset all matches to restart the tournament
+- Referee can insert/update match status within allowed transitions
 - Referee can insert/update match goals and scored-by-player registration
-- Referee can only select goal scorers who are marked available
+- Referee can only select goal scorers who belong to their team
 - Assigned referee can only update results for their assigned match
 - Admin can update results for all matches
-- System can compute winners and progression to the next stage
+- System computes winners from goals during simulation and progression to next stage
 - Guest can only view public competition information (fixtures, bracket, results)
 - System stores goals at player level for future top-scorer ranking
 
 ## 5.1 Role Permissions Matrix
 
-- Admin: full CRUD rights for competition data, teams, matches, and public competition data.
-- Referee: can insert/update match status and match goals (including goal scorer registration) only for assigned matches.
-- Guest: read-only access to public competition information.
+- Admin: tournament simulation, reset, user management, match result updates (all)
+- Referee: match status/goal updates for assigned matches, view tournament data (authenticated)
+- User: view current round, matches, and statistics (authenticated, read-only)
+- Guest: view current round fixtures only, access to login/register (unauthenticated)
 
 ## 6. Non-Functional Requirements
 
 - Clear and responsive UI (desktop + mobile)
-- Clear role-based access control and authorization checks per endpoint and page
+- Role-based access control enforced through auth middleware and service-layer checks
 - Data integrity with foreign keys and validation
-- Basic security for authentication and authorization
+- Authentication via JWT tokens
 - Test coverage for core domain logic
 
 ## 7. Proposed Technical Architecture

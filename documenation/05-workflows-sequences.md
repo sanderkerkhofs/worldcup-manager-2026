@@ -17,42 +17,72 @@ sequenceDiagram
     FE->>FE: store session in browser
 ```
 
-## 2. Automatic Stage Activation
+## 2. Tournament Simulation Flow (Admin)
 
 ```mermaid
 sequenceDiagram
-    participant SYS as System
-    participant BE as Competition Service
+    participant A as Admin
+    participant FE as Admin Dashboard
+    participant BE as Tournament Service
     participant DB as PostgreSQL
 
-    SYS->>DB: Seed first stage matches as IN_PROGRESS
-    BE->>DB: Wait until current stage is COMPLETED
-    BE->>DB: Assign winners to next-stage matches
-    BE->>DB: Set next-stage matches to IN_PROGRESS
+    A->>FE: Click "Simulate Round"
+    FE->>BE: POST /api/competition/rounds/:roundId/simulate
+    BE->>BE: Validate previous stage complete (or first stage)
+    BE->>BE: Generate non-draw results for all matches
+    BE->>DB: Create Goal records for generated goals
+    BE->>DB: Update match scores to FINISHED
+    BE->>BE: Assign winners to next stage matches
+    BE->>DB: Update next-stage matches with teams
+    BE-->>FE: Simulation complete response
+    FE->>FE: Refresh bracket view
 ```
 
 ## 3. Referee Match Update Flow
 
-```mermaid
+````mermaid
 sequenceDiagram
     participant R as Referee
     participant FE as Match Editor
     participant BE as Match Service
     participant DB as PostgreSQL
 
-    R->>FE: Set status / score
-    FE->>BE: PATCH status or PUT result
-    BE->>BE: Validate role and assigned match
-    BE->>BE: Validate knockout score rules
-    BE->>DB: Update match + optional goals
-    BE-->>FE: Updated match
-```
+    R->>FE: Set status and/or add goals
+    FE->>BE: PATCH /matches/:matchId/status or PUT /result or POST /goals
+    BE->>BE: Validate role (must be assigned referee)
+    BE->>BE: Validate status transition (PLANNED->NOT_STARTED->IN_PROGRESS->FINISHED)
+    BE->>BE: Validate previous stage completion (edit lock)
+    BE->>BE: Validate knockout rules (non-draw if FINISHED)
+    BE->>DB: Update match status and/or goals
+    BE->>DB: Recalculate match score from goals
+    BETournament Reset Flow (Admin)
 
-## 4. End-to-End Bracket Progression
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant FE as Admin Dashboard
+    participant BE as Tournament Service
+    participant DB as PostgreSQL
+
+    A->>FE: Click "Reset Matches"
+    FE->>BE: POST /api/competition/reset-matches
+    BE->>DB: Delete all Goal records
+    BE->>DB: Clear match scores (set to null)
+    BE->>DB: Reset all matches to PLANNED
+    BE->>DB: Clear teams from non-first-stage matches
+    BE-->>FE: Reset complete response
+    FE->>FE: Refresh bracket view
+````
+
+## 5. End-to-End Bracket Progression
 
 ```mermaid
 flowchart TD
-    A[Precreated matches exist per stage] --> B[First stage starts IN_PROGRESS]
+    A["🌱 Seed: All stages precreated<br/>First stage: teams assigned<br/>Later stages: no teams yet"] -->|Admin clicks Simulate| B["⚙️ Simulate Round 1<br/>Generate results, FINISHED all<br/>Assign winners to Round 2"]
+    B -->|Round 2 ready| C["⚙️ Simulate Round 2<br/>Generate results, FINISHED all<br/>Assign winners to Round 3"]
+    C -->|Round 3 ready| D["⚙️ Simulate Round 3<br/>Generate results, FINISHED all<br/>Assign winners to Final"]
+    D -->|Final ready| E["⚙️ Simulate Final<br/>Generate final result<br/>Tournament complete"]
+    E -->|Admin can| F["Reset all and repeat"age starts IN_PROGRESS]
     B --> C[Referee/Admin enters results]
     C --> D[Matches become COMPLETED]
     D --> E[Service assigns winners to next stage matches]

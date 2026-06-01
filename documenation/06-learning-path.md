@@ -36,35 +36,42 @@ Goal:
 
 Practice these mini-presentations:
 
-1. "How a stage moves from NOT_STARTED to COMPLETED"
-2. "How a referee updates a match safely"
-3. "How referees update match results and goals"
-4. "How role-based access is enforced"
+1. "How a stage simulation progresses the tournament"
+2. "How a referee updates a match result safely"
+3. "How role-based access and edit locks work together"
+4. "Why all matches are pre-created at seed time"
+5. "How simulation generates realistic non-draw results"
 
 ## Phase 5 - Self-Check Questions
 
 Use these to test yourself:
 
-1. Why is there both controller validation and service validation?
-2. Why are goals stored as separate events instead of only a final score?
-3. What checks prevent invalid knockout results?
-4. Why does the frontend use SWR instead of direct fetch in every component?
-5. What would break if `IN_PROGRESS` status was not enforced before result entry?
+1. Why are all matches pre-created at seed time instead of generated during simulation?
+2. Why does the match status have both `PLANNED` and `NOT_STARTED` instead of just one?
+3. What checks prevent a referee from editing a second-round match before the first round is done?
+4. Why are goals stored as separate events instead of only a final score?
+5. How does the admin "simulate" operation differ from manual referee entry?
+6. Why does the system ensure knockout matches cannot end in draws at the service layer?
 
 ## Phase 6 - Improvement Ideas (For Reflection)
 
-Potential next steps you can discuss in evaluation:
+to discuss in evaluation:
 
+- Add match scheduling/date management beyond seeded matches
+- Add player lineup selection (currently all players available)
+- Add team substitution tracking during matches
+- Add support for extra time and penalty shootouts
 - Add audit logging for critical admin/referee actions
-- Add optimistic UI for faster match editor updates
-- Add pagination/filtering for large user and match lists
-- Add integration tests for key role workflows
-- Add migration strategy and production-ready deployment profile
+- Add real-time match updates via WebSockets
+- Add progressive bracket updates (don't require full round completion)
 
 ## Quick Revision Sheet
 
-- **Architecture:** Layered backend + service-centric rules
-- **Data model:** User, Team, Player, Match (with round metadata), Goal
-- **Statuses:** NOT_STARTED -> IN_PROGRESS -> COMPLETED
-- **Security:** JWT + role middleware + contextual checks
+- **Architecture:** Layered backend + service-centric rules + pre-seeded data
+- **Data model:** User (ADMIN/REFEREE/USER/GUEST), Team, Player, Match (with round metadata), Goal
+- **Roles:** ADMIN (full management), REFEREE (match updates, authenticated), USER (read-only, authenticated), GUEST (limited home access, unauthenticated)
+- **Statuses:** PLANNED -> NOT_STARTED -> IN_PROGRESS -> FINISHED
+- **Key feature:** Admin simulation auto-generates non-draw results and progression
+- **Security:** JWT + role middleware + edit lock rules + referee assignment
+- **Statistics:** Visible to authenticated users only (ADMIN, REFEREE, USER); hidden from GUEST
 - **Core value:** Reliable role-driven tournament operations

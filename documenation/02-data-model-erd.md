@@ -10,11 +10,33 @@
 
 ## 2. Match Status Vocabulary
 
-- `NOT_STARTED`
-- `IN_PROGRESS`
-- `COMPLETED`
+- `PLANNED` - initial seeded state
+- `NOT_STARTED` - match initiated by referee/admin
+- `IN_PROGRESS` - match in progress
+- `FINISHED` - match completed with final score
 
-## 3. ERD (Mermaid)
+## 3. Entity Details
+
+### User Roles
+
+- `ADMIN`: tournament simulation and reset
+- `REFEREE`: assigned match updates and tournament data viewing (authenticated)
+- `USER`: read-only tournament data viewing (authenticated)
+- `GUEST`: limited home access only (unauthenticated)
+
+### Match Status Transitions
+
+- PLANNED → NOT_STARTED → IN_PROGRESS → FINISHED
+- Referees have restricted transitions (cannot skip IN_PROGRESS)
+- Admin can transition directly for simulation purposes
+
+### Match Pre-seeding
+
+- First stage: matches pre-created with teams assigned, PLANNED status
+- Subsequent stages: matches pre-created without teams, PLANNED status
+- Teams assigned to later stages during simulation of previous stage
+
+## 4. ERD (Mermaid)
 
 ```mermaid
 erDiagram
@@ -69,7 +91,6 @@ erDiagram
         string matchId FK
         string playerId FK
         string teamId FK
-        int minute
         datetime createdAt
     }
 
