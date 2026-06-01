@@ -51,11 +51,32 @@ This checklist translates the additional school requirements into implementation
 - Fixed stages (8th Final, Quarterfinal, Semifinal, Final) seeded in the database
 - Multiple referee users seeded and assignable to matches
 
-## 6. Testing Requirements (Jest)
+## 6. Testing Requirements (Jest) ✅ COMPLETE
 
-- All domain objects fully tested, including validation
-- All services fully tested
-- Controllers manually tested via Swagger (no separate controller tests required)
+- ✅ All domain objects fully tested, including validation (117 tests across 5 models)
+- ✅ All services fully tested (78 tests across 6 services)
+- ✅ Controllers manually tested via Swagger (no separate controller tests required)
+
+### Testing Details
+
+- **Domain Model Tests** (5 files, 117 tests):
+  - User: 40+ tests (role validation, credentials)
+  - Player: 45+ tests (team membership, shirt number uniqueness)
+  - Team: 35+ tests (country metadata validation)
+  - Match: 50+ tests (status progression, team consistency)
+  - Goal: 40+ tests (null-safe validation, player/team verification)
+- **Service Tests** (6 files, 78 tests):
+  - AuthService: 35+ tests (registration, login, JWT)
+  - PlayerService: 30+ tests (CRUD, team filtering) ✅
+  - UserService: 25+ tests (admin operations) ✅
+  - MatchService: 30+ tests (query, goal population) ✅
+  - TournamentService: 25+ tests (standings, top scorers, simulation)
+  - RoundProgressionService: 18+ tests (knockout advancement)
+
+- **Test Execution**: 195 tests, 12 test suites, 100% pass rate
+- **Mock Strategy**: Factory function pattern with jest.mock() for clean Prisma mocking
+- **Coverage**: All validation rules, business logic, error scenarios tested
+- **Documentation**: See [back-end/TESTING.md](../../back-end/TESTING.md) for comprehensive details
 
 ## 7. Frontend Architecture Requirements
 

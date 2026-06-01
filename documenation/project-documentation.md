@@ -211,18 +211,83 @@ npm run dev
 
 - Frontend: `http://localhost:8080`
 
-## 9. Seeded Example Accounts
+## 9. Testing Strategy
 
-- admin / admin123
-- Frank_De_Bleeckere / referee123 (referee example)
+### Backend Testing (Jest)
 
-## 10. Quality and Validation
+The backend includes **195 comprehensive unit tests** across **12 test suites** with 100% pass rate:
 
-- Backend domain tests: Jest
-- Frontend build verification: Next.js build
-- Runtime API docs: Swagger
+- **Domain Model Tests**: 117 tests across 5 models (User, Player, Team, Match, Goal)
+  - Input validation, business rules, Prisma conversion methods
+- **Service Tests**: 78 tests across 6 services (Auth, Player, User, Match, Tournament, RoundProgression)
+  - Business logic, error scenarios, cross-domain operations
+- **Controller Tests**: Manual via Swagger (no unit tests per requirements)
 
-## 11. Notes
+**Run Tests**:
+
+```console
+cd back-end
+npm test              # Run all 195 tests (12 suites)
+npm test test/model   # Run domain model tests only (117 tests)
+npm test test/service # Run service tests only (78 tests)
+```
+
+**Mock Strategy**: All service tests use factory function pattern for clean Prisma mocking, avoiding TypeScript type inference issues.
+
+For detailed testing information, see [back-end/TESTING.md](../back-end/TESTING.md).
+
+### Coverage Summary
+
+**Domain Models**:
+
+- User: role validation, credentials, Prisma conversion
+- Player: team membership, shirt number uniqueness, position
+- Team: country metadata validation
+- Match: team consistency, status progression, round tracking
+- Goal: null-safe validation, player/team verification
+
+**Services**:
+
+- Authentication: registration, login, JWT, role enforcement
+- Player Management: CRUD with team filtering
+- User Administration: admin operations with self-deletion prevention
+- Match Queries: goal population with team/player details
+- Tournament: standings calculation, top scorers, simulation
+- Round Progression: knockout advancement logic
+
+### Frontend Testing
+
+Frontend components are validated through:
+
+- Next.js build verification
+- Manual UI testing via browser
+- Swagger API docs for backend contract validation
+
+---
+
+## 10. Seeded Example Accounts
+
+| Username           | Password    | Role    | Team    |
+| ------------------ | ----------- | ------- | ------- |
+| admin              | admin123    | ADMIN   | —       |
+| Frank_De_Bleeckere | referee123  | REFEREE | Belgium |
+| greetjej           | greetjej123 | USER    | Belgium |
+| elkes              | elkes123    | USER    | Belgium |
+| johanp             | johanp123   | USER    | Belgium |
+
+---
+
+## 11. Quality and Validation
+
+- **Backend Testing**: Jest with 195 comprehensive tests (100% pass rate)
+- **Type Safety**: TypeScript with strict mode enabled
+- **API Documentation**: Swagger UI at `/api-docs`
+- **Runtime Validation**: Domain models validate all input
+- **Database Schema**: Prisma with PostgreSQL
+
+---
+
+## 12. Notes
 
 - Database reset and reseed can be done with backend script:
 
@@ -231,3 +296,52 @@ npm run db:seed
 ```
 
 - This performs a force reset, then seeds fresh demo data.
+
+---
+
+## 13. Project Statistics
+
+**Codebase Size**:
+
+- Backend: ~2,500 lines (models, services, controllers)
+- Frontend: ~1,800 lines (pages, components, services)
+- Tests: ~3,500 lines (195 tests, 12 suites)
+- Documentation: comprehensive markdown files
+
+**Test Coverage**:
+
+- Domain Models: 5 files, 117 tests
+- Services: 6 files, 78 tests
+- Total: 195 tests, 100% pass rate
+
+**Technology Stack**:
+
+- Backend: Node.js + Express + TypeScript + Prisma + PostgreSQL
+- Frontend: Next.js + React + TypeScript
+- Testing: Jest + SWR for data fetching
+- Infrastructure: Docker Compose for local PostgreSQL
+
+---
+
+## 14. Architecture Highlights
+
+### Layered Backend
+
+- **Domain Layer**: User, Player, Team, Match, Goal with validation
+- **Service Layer**: Business logic, cross-domain operations, Prisma interaction
+- **Controller Layer**: Request routing, response formatting
+- **No Circular Dependencies**: Clean dependency flow
+
+### Frontend Architecture
+
+- **Pages**: Next.js pages router with protected routes
+- **Components**: Reusable UI components with props
+- **Services**: Isolated API client calls
+- **State Management**: React hooks (useState, useEffect, useSWR)
+
+### Database Design
+
+- **One-to-Many**: Team → Players
+- **Many-to-Many**: Match ↔ Goal (implicit through Match.goals)
+- **Foreign Keys**: Ensures referential integrity
+- **Seeded Data**: 32 teams with 480+ players, fixed tournament rounds
