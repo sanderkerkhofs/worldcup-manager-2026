@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Head from 'next/head';
 import { ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,6 +46,9 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="shell">
+      <Head>
+        <title>Worldcup Manager 2026</title>
+      </Head>
       <header className="topbar">
         <div>
           <h1 className="brand">{t('brandTitle')}</h1>
