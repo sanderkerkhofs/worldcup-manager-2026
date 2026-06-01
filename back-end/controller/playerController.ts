@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { asyncHandler, authenticateToken, requireRoles } from '../util/middleware';
-import { createPlayer, deletePlayer, getPlayer, listPlayers, updatePlayer } from '../service/playerService';
+import { asyncHandler } from '../util/middleware';
+import { getPlayer, listPlayers } from '../service/playerService';
 
 export const playerRouter = Router();
 
@@ -13,19 +13,4 @@ playerRouter.get('/', asyncHandler(async (req, res) => {
 playerRouter.get('/:playerId', asyncHandler(async (req, res) => {
   const player = await getPlayer(req.params.playerId);
   res.json(player);
-}));
-
-playerRouter.post('/', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
-  const player = await createPlayer(req.body);
-  res.status(201).json(player);
-}));
-
-playerRouter.put('/:playerId', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
-  const player = await updatePlayer(req.params.playerId, req.body);
-  res.json(player);
-}));
-
-playerRouter.delete('/:playerId', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
-  await deletePlayer(req.params.playerId);
-  res.status(204).send();
 }));
