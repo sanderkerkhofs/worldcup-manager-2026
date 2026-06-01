@@ -13,6 +13,7 @@ export default function LoginPage() {
   return (
     <section className="authSection authSectionWide">
       <div className="authCard">
+        <p className="eyebrow">{t('authPredefinedAccess')}</p>
         <h2>{t('authPredefinedAccess')}</h2>
         <p className="muted">{t('authCredentialHint')}</p>
         <div className="tableWrap">

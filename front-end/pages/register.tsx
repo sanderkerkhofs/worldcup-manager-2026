@@ -34,6 +34,7 @@ export default function RegisterPage() {
   return (
     <section className="authSection authSectionWide">
       <div className="authCard">
+        <p className="eyebrow">{t('navRegister')}</p>
         <h2>{t('authCreateAccount')}</h2>
         <p className="muted">{t('authRegisterHint')}</p>
         <form onSubmit={handleSubmit}>

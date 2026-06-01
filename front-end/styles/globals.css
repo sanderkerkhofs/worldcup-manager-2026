@@ -697,13 +697,16 @@ td {
 
 .authSection {
   width: min(520px, 96vw);
-  margin: 2rem auto;
+  margin: 0 auto;
   display: grid;
   gap: 0.9rem;
 }
 
 .authSectionWide {
   width: 100%;
+  margin: 0;
+  display: grid;
+  gap: 0.9rem;
 }
 
 .modeSwitch {
@@ -719,6 +722,13 @@ td {
 .authCard {
   display: grid;
   gap: 0.75rem;
+}
+
+.authCard h2 {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
 }
 
 .authCard label {

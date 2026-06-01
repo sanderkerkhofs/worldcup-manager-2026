@@ -29,6 +29,7 @@ export function LoginForm({ onSubmit }: Props) {
 
   return (
     <form className="authCard" onSubmit={handleSubmit}>
+      <p className="eyebrow">{t('navLogin')}</p>
       <h2>{t('authSignIn')}</h2>
 
       <label>
