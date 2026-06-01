@@ -21,7 +21,7 @@ export class Goal {
     teamId: string;
     createdAt?: Date;
   }) {
-    if (!matchId.trim() || !playerId.trim() || !teamId.trim()) {
+    if (!matchId || typeof matchId !== 'string' || !matchId.trim() || !playerId || typeof playerId !== 'string' || !playerId.trim() || !teamId || typeof teamId !== 'string' || !teamId.trim()) {
       throw new ValidationError('Goal must belong to a match, player, and team.');
     }
 
