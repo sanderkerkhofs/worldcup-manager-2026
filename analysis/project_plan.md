@@ -126,7 +126,6 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 - Result processing and winner progression
 - Referee-owned match status and goals update flow
 - Goal scorer registration on result submission
-- Coach team-boundary checks for player selection
 - Validation split by layer (domain vs services)
 - JWT authentication, role-based authorization, Helmet security middleware
 
@@ -168,7 +167,6 @@ This guarantees every match belongs to exactly one fixed stage in the competitio
 - Players are simple fixed imported data from seeded database
 - Pre-created stage matches are visible, with first stage active by default and next stages auto-activated when unlocked
 - Matches can be scheduled, status-updated, and scored
-- Coaches can view their own team context
 - Referee can insert/update match status and goals
 - Assigned referee can only update their assigned matches
 - Admin can update results of all matches

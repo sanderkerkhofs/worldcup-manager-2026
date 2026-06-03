@@ -1,173 +1,276 @@
 # Project Schema - worldcup-manager-2026
 
-This document centralizes the analysis data model in one place:
+This document centralizes the analysis data model in one place, derived directly from `back-end/repository/prisma/schema.prisma`.
 
-- all entities
+- all entities and enums
 - key relationships
 - UML class diagram
 - conceptual ERD
 - logical ERD
 
-## 1. Entities
+## 1. Enums
+
+### UserRole
+
+```
+ADMIN | REFEREE | USER | GUEST
+```
+
+### MatchStatus
+
+```
+PLANNED | NOT_STARTED | IN_PROGRESS | FINISHED
+```
+
+## 2. Entities
+
+### User
+
+- id: String (CUID, PK)
+- username: String (UNIQUE)
+- passwordHash: String
+- role: UserRole (default: GUEST)
+- teamId: String? (FK → Team, optional)
+- createdAt: DateTime
+- updatedAt: DateTime
 
 ### Team
 
-- team_id (PK)
-- name
-- country
+- id: String (CUID, PK)
+- name: String (UNIQUE)
+- country: String
+- countryShortName: String
+- countryFlag: String
+- createdAt: DateTime
+- updatedAt: DateTime
 
 ### Match
 
-- match_id (PK)
-- round_order_number
-- round_name
-- home_team_id (FK -> Team)
-- away_team_id (FK -> Team)
-- referee_id (FK -> User, optional in this analysis model)
-- home_score
-- away_score
-- match_date
-- status
+- id: String (CUID, PK)
+- roundOrderNumber: Int
+- roundName: String
+- homeTeamId: String? (FK → Team, optional)
+- awayTeamId: String? (FK → Team, optional)
+- refereeId: String? (FK → User, optional)
+- homeScore: Int?
+- awayScore: Int?
+- matchDate: DateTime
+- status: MatchStatus (default: PLANNED)
+- createdAt: DateTime
+- updatedAt: DateTime
 
 ### Player
 
-- player_id (PK)
-- team_id (FK -> Team)
-- first_name
-- last_name
-- shirt_number
-- position
+- id: String (CUID, PK)
+- teamId: String (FK → Team)
+- firstName: String
+- lastName: String
+- shirtNumber: Int
+- position: String
+- createdAt: DateTime
+- updatedAt: DateTime
+- UNIQUE constraint: (teamId, shirtNumber)
 
 ### Goal
 
-- goal_id (PK)
-- match_id (FK -> Match)
-- player_id (FK -> Player)
-- team_id (FK -> Team)
-- minute
+- id: String (CUID, PK)
+- matchId: String (FK → Match)
+- playerId: String (FK → Player)
+- teamId: String (FK → Team)
+- createdAt: DateTime
 
-## 2. Relationship Overview
+## 3. Relationship Overview
 
-- Team 1 -> N Player
-- Match 1 -> N Goal
-- Player 1 -> N Goal
-- Team 1 -> N Goal
-- Match N -> 1 Team (home_team_id)
-- Match N -> 1 Team (away_team_id)
-- Match N -> 1 User (referee_id, optional)
+- Team 1 → N Player
+- Team 1 → N Goal (scoring team)
+- Team 1 → N Match (as homeTeam or awayTeam)
+- Match 1 → N Goal
+- Player 1 → N Goal
+- User (referee) 0..1 → N Match (assignedMatches)
+- User 0..1 → N Team membership (teamId, optional)
 
 Business rule highlights:
 
-- each team has at least 15 players
-- stage progression uses Match.round_order_number ordering (no separate Round table)
-- matches are pre-created at database seed time with PLANNED status
-- teams are assigned to matches during seeding (first stage) or during simulation (subsequent stages)
+- Each team has at least 15 seeded players
+- Stage progression uses `Match.roundOrderNumber` ordering (no separate Round/Stage entity)
+- Matches are pre-created at database seed time with `PLANNED` status
+- Teams are assigned to matches during seeding (first stage) or during simulation (subsequent stages)
+- No `minute` field on Goal — goals are recorded without timestamps; only `createdAt` is present
+- `Goal.teamId` must match a team that is playing in the match
+- `Goal.playerId` must belong to `Goal.teamId`
 
-## 3. UML Class Diagram
+## 4. UML Class Diagram
+
+See [drawio/uml-class-diagram.drawio](drawio/uml-class-diagram.drawio) for the editable diagram.
 
 ```mermaid
 classDiagram
+  class UserRole {
+    <<enumeration>>
+    ADMIN
+    REFEREE
+    USER
+    GUEST
+  }
+
+  class MatchStatus {
+    <<enumeration>>
+    PLANNED
+    NOT_STARTED
+    IN_PROGRESS
+    FINISHED
+  }
+
+  class User {
+    +String id
+    +String username
+    +String passwordHash
+    +UserRole role
+    +String? teamId
+    +DateTime createdAt
+    +DateTime updatedAt
+  }
+
   class Team {
-    +int team_id
-    +string name
-    +string country
+    +String id
+    +String name
+    +String country
+    +String countryShortName
+    +String countryFlag
+    +DateTime createdAt
+    +DateTime updatedAt
   }
 
   class Match {
-    +int match_id
-    +int round_order_number
-    +string round_name
-    +int home_team_id
-    +int away_team_id
-    +int referee_id
-    +int home_score
-    +int away_score
-    +datetime match_date
-    +string status
+    +String id
+    +Int roundOrderNumber
+    +String roundName
+    +String? homeTeamId
+    +String? awayTeamId
+    +String? refereeId
+    +Int? homeScore
+    +Int? awayScore
+    +DateTime matchDate
+    +MatchStatus status
+    +DateTime createdAt
+    +DateTime updatedAt
   }
 
   class Player {
-    +int player_id
-    +int team_id
-    +string first_name
-    +string last_name
-    +int shirt_number
-    +string position
+    +String id
+    +String teamId
+    +String firstName
+    +String lastName
+    +Int shirtNumber
+    +String position
+    +DateTime createdAt
+    +DateTime updatedAt
   }
 
   class Goal {
-    +int goal_id
-    +int match_id
-    +int player_id
-    +int team_id
-    +int minute
+    +String id
+    +String matchId
+    +String playerId
+    +String teamId
+    +DateTime createdAt
   }
 
-  Team "1" --> "*" Player
-  Match "1" --> "*" Goal
-  Player "1" --> "*" Goal
-  Team "1" --> "*" Goal
+  Team "1" --> "*" Player : has
+  Team "1" --> "*" Goal : for_team
+  Team "1" --> "*" Match : home_or_away
+  Match "1" --> "*" Goal : records
+  Player "1" --> "*" Goal : scores
+  User "0..1" --> "*" Match : referees
+  User "*" --> "0..1" Team : member_of
+
+  User --> UserRole
+  Match --> MatchStatus
 ```
 
-## 4. Conceptual ERD
+## 5. Conceptual ERD
+
+See [drawio/erd-conceptual.drawio](drawio/erd-conceptual.drawio) for the editable diagram.
 
 ```mermaid
 erDiagram
+  USER ||--o{ MATCH : referees
   TEAM ||--o{ PLAYER : has
+  TEAM ||--o{ GOAL : "for team"
+  TEAM ||--o{ MATCH : "home or away"
   MATCH ||--o{ GOAL : records
   PLAYER ||--o{ GOAL : scores
-  TEAM ||--o{ GOAL : for_team
-  TEAM ||--o{ MATCH : home_or_away
 ```
 
-## 5. Logical ERD
+## 6. Logical ERD
+
+See [drawio/erd-logical.drawio](drawio/erd-logical.drawio) for the editable diagram.
 
 ```mermaid
 erDiagram
+  USER {
+    String id PK
+    String username
+    String passwordHash
+    UserRole role
+    String teamId FK
+    DateTime createdAt
+    DateTime updatedAt
+  }
+
   TEAM {
-    INT team_id PK
-    VARCHAR name
-    VARCHAR country
+    String id PK
+    String name
+    String country
+    String countryShortName
+    String countryFlag
+    DateTime createdAt
+    DateTime updatedAt
   }
 
   MATCH {
-    INT match_id PK
-    INT round_order_number
-    VARCHAR round_name
-    INT home_team_id FK
-    INT away_team_id FK
-    INT referee_id FK
-    INT home_score
-    INT away_score
-    DATETIME match_date
-    VARCHAR status
+    String id PK
+    Int roundOrderNumber
+    String roundName
+    String homeTeamId FK
+    String awayTeamId FK
+    String refereeId FK
+    Int homeScore
+    Int awayScore
+    DateTime matchDate
+    MatchStatus status
+    DateTime createdAt
+    DateTime updatedAt
   }
 
   PLAYER {
-    INT player_id PK
-    INT team_id FK
-    VARCHAR first_name
-    VARCHAR last_name
-    INT shirt_number
-    VARCHAR position
-    ENUM status
+    String id PK
+    String teamId FK
+    String firstName
+    String lastName
+    Int shirtNumber
+    String position
+    DateTime createdAt
+    DateTime updatedAt
   }
 
   GOAL {
-    INT goal_id PK
-    INT match_id FK
-    INT player_id FK
-    INT team_id FK
-    INT minute
+    String id PK
+    String matchId FK
+    String playerId FK
+    String teamId FK
+    DateTime createdAt
   }
 
+  USER ||--o{ MATCH : referees
   TEAM ||--o{ PLAYER : has
-  MATCH ||--o{ GOAL : has
+  TEAM ||--o{ GOAL : "for team"
+  TEAM ||--o{ MATCH : "home or away"
+  MATCH ||--o{ GOAL : records
   PLAYER ||--o{ GOAL : scores
-  TEAM ||--o{ GOAL : for_team
-  TEAM ||--o{ MATCH : home_or_away
 ```
 
-## 6. Scope Note
+## 7. Scope Note
 
-This schema is intentionally modeled as a single fixed competition (World Cup 2026). Competition metadata (name/year/host/format) is provided through app configuration (for example .env or JSON), not a database entity.
+This schema is intentionally modeled as a single fixed competition (World Cup 2026). Competition metadata (name/year/host/format) is provided through app configuration (`.env` or seed constants), not as a database entity.
+
+The `Goal` model does not include a `minute` field — goals are recorded without a match-minute timestamp. Only `createdAt` is available. This is a deliberate design choice to keep the model simple for school delivery.
