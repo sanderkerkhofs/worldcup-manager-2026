@@ -9,7 +9,7 @@ So that I can follow the current stage, results, and the final winner.
 ## Roles Involved
 
 - **USER** (authenticated) — full bracket view
-- **REFEREE** / **ADMIN** / **COACH** — same access
+- **REFEREE** / **ADMIN** — same access
 - **GUEST** — can view current round fixtures only (no full bracket detail)
 
 ## Acceptance Criteria

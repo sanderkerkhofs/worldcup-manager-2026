@@ -59,18 +59,16 @@ Behavior:
 
 ## Seeded Users (Examples)
 
-- `admin` / `admin123`
-- `greetjej` / `greetjej123` (user, BEL)
-- `elkes` / `elkes123` (user, BEL)
-- `johanp` / `johanp123` (user, BEL)
-- `Domenico_Tedesco` / `coach123`
-- `Frank_De_Bleeckere` / `referee123`
+- `admin` / `admin123` (ADMIN)
+- `referee_1` / `referee123` (REFEREE)
+- `referee_2` / `referee123` (REFEREE)
+- `referee_3` / `referee123` (REFEREE)
 
 Notes:
 
 - Passwords are hashed with bcrypt.
 - Referees are assigned to matches in rotation.
-- Coach users are linked to seeded teams.
+- User roles: ADMIN, REFEREE, USER, GUEST
 
 ## Seeded Team and Player Data
 

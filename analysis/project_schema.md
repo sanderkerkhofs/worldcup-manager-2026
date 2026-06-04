@@ -26,11 +26,9 @@ PLANNED | NOT_STARTED | IN_PROGRESS | FINISHED
 
 ### User
 
-- id: String (CUID, PK)
-- username: String (UNIQUE)
+- username: String (PK)
 - passwordHash: String
-- role: UserRole (default: GUEST)
-- teamId: String? (FK → Team, optional)
+- role: UserRole (default: USER)
 - createdAt: DateTime
 - updatedAt: DateTime
 
@@ -87,7 +85,6 @@ PLANNED | NOT_STARTED | IN_PROGRESS | FINISHED
 - Match 1 → N Goal
 - Player 1 → N Goal
 - User (referee) 0..1 → N Match (assignedMatches)
-- User 0..1 → N Team membership (teamId, optional)
 
 Business rule highlights:
 
@@ -122,11 +119,9 @@ classDiagram
   }
 
   class User {
-    +String id
-    +String username
+    +String username (PK)
     +String passwordHash
     +UserRole role
-    +String? teamId
     +DateTime createdAt
     +DateTime updatedAt
   }
@@ -181,7 +176,6 @@ classDiagram
   Match "1" --> "*" Goal : records
   Player "1" --> "*" Goal : scores
   User "0..1" --> "*" Match : referees
-  User "*" --> "0..1" Team : member_of
 
   User --> UserRole
   Match --> MatchStatus

@@ -56,4 +56,4 @@ So that I can follow team and player performance throughout the competition.
 - Only goals from `FINISHED` matches count toward rankings
 - Top scorers ranking is derived from `Goal` records grouped by `playerId`
 - `UserRole.GUEST` is denied access to the stats page
-- `UserRole.USER`, `REFEREE`, `ADMIN`, and `COACH` all have read access
+- `UserRole.USER`, `REFEREE`, and `ADMIN` all have read access
