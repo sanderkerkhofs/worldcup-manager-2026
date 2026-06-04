@@ -183,7 +183,7 @@ classDiagram
 
 ## 5. Conceptual ERD
 
-See [drawio/erd-conceptual.drawio](drawio/erd-conceptual.drawio) for the editable diagram (Chen notation with entities, attributes, and relationship diamonds).
+See [drawio/erd-conceptual-model.drawio](drawio/erd-conceptual-model.drawio) for the editable diagram (Chen notation with entities, attributes, and relationship diamonds).
 
 ```mermaid
 erDiagram
@@ -238,7 +238,7 @@ erDiagram
 
 ## 6. Logical ERD
 
-See [drawio/erd-logical.drawio](drawio/erd-logical.drawio) for the editable diagram.
+See [drawio/erd-logical-model.drawio](drawio/erd-logical-model.drawio) for the editable diagram.
 
 ```mermaid
 erDiagram
@@ -308,4 +308,4 @@ erDiagram
 
 This schema is intentionally modeled as a single fixed competition (World Cup 2026). Competition metadata (name/year/host/format) is provided through app configuration (`.env` or seed constants), not as a database entity.
 
-The `Goal` model does not include a `minute` field — goals are recorded without a match-minute timestamp. Only `createdAt` is available. This is a deliberate design choice to keep the model simple for school delivery.
+The `Goal` model does not include a `minute` field — goals are recorded without a match-minute timestamp. Only `createdAt` is available. This is a deliberate design choice to keep the model simple for school purpose.

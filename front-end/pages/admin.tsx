@@ -195,7 +195,7 @@ export default function AdminPage() {
                     <td>
                       <button
                         className="smallButton"
-                        disabled={managedUser.username === user.username || busyUserId === managedUser.username}
+                        disabled={managedUser.username === user.username || busyUserId === managedUser.username || managedUser.role !== 'USER'}
                         onClick={async () => {
                           if (!token) {
                             return;
