@@ -348,26 +348,26 @@ npm test test/service/playerService.test.ts
 
 ### Domain Model Coverage
 
-| Model     | Tests | Coverage Areas                                                |
-| --------- | ----- | ------------------------------------------------------------- |
-| User      | 20    | Role validation, username/password rules, Prisma conversion   |
-| Player    | 23    | Team membership, shirt number uniqueness, position validation |
-| Team      | 22    | Country metadata, team creation, data integrity               |
-| Goal      | 22    | Goal validation, null-safety, Prisma conversion               |
-| Match     | 28    | Team consistency, status progression, round tracking          |
-| Domain    | 6     | High-level domain object validation                           |
+| Model     | Tests   | Coverage Areas                                                |
+| --------- | ------- | ------------------------------------------------------------- |
+| User      | 20      | Role validation, username/password rules, Prisma conversion   |
+| Player    | 23      | Team membership, shirt number uniqueness, position validation |
+| Team      | 22      | Country metadata, team creation, data integrity               |
+| Goal      | 22      | Goal validation, null-safety, Prisma conversion               |
+| Match     | 28      | Team consistency, status progression, round tracking          |
+| Domain    | 6       | High-level domain object validation                           |
 | **Total** | **121** | **All domain rules validated**                                |
 
 ### Service Coverage
 
-| Service          | Tests | Coverage Areas                             |
-| ---------------- | ----- | ------------------------------------------ |
-| Auth             | 32    | Registration, login, JWT, role enforcement |
-| Player           | 26    | CRUD, team filtering, shirt uniqueness     |
-| User             | 25    | Admin operations, self-deletion prevention |
-| Match            | 27    | Query, goal population, team info          |
-| Tournament       | 22    | Standings, top scorers, round simulation   |
-| RoundProgression | 16    | Knockout advancement, winner determination |
+| Service          | Tests  | Coverage Areas                             |
+| ---------------- | ------ | ------------------------------------------ |
+| Auth             | 32     | Registration, login, JWT, role enforcement |
+| Player           | 26     | CRUD, team filtering, shirt uniqueness     |
+| User             | 25     | Admin operations, self-deletion prevention |
+| Match            | 27     | Query, goal population, team info          |
+| Tournament       | 22     | Standings, top scorers, round simulation   |
+| RoundProgression | 16     | Knockout advancement, winner determination |
 | **Total**        | **50** | **All service logic validated**            |
 
 ---
