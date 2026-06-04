@@ -7,28 +7,25 @@ function isUserRole(role: string): role is UserRole {
 }
 
 export class User {
-  public readonly id: string;
   public readonly username: string;
   public readonly passwordHash: string;
   public readonly role: UserRole;
-  public readonly teamId: string | null;
+  public readonly teamName: string | null;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
   constructor({
-    id,
     username,
     passwordHash,
     role,
-    teamId = null,
+    teamName = null,
     createdAt,
     updatedAt,
   }: {
-    id: string;
     username: string;
     passwordHash: string;
     role: UserRole;
-    teamId?: string | null;
+    teamName?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
   }) {
@@ -44,11 +41,10 @@ export class User {
       throw new ValidationError('User role is invalid.');
     }
 
-    this.id = id;
     this.username = username;
     this.passwordHash = passwordHash;
     this.role = role;
-    this.teamId = teamId;
+    this.teamName = teamName;
     this.createdAt = createdAt ?? new Date();
     this.updatedAt = updatedAt ?? new Date();
   }
@@ -61,11 +57,10 @@ export class User {
     }
 
     return new User({
-      id: prismaUser.id,
       username: prismaUser.username,
       passwordHash: prismaUser.passwordHash,
       role,
-      teamId: prismaUser.teamId,
+      teamName: prismaUser.teamName,
       createdAt: prismaUser.createdAt,
       updatedAt: prismaUser.updatedAt,
     });

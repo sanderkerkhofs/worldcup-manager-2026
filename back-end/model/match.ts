@@ -2,12 +2,12 @@ import { MatchStatus } from '../types';
 import { ValidationError } from '../util/errors';
 
 type PrismaMatchLike = {
-  id: string;
+  id: number;
   roundOrderNumber: number;
   roundName: string;
-  homeTeamId: string | null;
-  awayTeamId: string | null;
-  refereeId?: string | null;
+  homeTeamName: string | null;
+  awayTeamName: string | null;
+  refereeUsername?: string | null;
   homeScore: number | null;
   awayScore: number | null;
   matchDate: Date;
@@ -24,13 +24,13 @@ function isMatchStatus(status: string): status is MatchStatus {
 }
 
 export class Match {
-  public readonly id: string;
+  public readonly id: number;
   public readonly roundOrderNumber: number;
   public readonly roundName: string;
   public readonly roundId: string;
-  public readonly homeTeamId: string | null;
-  public readonly awayTeamId: string | null;
-  public readonly refereeId: string | null;
+  public readonly homeTeamName: string | null;
+  public readonly awayTeamName: string | null;
+  public readonly refereeUsername: string | null;
   public readonly homeScore: number | null;
   public readonly awayScore: number | null;
   public readonly matchDate: Date;
@@ -42,9 +42,9 @@ export class Match {
     id,
     roundOrderNumber,
     roundName,
-    homeTeamId,
-    awayTeamId,
-    refereeId,
+    homeTeamName,
+    awayTeamName,
+    refereeUsername,
     homeScore,
     awayScore,
     matchDate,
@@ -52,12 +52,12 @@ export class Match {
     createdAt,
     updatedAt,
   }: {
-    id: string;
+    id: number;
     roundOrderNumber: number;
     roundName: string;
-    homeTeamId: string | null;
-    awayTeamId: string | null;
-    refereeId: string | null;
+    homeTeamName: string | null;
+    awayTeamName: string | null;
+    refereeUsername: string | null;
     homeScore: number | null;
     awayScore: number | null;
     matchDate: Date;
@@ -73,11 +73,11 @@ export class Match {
       throw new ValidationError('Match must belong to a named round.');
     }
 
-    if ((homeTeamId === null) !== (awayTeamId === null)) {
+    if ((homeTeamName === null) !== (awayTeamName === null)) {
       throw new ValidationError('Match teams must either both be present or both be pending.');
     }
 
-    if (homeTeamId && awayTeamId && homeTeamId === awayTeamId) {
+    if (homeTeamName && awayTeamName && homeTeamName === awayTeamName) {
       throw new ValidationError('Home team and away team must be different.');
     }
 
@@ -101,9 +101,9 @@ export class Match {
     this.roundOrderNumber = roundOrderNumber;
     this.roundName = roundName;
     this.roundId = String(roundOrderNumber);
-    this.homeTeamId = homeTeamId;
-    this.awayTeamId = awayTeamId;
-    this.refereeId = refereeId;
+    this.homeTeamName = homeTeamName;
+    this.awayTeamName = awayTeamName;
+    this.refereeUsername = refereeUsername;
     this.homeScore = homeScore;
     this.awayScore = awayScore;
     this.matchDate = matchDate;
@@ -123,9 +123,9 @@ export class Match {
       id: prismaMatch.id,
       roundOrderNumber: prismaMatch.roundOrderNumber,
       roundName: prismaMatch.roundName,
-      homeTeamId: prismaMatch.homeTeamId,
-      awayTeamId: prismaMatch.awayTeamId,
-      refereeId: prismaMatch.refereeId ?? null,
+      homeTeamName: prismaMatch.homeTeamName,
+      awayTeamName: prismaMatch.awayTeamName,
+      refereeUsername: prismaMatch.refereeUsername ?? null,
       homeScore: prismaMatch.homeScore,
       awayScore: prismaMatch.awayScore,
       matchDate: prismaMatch.matchDate,

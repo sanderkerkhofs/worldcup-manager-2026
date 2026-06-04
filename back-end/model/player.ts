@@ -2,8 +2,8 @@ import { Player as PrismaPlayer } from '@prisma/client';
 import { ValidationError } from '../util/errors';
 
 export class Player {
-  public readonly id: string;
-  public readonly teamId: string;
+  public readonly id: number;
+  public readonly teamName: string;
   public readonly firstName: string;
   public readonly lastName: string;
   public readonly shirtNumber: number;
@@ -13,7 +13,7 @@ export class Player {
 
   constructor({
     id,
-    teamId,
+    teamName,
     firstName,
     lastName,
     shirtNumber,
@@ -21,8 +21,8 @@ export class Player {
     createdAt,
     updatedAt,
   }: {
-    id: string;
-    teamId: string;
+    id: number;
+    teamName: string;
     firstName: string;
     lastName: string;
     shirtNumber: number;
@@ -30,7 +30,7 @@ export class Player {
     createdAt?: Date;
     updatedAt?: Date;
   }) {
-    if (!teamId.trim()) {
+    if (!teamName.trim()) {
       throw new ValidationError('Player must belong to a team.');
     }
 
@@ -47,7 +47,7 @@ export class Player {
     }
 
     this.id = id;
-    this.teamId = teamId;
+    this.teamName = teamName;
     this.firstName = firstName;
     this.lastName = lastName;
     this.shirtNumber = shirtNumber;
@@ -59,7 +59,7 @@ export class Player {
   static from(prismaPlayer: PrismaPlayer): Player {
     return new Player({
       id: prismaPlayer.id,
-      teamId: prismaPlayer.teamId,
+      teamName: prismaPlayer.teamName,
       firstName: prismaPlayer.firstName,
       lastName: prismaPlayer.lastName,
       shirtNumber: prismaPlayer.shirtNumber,

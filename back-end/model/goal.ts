@@ -2,33 +2,33 @@ import { Goal as PrismaGoal } from '@prisma/client';
 import { ValidationError } from '../util/errors';
 
 export class Goal {
-  public readonly id: string;
-  public readonly matchId: string;
-  public readonly playerId: string;
-  public readonly teamId: string;
+  public readonly id: number;
+  public readonly matchId: number;
+  public readonly playerId: number;
+  public readonly teamName: string;
   public readonly createdAt: Date;
 
   constructor({
     id,
     matchId,
     playerId,
-    teamId,
+    teamName,
     createdAt,
   }: {
-    id: string;
-    matchId: string;
-    playerId: string;
-    teamId: string;
+    id: number;
+    matchId: number;
+    playerId: number;
+    teamName: string;
     createdAt?: Date;
   }) {
-    if (!matchId || typeof matchId !== 'string' || !matchId.trim() || !playerId || typeof playerId !== 'string' || !playerId.trim() || !teamId || typeof teamId !== 'string' || !teamId.trim()) {
+    if (!Number.isInteger(matchId) || matchId <= 0 || !Number.isInteger(playerId) || playerId <= 0 || !teamName || !teamName.trim()) {
       throw new ValidationError('Goal must belong to a match, player, and team.');
     }
 
     this.id = id;
     this.matchId = matchId;
     this.playerId = playerId;
-    this.teamId = teamId;
+    this.teamName = teamName;
     this.createdAt = createdAt ?? new Date();
   }
 
@@ -37,7 +37,7 @@ export class Goal {
       id: prismaGoal.id,
       matchId: prismaGoal.matchId,
       playerId: prismaGoal.playerId,
-      teamId: prismaGoal.teamId,
+      teamName: prismaGoal.teamName,
       createdAt: prismaGoal.createdAt,
     });
   }

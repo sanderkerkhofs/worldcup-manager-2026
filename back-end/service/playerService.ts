@@ -3,16 +3,16 @@ import { NotFoundError, ValidationError } from '../util/errors';
 import { Player } from '../model/player';
 import { PlayerCreateDto, PlayerUpdateDto } from '../types';
 
-export async function listPlayers(teamId?: string) {
+export async function listPlayers(teamName?: string) {
   const players = await prisma.player.findMany({
-    where: teamId ? { teamId } : undefined,
-    orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }],
+    where: teamName ? { teamName } : undefined,
+    orderBy: [{ teamName: 'asc' }, { shirtNumber: 'asc' }],
   });
 
   return players.map((player) => Player.from(player));
 }
 
-export async function getPlayer(playerId: string) {
+export async function getPlayer(playerId: number) {
   const player = await prisma.player.findUnique({ where: { id: playerId } });
 
   if (!player) {
@@ -23,7 +23,7 @@ export async function getPlayer(playerId: string) {
 }
 
 export async function createPlayer(input: PlayerCreateDto) {
-  const team = await prisma.team.findUnique({ where: { id: input.teamId } });
+  const team = await prisma.team.findUnique({ where: { name: input.teamName } });
 
   if (!team) {
     throw new NotFoundError('Team was not found.');
@@ -31,8 +31,8 @@ export async function createPlayer(input: PlayerCreateDto) {
 
   const existingPlayer = await prisma.player.findUnique({
     where: {
-      teamId_shirtNumber: {
-        teamId: input.teamId,
+      teamName_shirtNumber: {
+        teamName: input.teamName,
         shirtNumber: input.shirtNumber,
       },
     },
@@ -44,7 +44,7 @@ export async function createPlayer(input: PlayerCreateDto) {
 
   const player = await prisma.player.create({
     data: {
-      teamId: input.teamId,
+      teamName: input.teamName,
       firstName: input.firstName,
       lastName: input.lastName,
       shirtNumber: input.shirtNumber,
@@ -55,7 +55,7 @@ export async function createPlayer(input: PlayerCreateDto) {
   return Player.from(player);
 }
 
-export async function updatePlayer(playerId: string, input: PlayerUpdateDto) {
+export async function updatePlayer(playerId: number, input: PlayerUpdateDto) {
   const existingPlayer = await getPlayer(playerId);
 
   const player = await prisma.player.update({
@@ -71,7 +71,7 @@ export async function updatePlayer(playerId: string, input: PlayerUpdateDto) {
   return Player.from(player);
 }
 
-export async function deletePlayer(playerId: string) {
+export async function deletePlayer(playerId: number) {
   await getPlayer(playerId);
   await prisma.player.delete({ where: { id: playerId } });
 }

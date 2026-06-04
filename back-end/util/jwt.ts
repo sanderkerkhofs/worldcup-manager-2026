@@ -2,10 +2,9 @@ import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from './errors';
 
 export type JwtPayload = {
-    sub: string;
     username: string;
     role: string;
-    teamId: string | null;
+    teamName: string | null;
 };
 
 export function signAccessToken(payload: JwtPayload): string {

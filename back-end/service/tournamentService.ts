@@ -34,7 +34,6 @@ function buildRoundResponse(round: { name: string; orderNumber: number }, matche
     : new Date();
 
   return {
-    id: roundIdFromOrder(round.orderNumber),
     name: round.name,
     orderNumber: round.orderNumber,
     createdAt: createdAt.toISOString(),
@@ -44,7 +43,6 @@ function buildRoundResponse(round: { name: string; orderNumber: number }, matche
 
 function createStandingRow(team: Team): StandingRow {
   return {
-    teamId: team.id,
     teamName: team.name,
     played: 0,
     won: 0,
@@ -58,15 +56,15 @@ function createStandingRow(team: Team): StandingRow {
 }
 
 function calculateStandings(matches: Match[], teams: Team[]): StandingRow[] {
-  const rows = new Map<string, StandingRow>(teams.map((team) => [team.id, createStandingRow(team)]));
+  const rows = new Map<string, StandingRow>(teams.map((team) => [team.name, createStandingRow(team)]));
 
   for (const match of matches) {
-    if (match.status !== 'FINISHED' || match.homeScore === null || match.awayScore === null || !match.homeTeamId || !match.awayTeamId) {
+    if (match.status !== 'FINISHED' || match.homeScore === null || match.awayScore === null || !match.homeTeamName || !match.awayTeamName) {
       continue;
     }
 
-    const homeRow = rows.get(match.homeTeamId);
-    const awayRow = rows.get(match.awayTeamId);
+    const homeRow = rows.get(match.homeTeamName);
+    const awayRow = rows.get(match.awayTeamName);
 
     if (!homeRow || !awayRow) {
       continue;
@@ -112,12 +110,12 @@ function calculateStandings(matches: Match[], teams: Team[]): StandingRow[] {
 
 function calculateTopScorers(goals: Goal[], players: Player[], teams: Team[]): TopScorerRow[] {
   const playerById = new Map(players.map((player) => [player.id, player]));
-  const teamById = new Map(teams.map((team) => [team.id, team]));
-  const scorerMap = new Map<string, TopScorerRow>();
+  const teamByName = new Map(teams.map((team) => [team.name, team]));
+  const scorerMap = new Map<number, TopScorerRow>();
 
   for (const goal of goals) {
     const player = playerById.get(goal.playerId);
-    const team = teamById.get(goal.teamId);
+    const team = teamByName.get(goal.teamName);
 
     if (!player || !team) {
       continue;
@@ -126,7 +124,6 @@ function calculateTopScorers(goals: Goal[], players: Player[], teams: Team[]): T
     const current = scorerMap.get(player.id) ?? {
       playerId: player.id,
       playerName: `${player.firstName} ${player.lastName}`,
-      teamId: team.id,
       teamName: team.name,
       teamCountryFlag: team.countryFlag,
       goals: 0,
@@ -155,12 +152,12 @@ function shuffle<T>(items: T[]) {
 }
 
 function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>): GoalInputDto[] {
-  if (!match.homeTeamId || !match.awayTeamId) {
+  if (!match.homeTeamName || !match.awayTeamName) {
     throw new ValidationError('Cannot simulate a match without both teams assigned.');
   }
 
-  const homeTeamId = match.homeTeamId as string;
-  const awayTeamId = match.awayTeamId as string;
+  const homeTeamName = match.homeTeamName;
+  const awayTeamName = match.awayTeamName;
 
   let homeScore = 0;
   let awayScore = 0;
@@ -173,12 +170,12 @@ function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>):
   } while ((homeScore === 0 && awayScore === 0) || homeScore === awayScore);
 
   const goalTeams: string[] = shuffle([
-    ...Array.from({ length: homeScore }, () => homeTeamId),
-    ...Array.from({ length: awayScore }, () => awayTeamId),
+    ...Array.from({ length: homeScore }, () => homeTeamName),
+    ...Array.from({ length: awayScore }, () => awayTeamName),
   ]);
 
-  return goalTeams.map((teamId) => {
-    const teamPlayers = playersByTeam.get(teamId) ?? [];
+  return goalTeams.map((teamName) => {
+    const teamPlayers = playersByTeam.get(teamName) ?? [];
 
     if (teamPlayers.length === 0) {
       throw new ValidationError('Unable to simulate a goal without players for one of the teams.');
@@ -188,7 +185,7 @@ function buildGoalsForMatch(match: Match, playersByTeam: Map<string, Player[]>):
 
     return {
       playerId: scorer.id,
-      teamId,
+      teamName,
     };
   });
 }
@@ -213,31 +210,30 @@ async function loadValidatedPreviousRound(orderNumber: number) {
   return orderNumber - 1;
 }
 
-function hasPlayableTeams(match: { homeTeamId: string | null; awayTeamId: string | null }) {
-  return !!match.homeTeamId && !!match.awayTeamId;
+function hasPlayableTeams(match: { homeTeamName: string | null; awayTeamName: string | null }) {
+  return !!match.homeTeamName && !!match.awayTeamName;
 }
 
 export async function getCompetitionOverview(): Promise<CompetitionOverviewResponse> {
   const [teams, matches, players, goals, referees] = await Promise.all([
     prisma.team.findMany({ orderBy: { name: 'asc' } }),
     prisma.match.findMany({ orderBy: { matchDate: 'asc' } }),
-    prisma.player.findMany({ orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }] }),
+    prisma.player.findMany({ orderBy: [{ teamName: 'asc' }, { shirtNumber: 'asc' }] }),
     prisma.goal.findMany({ orderBy: { createdAt: 'asc' } }),
-    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true } }),
+    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { username: true } }),
   ]);
 
   const teamModels = teams.map((team) => Team.from(team));
   const matchModels = matches.map((match) => Match.from(match));
   const playerModels = players.map((player) => Player.from(player));
   const goalModels = goals.map((goal) => Goal.from(goal));
-  const teamById = new Map(teamModels.map((team) => [team.id, team]));
-  const refereeById = new Map(referees.map((referee) => [referee.id, referee]));
+  const teamByName = new Map(teamModels.map((team) => [team.name, team]));
+  const refereeByUsername = new Map(referees.map((referee) => [referee.username, referee]));
   const rounds = fixedRounds.map((round) => buildRoundResponse(round, matches.filter((match) => match.roundOrderNumber === round.orderNumber)));
 
   return {
     competition,
     teams: teamModels.map((team) => ({
-      id: team.id,
       name: team.name,
       country: team.country,
       countryShortName: team.countryShortName,
@@ -251,10 +247,10 @@ export async function getCompetitionOverview(): Promise<CompetitionOverviewRespo
       roundId: match.roundId,
       roundOrderNumber: match.roundOrderNumber,
       roundName: match.roundName,
-      homeTeamId: match.homeTeamId,
-      awayTeamId: match.awayTeamId,
-      refereeId: match.refereeId,
-      refereeName: match.refereeId ? (refereeById.get(match.refereeId)?.username.replace(/_/g, ' ') ?? null) : null,
+      homeTeamName: match.homeTeamName,
+      awayTeamName: match.awayTeamName,
+      refereeUsername: match.refereeUsername,
+      refereeName: match.refereeUsername ? (refereeByUsername.get(match.refereeUsername)?.username.replace(/_/g, ' ') ?? null) : null,
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       matchDate: match.matchDate.toISOString(),
@@ -306,25 +302,25 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
   const teamsInRound = new Set<string>();
 
   for (const match of activeRoundMatches) {
-    if (!match.homeTeamId || !match.awayTeamId) {
+    if (!match.homeTeamName || !match.awayTeamName) {
       throw new ValidationError('Round cannot be simulated yet because participant teams are not known.');
     }
 
-    teamsInRound.add(match.homeTeamId);
-    teamsInRound.add(match.awayTeamId);
+    teamsInRound.add(match.homeTeamName);
+    teamsInRound.add(match.awayTeamName);
   }
 
   const players = await prisma.player.findMany({
-    where: { teamId: { in: Array.from(teamsInRound) } },
-    orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }],
+    where: { teamName: { in: Array.from(teamsInRound) } },
+    orderBy: [{ teamName: 'asc' }, { shirtNumber: 'asc' }],
   });
 
   const playersByTeam = new Map<string, Player[]>();
 
   for (const player of players.map((item) => Player.from(item))) {
-    const existing = playersByTeam.get(player.teamId) ?? [];
+    const existing = playersByTeam.get(player.teamName) ?? [];
     existing.push(player);
-    playersByTeam.set(player.teamId, existing);
+    playersByTeam.set(player.teamName, existing);
   }
 
   const updatedMatches: Match[] = [];
@@ -335,15 +331,15 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
 
     for (const match of activeRoundMatches) {
       const goals = buildGoalsForMatch(Match.from(match), playersByTeam);
-      const homeScore = goals.filter((goal) => goal.teamId === match.homeTeamId).length;
-      const awayScore = goals.filter((goal) => goal.teamId === match.awayTeamId).length;
+      const homeScore = goals.filter((goal) => goal.teamName === match.homeTeamName).length;
+      const awayScore = goals.filter((goal) => goal.teamName === match.awayTeamName).length;
 
       if (goals.length > 0) {
         await transaction.goal.createMany({
           data: goals.map((goal) => ({
             matchId: match.id,
             playerId: goal.playerId,
-            teamId: goal.teamId,
+            teamName: goal.teamName,
           })),
         });
       }
@@ -365,10 +361,10 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
   await createNextRoundMatchesIfReady(roundIdFromOrder(activeRound.orderNumber));
 
   const [referees] = await Promise.all([
-    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { id: true, username: true } }),
+    prisma.user.findMany({ where: { role: 'REFEREE' }, select: { username: true } }),
   ]);
 
-  const refereeNameById = new Map(referees.map((referee) => [referee.id, referee.username.replace(/_/g, ' ')]));
+  const refereeNameByUsername = new Map(referees.map((referee) => [referee.username, referee.username.replace(/_/g, ' ')]));
 
   return {
     round: buildRoundResponse(activeRound, updatedMatches),
@@ -377,10 +373,10 @@ export async function simulateRound(roundId: string): Promise<RoundSimulationRes
       roundId: match.roundId,
       roundOrderNumber: match.roundOrderNumber,
       roundName: match.roundName,
-      homeTeamId: match.homeTeamId,
-      awayTeamId: match.awayTeamId,
-      refereeId: match.refereeId,
-      refereeName: match.refereeId ? refereeNameById.get(match.refereeId) ?? null : null,
+      homeTeamName: match.homeTeamName,
+      awayTeamName: match.awayTeamName,
+      refereeUsername: match.refereeUsername,
+      refereeName: match.refereeUsername ? refereeNameByUsername.get(match.refereeUsername) ?? null : null,
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       matchDate: match.matchDate.toISOString(),
@@ -413,8 +409,8 @@ export async function resetTournamentMatches(): Promise<TournamentResetResponse>
     const futureRoundsReset = await transaction.match.updateMany({
       where: { roundOrderNumber: { gt: firstRoundOrder } },
       data: {
-        homeTeamId: null,
-        awayTeamId: null,
+        homeTeamName: null,
+        awayTeamName: null,
         homeScore: null,
         awayScore: null,
         status: 'PLANNED',

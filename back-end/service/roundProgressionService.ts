@@ -47,7 +47,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   }
 
   const winners = completedRoundMatches.map((match) => {
-    if (!match.homeTeamId || !match.awayTeamId) {
+    if (!match.homeTeamName || !match.awayTeamName) {
       throw new ValidationError('Completed knockout matches must have both teams assigned.');
     }
 
@@ -62,7 +62,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
       throw new ValidationError('Knockout matches cannot end in a draw.');
     }
 
-    return homeScore > awayScore ? match.homeTeamId : match.awayTeamId;
+    return homeScore > awayScore ? match.homeTeamName : match.awayTeamName;
   });
 
   if (winners.length % 2 !== 0) {
@@ -73,7 +73,7 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
     throw new ValidationError('Next round does not have the expected number of pre-seeded matches.');
   }
 
-  const hasAllTeamsAssigned = nextRoundMatches.every((match) => match.homeTeamId && match.awayTeamId);
+  const hasAllTeamsAssigned = nextRoundMatches.every((match) => match.homeTeamName && match.awayTeamName);
 
   if (hasAllTeamsAssigned) {
     // All teams already assigned - no need to update current round
@@ -83,16 +83,16 @@ export async function createNextRoundMatchesIfReady(roundId: string) {
   // The transaction keeps both rounds consistent if one next-round assignment fails.
   await prisma.$transaction(async (transaction) => {
     for (let index = 0; index < nextRoundMatches.length; index += 1) {
-      const homeTeamId = winners[index * 2];
-      const awayTeamId = winners[index * 2 + 1];
+      const homeTeamName = winners[index * 2];
+      const awayTeamName = winners[index * 2 + 1];
 
       await transaction.goal.deleteMany({ where: { matchId: nextRoundMatches[index].id } });
 
       await transaction.match.update({
         where: { id: nextRoundMatches[index].id },
         data: {
-          homeTeamId,
-          awayTeamId,
+          homeTeamName,
+          awayTeamName,
           homeScore: null,
           awayScore: null,
           status: 'NOT_STARTED',

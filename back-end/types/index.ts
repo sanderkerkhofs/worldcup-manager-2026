@@ -10,10 +10,9 @@ export type CompetitionMetadata = {
 };
 
 export type AuthUser = {
-  id: string;
   username: string;
   role: UserRole;
-  teamId: string | null;
+  teamName: string | null;
 };
 
 export type RegisterDto = {
@@ -37,14 +36,14 @@ export type TeamCreateDto = {
 export type TeamUpdateDto = Partial<TeamCreateDto>;
 
 export type PlayerCreateDto = {
-  teamId: string;
+  teamName: string;
   firstName: string;
   lastName: string;
   shirtNumber: number;
   position: string;
 };
 
-export type PlayerUpdateDto = Partial<Omit<PlayerCreateDto, 'teamId'>>;
+export type PlayerUpdateDto = Partial<Omit<PlayerCreateDto, 'teamName'>>;
 
 export type RoundCreateDto = {
   name: string;
@@ -53,15 +52,15 @@ export type RoundCreateDto = {
 
 export type MatchCreateDto = {
   roundId: string;
-  homeTeamId: string;
-  awayTeamId: string;
+  homeTeamName: string;
+  awayTeamName: string;
   matchDate: string;
-  refereeId?: string | null;
+  refereeUsername?: string | null;
 };
 
 export type GoalInputDto = {
-  playerId: string;
-  teamId: string;
+  playerId: number;
+  teamName: string;
 };
 
 export type MatchStatusDto = {
@@ -88,16 +87,14 @@ export type TournamentResetResponse = {
 };
 
 export type UserResponse = {
-  id: string;
   username: string;
   role: UserRole;
-  teamId: string | null;
+  teamName: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
 export type TeamResponse = {
-  id: string;
   name: string;
   country: string;
   countryShortName: string;
@@ -107,8 +104,8 @@ export type TeamResponse = {
 };
 
 export type PlayerResponse = {
-  id: string;
-  teamId: string;
+  id: number;
+  teamName: string;
   firstName: string;
   lastName: string;
   shirtNumber: number;
@@ -118,7 +115,6 @@ export type PlayerResponse = {
 };
 
 export type RoundResponse = {
-  id: string;
   name: string;
   orderNumber: number;
   createdAt: string;
@@ -126,21 +122,21 @@ export type RoundResponse = {
 };
 
 export type GoalResponse = {
-  id: string;
-  matchId: string;
-  playerId: string;
-  teamId: string;
+  id: number;
+  matchId: number;
+  playerId: number;
+  teamName: string;
   createdAt: string;
 };
 
 export type MatchResponse = {
-  id: string;
+  id: number;
   roundId: string;
   roundOrderNumber: number;
   roundName: string;
-  homeTeamId: string | null;
-  awayTeamId: string | null;
-  refereeId: string | null;
+  homeTeamName: string | null;
+  awayTeamName: string | null;
+  refereeUsername: string | null;
   refereeName: string | null;
   homeScore: number | null;
   awayScore: number | null;
@@ -151,7 +147,6 @@ export type MatchResponse = {
 };
 
 export type StandingRow = {
-  teamId: string;
   teamName: string;
   played: number;
   won: number;
@@ -164,9 +159,8 @@ export type StandingRow = {
 };
 
 export type TopScorerRow = {
-  playerId: string;
+  playerId: number;
   playerName: string;
-  teamId: string;
   teamName: string;
   teamCountryFlag: string;
   goals: number;

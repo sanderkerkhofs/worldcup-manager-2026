@@ -7,19 +7,19 @@ import { RequestUser } from '../util/middleware';
 import { createNextRoundMatchesIfReady } from './roundProgressionService';
 
 // Admins can update any match; referees are limited to the match assigned to them.
-function assertMatchAccess(actor: RequestUser, refereeId: string | null): void {
+function assertMatchAccess(actor: RequestUser, refereeUsername: string | null): void {
   if (actor.role === 'ADMIN') {
     return;
   }
 
-  if (actor.role === 'REFEREE' && actor.id === refereeId) {
+  if (actor.role === 'REFEREE' && actor.username === refereeUsername) {
     return;
   }
 
   throw new ForbiddenError('Only the assigned referee or admin can update this match.');
 }
 
-async function loadMatch(matchId: string) {
+async function loadMatch(matchId: number) {
   const match = await prisma.match.findUnique({ where: { id: matchId } });
 
   if (!match) {
@@ -65,10 +65,10 @@ function assertStatusTransition(matchStatus: MatchStatus, nextStatus: MatchStatu
 }
 
 // Goal input must always match the actual teams and an available player in this match.
-async function validateGoalInput(matchId: string, goal: GoalInputDto) {
+async function validateGoalInput(matchId: number, goal: GoalInputDto) {
   const match = await loadMatch(matchId);
 
-  if (!match.homeTeamId || !match.awayTeamId) {
+  if (!match.homeTeamName || !match.awayTeamName) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
@@ -78,22 +78,22 @@ async function validateGoalInput(matchId: string, goal: GoalInputDto) {
     throw new NotFoundError('Scoring player was not found.');
   }
 
-  if (player.teamId !== goal.teamId) {
+  if (player.teamName !== goal.teamName) {
     throw new ValidationError('Goal team must match the selected player team.');
   }
 
-  if (goal.teamId !== match.homeTeamId && goal.teamId !== match.awayTeamId) {
+  if (goal.teamName !== match.homeTeamName && goal.teamName !== match.awayTeamName) {
     throw new ValidationError('Goal team must be one of the teams in the match.');
   }
 }
 
 // Recalculate the score from stored goals so the match summary stays the single source of truth.
-async function recalculateMatchScores(matchId: string) {
+async function recalculateMatchScores(matchId: number) {
   const match = await loadMatch(matchId);
   const goals = await prisma.goal.findMany({ where: { matchId } });
 
-  const homeScore = goals.filter((goal) => goal.teamId === match.homeTeamId).length;
-  const awayScore = goals.filter((goal) => goal.teamId === match.awayTeamId).length;
+  const homeScore = goals.filter((goal) => goal.teamName === match.homeTeamName).length;
+  const awayScore = goals.filter((goal) => goal.teamName === match.awayTeamName).length;
 
   await prisma.match.update({
     where: { id: matchId },
@@ -106,7 +106,7 @@ export async function listMatches() {
   return matches.map((match) => Match.from(match));
 }
 
-export async function getMatch(matchId: string) {
+export async function getMatch(matchId: number) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
     include: {
@@ -121,9 +121,8 @@ export async function getMatch(matchId: string) {
           },
           team: {
             select: {
-              id: true,
-              countryFlag: true,
               name: true,
+              countryFlag: true,
             },
           },
         },
@@ -143,22 +142,21 @@ export async function getMatch(matchId: string) {
     goals: match.goals.map((goal) => ({
       id: goal.id,
       playerId: goal.playerId,
-      teamId: goal.teamId,
+      teamName: goal.teamName,
       playerName: `${goal.player.firstName} ${goal.player.lastName}`,
-      teamName: goal.team.name,
       teamCountryFlag: goal.team.countryFlag,
       createdAt: goal.createdAt,
     })),
   };
 }
 
-export async function updateMatchStatus(matchId: string, status: MatchStatus, actor: RequestUser) {
+export async function updateMatchStatus(matchId: number, status: MatchStatus, actor: RequestUser) {
   const match = await loadMatch(matchId);
-  assertMatchAccess(actor, match.refereeId);
+  assertMatchAccess(actor, match.refereeUsername);
   await assertRoundUnlocked(match);
   assertStatusTransition(match.status as MatchStatus, status, actor);
 
-  if ((status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'FINISHED') && (!match.homeTeamId || !match.awayTeamId)) {
+  if ((status === 'NOT_STARTED' || status === 'IN_PROGRESS' || status === 'FINISHED') && (!match.homeTeamName || !match.awayTeamName)) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
@@ -184,12 +182,12 @@ export async function updateMatchStatus(matchId: string, status: MatchStatus, ac
   return Match.from(updated);
 }
 
-export async function updateMatchResult(matchId: string, input: MatchResultDto, actor: RequestUser) {
+export async function updateMatchResult(matchId: number, input: MatchResultDto, actor: RequestUser) {
   const match = await loadMatch(matchId);
-  assertMatchAccess(actor, match.refereeId);
+  assertMatchAccess(actor, match.refereeUsername);
   await assertRoundUnlocked(match);
 
-  if (!match.homeTeamId || !match.awayTeamId) {
+  if (!match.homeTeamName || !match.awayTeamName) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
@@ -207,7 +205,7 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
         data: {
           matchId,
           playerId: goal.playerId,
-          teamId: goal.teamId,
+          teamName: goal.teamName,
         },
       });
     }
@@ -245,12 +243,12 @@ export async function updateMatchResult(matchId: string, input: MatchResultDto, 
   return Match.from(updated);
 }
 
-export async function addGoal(matchId: string, input: GoalInputDto, actor: RequestUser) {
+export async function addGoal(matchId: number, input: GoalInputDto, actor: RequestUser) {
   const match = await loadMatch(matchId);
-  assertMatchAccess(actor, match.refereeId);
+  assertMatchAccess(actor, match.refereeUsername);
   await assertRoundUnlocked(match);
 
-  if (!match.homeTeamId || !match.awayTeamId) {
+  if (!match.homeTeamName || !match.awayTeamName) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
@@ -264,7 +262,7 @@ export async function addGoal(matchId: string, input: GoalInputDto, actor: Reque
     data: {
       matchId,
       playerId: input.playerId,
-      teamId: input.teamId,
+      teamName: input.teamName,
     },
   });
 
@@ -273,12 +271,12 @@ export async function addGoal(matchId: string, input: GoalInputDto, actor: Reque
   return Goal.from(goal);
 }
 
-export async function updateGoal(matchId: string, goalId: string, input: GoalInputDto, actor: RequestUser) {
+export async function updateGoal(matchId: number, goalId: number, input: GoalInputDto, actor: RequestUser) {
   const match = await loadMatch(matchId);
-  assertMatchAccess(actor, match.refereeId);
+  assertMatchAccess(actor, match.refereeUsername);
   await assertRoundUnlocked(match);
 
-  if (!match.homeTeamId || !match.awayTeamId) {
+  if (!match.homeTeamName || !match.awayTeamName) {
     throw new ValidationError('This match is not available yet. Teams are not assigned yet.');
   }
 
@@ -307,24 +305,26 @@ export async function updateGoal(matchId: string, goalId: string, input: GoalInp
 export async function getTopScorers() {
   const goals = await prisma.goal.findMany({ orderBy: { createdAt: 'asc' } });
   const players = await prisma.player.findMany();
-  const teams = await prisma.team.findMany();
 
   const playerById = new Map(players.map((player) => [player.id, player]));
-  const teamById = new Map(teams.map((team) => [team.id, team]));
-  const scorerMap = new Map<string, { playerId: string; playerName: string; teamId: string; teamName: string; teamCountryFlag: string; goals: number }>();
+  const scorerMap = new Map<number, { playerId: number; playerName: string; teamName: string; teamCountryFlag: string; goals: number }>();
 
   for (const goal of goals) {
     const player = playerById.get(goal.playerId);
-    const team = teamById.get(goal.teamId);
 
-    if (!player || !team) {
+    if (!player) {
+      continue;
+    }
+
+    const team = await prisma.team.findUnique({ where: { name: goal.teamName } });
+
+    if (!team) {
       continue;
     }
 
     const existing = scorerMap.get(player.id) ?? {
       playerId: player.id,
       playerName: `${player.firstName} ${player.lastName}`,
-      teamId: team.id,
       teamName: team.name,
       teamCountryFlag: team.countryFlag,
       goals: 0,

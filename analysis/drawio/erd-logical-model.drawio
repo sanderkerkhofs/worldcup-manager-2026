@@ -1,0 +1,150 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Logical ERD" id="erd-logical">
+    <mxGraphModel dx="1414" dy="1671" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="User" vertex="1">
+          <mxGeometry height="160" width="260" x="750" y="-810" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="2" style="text;align=left;strokeColor=none;fillColor=none;" value="PK" vertex="1">
+          <mxGeometry height="20" width="40" x="4" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="2" style="text;align=left;strokeColor=none;fillColor=none;fontStyle=5;" value="id: String (ID)" vertex="1">
+          <mxGeometry height="20" width="200" x="50" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="2" style="text;align=left;strokeColor=none;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="105" width="256" x="4" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="5b" parent="2" style="text;align=left;strokeColor=none;fillColor=none;" value="username: String UNIQUE&#xa;passwordHash: String&#xa;role: UserRole DEFAULT USER&#xa;createdAt: DateTime&#xa;updatedAt: DateTime" vertex="1">
+          <mxGeometry height="95" width="206" x="50" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="2kE10oa1dloucec3Kno1-57" edge="1" parent="1" source="6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;" target="17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="585" y="-350" />
+              <mxPoint x="585" y="-145" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7PJ2_GqAwX6mQPG0iZsw-21" connectable="0" parent="2kE10oa1dloucec3Kno1-57" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="teamId" vertex="1">
+          <mxGeometry relative="1" x="0.0729" y="1" as="geometry">
+            <mxPoint x="24" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="Team" vertex="1">
+          <mxGeometry height="200" width="280" x="140" y="-500" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="6" style="text;align=left;strokeColor=none;fillColor=none;" value="PK" vertex="1">
+          <mxGeometry height="20" width="40" x="4" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8" parent="6" style="text;align=left;strokeColor=none;fillColor=none;fontStyle=5;" value="id: String ID)" vertex="1">
+          <mxGeometry height="20" width="220" x="50" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8b" parent="6" style="text;align=left;strokeColor=none;fillColor=none;" value="name: String UNIQUE&#xa;country: String&#xa;countryShortName: String&#xa;countryFlag: String&#xa;createdAt: DateTime&#xa;updatedAt: DateTime" vertex="1">
+          <mxGeometry height="135" width="220" x="50" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="9" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="Match" vertex="1">
+          <mxGeometry height="230" width="300" x="730" y="-530" as="geometry" />
+        </mxCell>
+        <mxCell id="10" parent="9" style="text;align=left;strokeColor=none;fillColor=none;" value="PK" vertex="1">
+          <mxGeometry height="20" width="40" x="4" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="11" parent="9" style="text;align=left;strokeColor=none;fillColor=none;fontStyle=5;" value="id: String (ID)" vertex="1">
+          <mxGeometry height="20" width="240" x="50" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="12" parent="9" style="text;align=left;strokeColor=none;fillColor=none;" value="FK1&#xa;FK2&#xa;FK3" vertex="1">
+          <mxGeometry height="75" width="40" x="4" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="12b" parent="9" style="text;align=left;strokeColor=none;fillColor=none;" value="roundOrderNumber: Int&#xa;roundName: String&#xa;homeTeamId: String? (FK → Team)&#xa;awayTeamId: String? (FK → Team)&#xa;refereeId: String? (FK → User)&#xa;homeScore: Int?&#xa;awayScore: Int?&#xa;matchDate: DateTime&#xa;status: MatchStatus DEFAULT PLANNED&#xa;createdAt: DateTime&#xa;updatedAt: DateTime" vertex="1">
+          <mxGeometry height="175" width="240" x="50" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="13" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="Player" vertex="1">
+          <mxGeometry height="220" width="280" x="140" y="-230" as="geometry" />
+        </mxCell>
+        <mxCell id="14" parent="13" style="text;align=left;strokeColor=none;fillColor=none;" value="PK" vertex="1">
+          <mxGeometry height="20" width="40" x="4" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="15" parent="13" style="text;align=left;strokeColor=none;fillColor=none;fontStyle=5;" value="id: String (ID)" vertex="1">
+          <mxGeometry height="20" width="220" x="50" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="16" parent="13" style="text;align=left;strokeColor=none;fillColor=none;" value="FK1" vertex="1">
+          <mxGeometry height="20" width="40" x="4" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="16b" parent="13" style="text;align=left;strokeColor=none;fillColor=none;" value="teamId: String (FK → Team)&#xa;firstName: String&#xa;lastName: String&#xa;shirtNumber: Int&#xa;position: String&#xa;createdAt: DateTime&#xa;updatedAt: DateTime&#xa;UNIQUE(teamId, shirtNumber)" vertex="1">
+          <mxGeometry height="155" width="220" x="50" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="17" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="Goal" vertex="1">
+          <mxGeometry height="180" width="280" x="750" y="-190" as="geometry" />
+        </mxCell>
+        <mxCell id="18" parent="17" style="text;align=left;strokeColor=none;fillColor=none;" value="PK" vertex="1">
+          <mxGeometry height="20" width="40" x="4" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="19" parent="17" style="text;align=left;strokeColor=none;fillColor=none;fontStyle=5;" value="id: String (ID)" vertex="1">
+          <mxGeometry height="20" width="220" x="50" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="20" parent="17" style="text;align=left;strokeColor=none;fillColor=none;" value="FK1&#xa;FK2&#xa;FK3" vertex="1">
+          <mxGeometry height="75" width="40" x="4" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="20b" parent="17" style="text;align=left;strokeColor=none;fillColor=none;" value="matchId: String (FK → Match)&#xa;playerId: String (FK → Player)&#xa;teamId: String (FK → Team)&#xa;createdAt: DateTime" vertex="1">
+          <mxGeometry height="115" width="220" x="50" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" edge="1" parent="1" source="6" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmany;startArrow=ERmandOne;" target="13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7PJ2_GqAwX6mQPG0iZsw-23" connectable="0" parent="r2" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="teamId" vertex="1">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint x="31" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3" edge="1" parent="1" source="6" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERzeroToMany;startArrow=ERmandOne;startFill=0;endFill=0;" target="9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="-450" />
+              <mxPoint x="480" y="-450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r3l" connectable="0" parent="r3" style="resizable=0;align=center;fontSize=12;" value="homeTeamId / awayTeamId" vertex="1">
+          <mxGeometry relative="1" y="-15" as="geometry">
+            <mxPoint x="-5" y="-25" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r6" edge="1" parent="1" source="13" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERzeroToMany;startArrow=ERmandOne;endFill=0;" target="17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="-50" />
+              <mxPoint x="590" y="-50" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7PJ2_GqAwX6mQPG0iZsw-22" connectable="0" parent="r6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="playerId" vertex="1">
+          <mxGeometry relative="1" x="-0.0424" y="3" as="geometry">
+            <mxPoint y="-7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2kE10oa1dloucec3Kno1-42" edge="1" parent="1" source="5" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;" target="9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7PJ2_GqAwX6mQPG0iZsw-20" connectable="0" parent="2kE10oa1dloucec3Kno1-42" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="r&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;efereeId&lt;/span&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.1173" y="3" as="geometry">
+            <mxPoint x="26" y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7PJ2_GqAwX6mQPG0iZsw-24" edge="1" parent="1" source="12b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;" target="17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="890" y="-270" />
+              <mxPoint x="890" y="-270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7PJ2_GqAwX6mQPG0iZsw-25" connectable="0" parent="7PJ2_GqAwX6mQPG0iZsw-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" value="matchId" vertex="1">
+          <mxGeometry relative="1" x="-0.3091" y="1" as="geometry">
+            <mxPoint x="29" y="22" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

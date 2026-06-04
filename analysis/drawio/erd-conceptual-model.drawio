@@ -1,0 +1,253 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Conceptual ERD" id="erd-conceptual">
+    <mxGraphModel dx="1884" dy="878" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e_user" parent="1" style="shape=mxgraph.erd.entity;fontSize=14;fontStyle=1;" value="USER" vertex="1">
+          <mxGeometry height="60" width="120" x="770" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_team" parent="1" style="shape=mxgraph.erd.entity;fontSize=14;fontStyle=1;" value="TEAM" vertex="1">
+          <mxGeometry height="60" width="120" x="190" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="e_match" parent="1" style="shape=mxgraph.erd.entity;fontSize=14;fontStyle=1;" value="MATCH" vertex="1">
+          <mxGeometry height="60" width="120" x="770" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="e_player" parent="1" style="shape=mxgraph.erd.entity;fontSize=14;fontStyle=1;" value="PLAYER" vertex="1">
+          <mxGeometry height="60" width="120" x="190" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="e_goal" parent="1" style="shape=mxgraph.erd.entity;fontSize=14;fontStyle=1;" value="GOAL" vertex="1">
+          <mxGeometry height="60" width="120" x="770" y="625" as="geometry" />
+        </mxCell>
+        <mxCell id="a_user_id" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;fontStyle=4;" value="user_id (PK)" vertex="1">
+          <mxGeometry height="40" width="110" x="650" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="a_user_username" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="username" vertex="1">
+          <mxGeometry height="40" width="100" x="780" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a_user_role" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="role" vertex="1">
+          <mxGeometry height="40" width="70" x="930" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_user_id" edge="1" parent="1" source="e_user" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_user_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_user_username" edge="1" parent="1" source="e_user" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_user_username">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_user_role" edge="1" parent="1" source="e_user" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_user_role">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_team_id" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;fontStyle=4;" value="team_id (PK)" vertex="1">
+          <mxGeometry height="40" width="110" x="20" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="a_team_name" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="name" vertex="1">
+          <mxGeometry height="40" width="80" x="120" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="a_team_country" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="country" vertex="1">
+          <mxGeometry height="40" width="80" x="40" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="a_team_flag" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="countryFlag" vertex="1">
+          <mxGeometry height="40" width="100" x="20" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_team_id" edge="1" parent="1" source="e_team" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_team_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_team_name" edge="1" parent="1" source="e_team" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_team_name">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_team_country" edge="1" parent="1" source="e_team" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_team_country">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_team_flag" edge="1" parent="1" source="e_team" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_team_flag">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_player_id" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;fontStyle=4;" value="player_id (PK)" vertex="1">
+          <mxGeometry height="40" width="110" x="50" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="a_player_fn" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="firstName" vertex="1">
+          <mxGeometry height="40" width="90" x="10" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="a_player_ln" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="lastName" vertex="1">
+          <mxGeometry height="40" width="90" x="30" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="a_player_num" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="shirtNumber" vertex="1">
+          <mxGeometry height="40" width="100" x="110" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="a_player_pos" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="position" vertex="1">
+          <mxGeometry height="40" width="80" x="240" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_player_id" edge="1" parent="1" source="e_player" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_player_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_player_fn" edge="1" parent="1" source="e_player" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_player_fn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_player_ln" edge="1" parent="1" source="e_player" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_player_ln">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_player_num" edge="1" parent="1" source="e_player" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_player_num">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_player_pos" edge="1" parent="1" source="e_player" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_player_pos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_match_id" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;fontStyle=4;" value="match_id (PK)" vertex="1">
+          <mxGeometry height="40" width="110" x="910" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="a_match_rorder" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="roundOrderNumber" vertex="1">
+          <mxGeometry height="40" width="130" x="1000" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="a_match_rname" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="roundName" vertex="1">
+          <mxGeometry height="40" width="100" x="1000" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="a_match_date" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="matchDate" vertex="1">
+          <mxGeometry height="40" width="100" x="960" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="a_match_status" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="status" vertex="1">
+          <mxGeometry height="40" width="80" x="910" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_match_id" edge="1" parent="1" source="e_match" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_match_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_match_rorder" edge="1" parent="1" source="e_match" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_match_rorder">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_match_rname" edge="1" parent="1" source="e_match" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_match_rname">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_match_date" edge="1" parent="1" source="e_match" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_match_date">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_match_status" edge="1" parent="1" source="e_match" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_match_status">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_goal_id" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;fontStyle=4;" value="goal_id (PK)" vertex="1">
+          <mxGeometry height="40" width="110" x="910" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="a_goal_created" parent="1" style="ellipse;whiteSpace=wrap;fontSize=11;" value="createdAt" vertex="1">
+          <mxGeometry height="40" width="90" x="925" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_goal_id" edge="1" parent="1" source="e_goal" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_goal_id">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea_goal_created" edge="1" parent="1" source="e_goal" style="edgeStyle=none;endArrow=none;endFill=0;" target="a_goal_created">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re_team_has" edge="1" parent="1" source="e_team" style="edgeStyle=none;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9VCkqJC4a1CBTZO7tn8x-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_team_has_lbl" connectable="0" parent="re_team_has" style="resizable=0;fontSize=11;" value="(1, M)" vertex="1">
+          <mxGeometry relative="1" x="-0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_has_player" edge="1" parent="1" source="9VCkqJC4a1CBTZO7tn8x-2" style="edgeStyle=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="e_player">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="550" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_has_player_lbl" connectable="0" parent="re_has_player" style="resizable=0;fontSize=11;" value="(1, 1)" vertex="1">
+          <mxGeometry relative="1" x="0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_team_plays" edge="1" parent="1" source="e_team" style="edgeStyle=none;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9VCkqJC4a1CBTZO7tn8x-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="490" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_team_plays_lbl" connectable="0" parent="re_team_plays" style="resizable=0;fontSize=11;" value="(0, N)" vertex="1">
+          <mxGeometry relative="1" x="-0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_plays_match" edge="1" parent="1" source="9VCkqJC4a1CBTZO7tn8x-3" style="edgeStyle=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="e_match">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="370" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_plays_match_lbl" connectable="0" parent="re_plays_match" style="resizable=0;fontSize=11;" value="(1, M)" vertex="1">
+          <mxGeometry relative="1" x="0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_user_ref" edge="1" parent="1" source="e_user" style="edgeStyle=none;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9VCkqJC4a1CBTZO7tn8x-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="826" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_user_ref_lbl" connectable="0" parent="re_user_ref" style="resizable=0;fontSize=11;" value="(0, N)" vertex="1">
+          <mxGeometry relative="1" x="-0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_ref_match" edge="1" parent="1" source="9VCkqJC4a1CBTZO7tn8x-1" style="edgeStyle=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="e_match">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="826.0714285714284" y="260" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_ref_match_lbl" connectable="0" parent="re_ref_match" style="resizable=0;fontSize=11;" value="(0, 1)" vertex="1">
+          <mxGeometry relative="1" x="0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_match_rec" edge="1" parent="1" source="e_match" style="edgeStyle=none;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9VCkqJC4a1CBTZO7tn8x-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="926" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_match_rec_lbl" connectable="0" parent="re_match_rec" style="resizable=0;fontSize=11;" value="(1, M)" vertex="1">
+          <mxGeometry relative="1" x="-0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_rec_goal" edge="1" parent="1" source="9VCkqJC4a1CBTZO7tn8x-5" style="edgeStyle=none;exitX=0.5;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="e_goal">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="940" y="560" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_rec_goal_lbl" connectable="0" parent="re_rec_goal" style="resizable=0;fontSize=11;" value="(1, 1)" vertex="1">
+          <mxGeometry relative="1" x="0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_player_sco" edge="1" parent="1" source="e_player" style="edgeStyle=none;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="9VCkqJC4a1CBTZO7tn8x-6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="630" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_player_sco_lbl" connectable="0" parent="re_player_sco" style="resizable=0;fontSize=11;" value="(0, N)" vertex="1">
+          <mxGeometry relative="1" x="-0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_sco_goal" edge="1" parent="1" source="9VCkqJC4a1CBTZO7tn8x-6" style="edgeStyle=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="e_goal">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="660" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_sco_goal_lbl" connectable="0" parent="re_sco_goal" style="resizable=0;fontSize=11;" value="(1, 1)" vertex="1">
+          <mxGeometry relative="1" x="0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_team_for" edge="1" parent="1" source="e_team" style="edgeStyle=none;endArrow=none;endFill=0;" target="9VCkqJC4a1CBTZO7tn8x-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="580" y="482.8947368421052" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_team_for_lbl" connectable="0" parent="re_team_for" style="resizable=0;fontSize=11;" value="(0, N)" vertex="1">
+          <mxGeometry relative="1" x="-0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="re_for_goal" edge="1" parent="1" source="9VCkqJC4a1CBTZO7tn8x-4" style="edgeStyle=none;exitX=1;exitY=1;exitDx=0;exitDy=0;endArrow=none;endFill=0;" target="e_goal">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="516.6666666666667" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="re_for_goal_lbl" connectable="0" parent="re_for_goal" style="resizable=0;fontSize=11;" value="(1, 1)" vertex="1">
+          <mxGeometry relative="1" x="0.6" y="-16" as="geometry" />
+        </mxCell>
+        <mxCell id="9VCkqJC4a1CBTZO7tn8x-1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=14;" value="referees" vertex="1">
+          <mxGeometry height="70" width="140" x="760" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="9VCkqJC4a1CBTZO7tn8x-2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=14;" value="has" vertex="1">
+          <mxGeometry height="70" width="140" x="180" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="9VCkqJC4a1CBTZO7tn8x-3" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=14;" value="plays in" vertex="1">
+          <mxGeometry height="70" width="140" x="490" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="9VCkqJC4a1CBTZO7tn8x-4" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=14;" value="for team" vertex="1">
+          <mxGeometry height="70" width="140" x="450" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="9VCkqJC4a1CBTZO7tn8x-5" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=14;" value="records" vertex="1">
+          <mxGeometry height="70" width="140" x="760" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="9VCkqJC4a1CBTZO7tn8x-6" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=14;" value="scores" vertex="1">
+          <mxGeometry height="70" width="140" x="440" y="620" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

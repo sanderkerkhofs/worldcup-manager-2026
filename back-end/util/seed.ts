@@ -103,7 +103,7 @@ async function main() {
   for (const team of teams) {
     await prisma.player.createMany({
       data: Array.from({ length: seededPlayersPerTeam }, (_unused, index) => ({
-        teamId: team.id,
+        teamName: team.name,
         firstName: playerFirstNames[(index + team.name.length) % playerFirstNames.length],
         lastName: playerLastNames[(index + team.country.length) % playerLastNames.length],
         shirtNumber: index + 1,
@@ -118,9 +118,9 @@ async function main() {
   const allMatches = [] as Array<{
     roundOrderNumber: number;
     roundName: string;
-    homeTeamId: string | null;
-    awayTeamId: string | null;
-    refereeId: string | null;
+    homeTeamName: string | null;
+    awayTeamName: string | null;
+    refereeUsername: string | null;
     matchDate: Date;
     status: 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS';
     homeScore: null;
@@ -141,9 +141,9 @@ async function main() {
       allMatches.push({
         roundOrderNumber: round.orderNumber,
         roundName: round.name,
-        homeTeamId: homeTeam?.id ?? null,
-        awayTeamId: awayTeam?.id ?? null,
-        refereeId: referee?.id ?? null,
+        homeTeamName: homeTeam?.name ?? null,
+        awayTeamName: awayTeam?.name ?? null,
+        refereeUsername: referee?.username ?? null,
         matchDate,
         status: round.orderNumber === 1 ? 'IN_PROGRESS' : 'PLANNED',
         homeScore: null,

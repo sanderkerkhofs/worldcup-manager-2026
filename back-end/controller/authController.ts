@@ -16,6 +16,6 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
 
 authRouter.get('/me', authenticateToken, asyncHandler(async (req, res) => {
   const user = getAuthenticatedUser(req);
-  const currentUser = await getCurrentUser(user.id);
+  const currentUser = await getCurrentUser(user.username);
   res.json(currentUser);
 }));

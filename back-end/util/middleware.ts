@@ -3,10 +3,9 @@ import { ForbiddenError, UnauthorizedError, ApplicationError } from './errors';
 import { verifyAccessToken } from './jwt';
 
 export type RequestUser = {
-    id: string;
     username: string;
     role: string;
-    teamId: string | null;
+    teamName: string | null;
 };
 
 export function getAuthenticatedUser(req: Request): RequestUser {
@@ -31,10 +30,9 @@ export function authenticateToken(req: Request, _res: Response, next: NextFuncti
     const payload = verifyAccessToken(token);
 
     (req as Request & { user?: RequestUser }).user = {
-        id: payload.sub,
         username: payload.username,
         role: payload.role,
-        teamId: payload.teamId,
+        teamName: payload.teamName,
     };
 
     next();

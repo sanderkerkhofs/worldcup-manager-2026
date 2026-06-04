@@ -5,10 +5,9 @@ import { NotFoundError, ValidationError } from '../util/errors';
 
 function toPublicUser(user: User): AuthUser {
   return {
-    id: user.id,
     username: user.username,
     role: user.role,
-    teamId: user.teamId,
+    teamName: user.teamName,
   };
 }
 
@@ -17,16 +16,16 @@ export async function listUsersForAdmin() {
   return users.map((user) => toPublicUser(User.from(user)));
 }
 
-export async function deleteUserForAdmin(userId: string, actorId: string) {
-  if (userId === actorId) {
+export async function deleteUserForAdmin(username: string, actorUsername: string) {
+  if (username === actorUsername) {
     throw new ValidationError('You cannot delete your own account.');
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { username } });
 
   if (!user) {
     throw new NotFoundError('User was not found.');
   }
 
-  await prisma.user.delete({ where: { id: userId } });
+  await prisma.user.delete({ where: { username } });
 }

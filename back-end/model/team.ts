@@ -2,7 +2,6 @@ import { Team as PrismaTeam } from '@prisma/client';
 import { ValidationError } from '../util/errors';
 
 export class Team {
-  public readonly id: string;
   public readonly name: string;
   public readonly country: string;
   public readonly countryShortName: string;
@@ -11,7 +10,6 @@ export class Team {
   public readonly updatedAt: Date;
 
   constructor({
-    id,
     name,
     country,
     countryShortName,
@@ -19,7 +17,6 @@ export class Team {
     createdAt,
     updatedAt,
   }: {
-    id: string;
     name: string;
     country: string;
     countryShortName: string;
@@ -43,7 +40,6 @@ export class Team {
       throw new ValidationError('Team country flag is required.');
     }
 
-    this.id = id;
     this.name = name;
     this.country = country;
     this.countryShortName = countryShortName;
@@ -54,7 +50,6 @@ export class Team {
 
   static from(prismaTeam: PrismaTeam): Team {
     return new Team({
-      id: prismaTeam.id,
       name: prismaTeam.name,
       country: prismaTeam.country,
       countryShortName: prismaTeam.countryShortName,

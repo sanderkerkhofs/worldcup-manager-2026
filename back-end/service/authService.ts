@@ -7,19 +7,17 @@ import { AuthUser, LoginDto, RegisterDto } from '../types';
 
 function toPublicUser(user: User): AuthUser {
   return {
-    id: user.id,
     username: user.username,
     role: user.role,
-    teamId: user.teamId,
+    teamName: user.teamName,
   };
 }
 
 function toAuthResponse(user: User) {
   const token = signAccessToken({
-    sub: user.id,
     username: user.username,
     role: user.role,
-    teamId: user.teamId,
+    teamName: user.teamName,
   });
 
   return { user: toPublicUser(user), token };
@@ -81,8 +79,8 @@ export async function loginUser(input: LoginDto) {
   return toAuthResponse(User.from(user));
 }
 
-export async function getCurrentUser(userId: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+export async function getCurrentUser(username: string) {
+  const user = await prisma.user.findUnique({ where: { username } });
 
   if (!user) {
     throw new NotFoundError('User was not found.');

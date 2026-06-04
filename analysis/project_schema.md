@@ -189,17 +189,58 @@ classDiagram
 
 ## 5. Conceptual ERD
 
-See [drawio/erd-conceptual.drawio](drawio/erd-conceptual.drawio) for the editable diagram.
+See [drawio/erd-conceptual.drawio](drawio/erd-conceptual.drawio) for the editable diagram (Chen notation with entities, attributes, and relationship diamonds).
 
 ```mermaid
 erDiagram
-  USER ||--o{ MATCH : referees
-  TEAM ||--o{ PLAYER : has
+  USER {
+    string id PK
+    string username
+    string role
+  }
+  TEAM {
+    string id PK
+    string name
+    string country
+    string countryFlag
+  }
+  PLAYER {
+    string id PK
+    string firstName
+    string lastName
+    int shirtNumber
+    string position
+  }
+  MATCH {
+    string id PK
+    int roundOrderNumber
+    string roundName
+    datetime matchDate
+    string status
+  }
+  GOAL {
+    string id PK
+    datetime createdAt
+  }
+
+  TEAM ||--o{ PLAYER : "has"
+  TEAM }o--o{ MATCH : "plays in"
+  USER }o--o| MATCH : "referees"
+  MATCH ||--o{ GOAL : "records"
+  PLAYER ||--o{ GOAL : "scores"
   TEAM ||--o{ GOAL : "for team"
-  TEAM ||--o{ MATCH : "home or away"
-  MATCH ||--o{ GOAL : records
-  PLAYER ||--o{ GOAL : scores
 ```
+
+### Cardinality notes
+
+| Relationship | From   | Cardinality | To     | Cardinality |
+| ------------ | ------ | ----------- | ------ | ----------- |
+| has          | TEAM   | (1, M)      | PLAYER | (1, 1)      |
+| plays in     | TEAM   | (0, N)      | MATCH  | (1, M)      |
+| referees     | USER   | (0, N)      | MATCH  | (0, 1)      |
+| records      | MATCH  | (1, M)      | GOAL   | (1, 1)      |
+| scores       | PLAYER | (0, N)      | GOAL   | (1, 1)      |
+| for team     | TEAM   | (0, N)      | GOAL   | (1, 1)      |
 
 ## 6. Logical ERD
 

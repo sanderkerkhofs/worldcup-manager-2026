@@ -9,8 +9,8 @@ userRouter.get('/', authenticateToken, requireRoles('ADMIN'), asyncHandler(async
   res.json(users);
 }));
 
-userRouter.delete('/:userId', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
+userRouter.delete('/:username', authenticateToken, requireRoles('ADMIN'), asyncHandler(async (req, res) => {
   const actor = getAuthenticatedUser(req);
-  await deleteUserForAdmin(req.params.userId, actor.id);
+  await deleteUserForAdmin(req.params.username, actor.username);
   res.status(204).send();
 }));
