@@ -16,7 +16,7 @@ export default function HomePage() {
   const standings = isAuthenticated ? (overview?.standings ?? []) : [];
   const topScorers = isAuthenticated ? (overview?.topScorers ?? []) : [];
 
-  const teamById = new Map((overview?.teams ?? []).map((team) => [team.id, team]));
+  const teamByName = new Map((overview?.teams ?? []).map((team) => [team.name, team]));
   const orderedRounds = useMemo(
     () => [...rounds].sort((left, right) => left.orderNumber - right.orderNumber),
     [rounds],
@@ -24,7 +24,7 @@ export default function HomePage() {
 
   const currentRound = useMemo(() => {
     const activeRound = orderedRounds.find((round) => {
-      const roundMatches = matches.filter((match) => match.roundId === round.id);
+      const roundMatches = matches.filter((match) => match.roundId === String(round.orderNumber));
       return roundMatches.some((match) => match.status === 'NOT_STARTED' || match.status === 'IN_PROGRESS' || match.status === 'FINISHED');
     });
 
@@ -34,7 +34,7 @@ export default function HomePage() {
   const currentRoundMatches = useMemo(
     () => currentRound
       ? matches
-        .filter((match) => match.roundId === currentRound.id)
+        .filter((match) => match.roundId === String(currentRound.orderNumber))
         .sort((left, right) => new Date(left.matchDate).getTime() - new Date(right.matchDate).getTime())
       : [],
     [currentRound, matches],
@@ -81,8 +81,8 @@ export default function HomePage() {
                     </thead>
                     <tbody>
                       {currentRoundMatches.map((match) => {
-                        const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                        const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+                        const homeTeam = match.homeTeamName ? teamByName.get(match.homeTeamName) : undefined;
+                        const awayTeam = match.awayTeamName ? teamByName.get(match.awayTeamName) : undefined;
 
                         return (
                           <tr key={match.id}>
@@ -130,8 +130,8 @@ export default function HomePage() {
                   </thead>
                   <tbody>
                     {topFiveStandings.map((row) => (
-                      <tr key={row.teamId}>
-                        <td>{teamById.get(row.teamId)?.countryFlag ? `${teamById.get(row.teamId)?.countryFlag} ` : ''}{row.teamName}</td>
+                      <tr key={row.teamName}>
+                        <td>{teamByName.get(row.teamName)?.countryFlag ? `${teamByName.get(row.teamName)?.countryFlag} ` : ''}{row.teamName}</td>
                         <td>{row.played}</td>
                         <td>{row.won}</td>
                         <td>{row.drawn}</td>

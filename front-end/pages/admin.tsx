@@ -53,12 +53,15 @@ export default function AdminPage() {
 
   const orderedRounds = [...overview.rounds].sort((left, right) => left.orderNumber - right.orderNumber);
   const currentRound = orderedRounds.find((round) => {
-    const roundMatches = overview.matches.filter((match) => match.roundId === round.id);
-    return roundMatches.some((match) => match.status === 'NOT_STARTED' || match.status === 'IN_PROGRESS' || match.status === 'FINISHED');
-  }) ?? orderedRounds[orderedRounds.length - 1] ?? null;
+    const roundMatches = overview.matches.filter((match) => match.roundId === String(round.orderNumber));
+    return roundMatches.some((match) => match.status === 'NOT_STARTED' || match.status === 'IN_PROGRESS');
+  }) ?? (orderedRounds.find((round) => {
+    const roundMatches = overview.matches.filter((match) => match.roundId === String(round.orderNumber));
+    return roundMatches.some((match) => match.status === 'FINISHED');
+  })) ?? null;
 
   const roundSummaries = orderedRounds.map((round) => {
-    const roundMatches = overview.matches.filter((match) => match.roundId === round.id);
+    const roundMatches = overview.matches.filter((match) => match.roundId === String(round.orderNumber));
     const finishedMatches = roundMatches.filter((match) => match.status === 'FINISHED' || match.status === 'COMPLETED');
     const isCompleted = roundMatches.length > 0 && finishedMatches.length === roundMatches.length;
 
@@ -67,7 +70,7 @@ export default function AdminPage() {
       matchCount: roundMatches.length,
       finishedCount: finishedMatches.length,
       isCompleted,
-      isCurrentRound: currentRound?.id === round.id,
+      isCurrentRound: currentRound?.orderNumber === round.orderNumber,
     };
   });
 
@@ -134,7 +137,7 @@ export default function AdminPage() {
               </thead>
               <tbody>
                 {roundSummaries.map(({ round, matchCount, finishedCount, isCompleted, isCurrentRound }) => (
-                  <tr key={round.id}>
+                  <tr key={`round-${round.orderNumber}`}>
                     <td>{round.orderNumber}. {round.name}</td>
                     <td>{matchCount}</td>
                     <td>{finishedCount}/{matchCount}</td>
@@ -143,17 +146,17 @@ export default function AdminPage() {
                     <td>
                       <button
                         className="smallButton"
-                        disabled={!isCurrentRound || isCompleted || simulatingRoundId === round.id}
+                        disabled={!isCurrentRound || simulatingRoundId === String(round.orderNumber)}
                         onClick={async () => {
                           if (!token) {
                             return;
                           }
 
-                          setSimulatingRoundId(round.id);
+                          setSimulatingRoundId(String(round.orderNumber));
                           setMessage(null);
 
                           try {
-                            await simulateRound(round.id, token);
+                            await simulateRound(String(round.orderNumber), token);
                             await mutateOverview();
                             setMessage(t('adminSimulateSuccess', { round: round.name }));
                           } catch (simulationError) {
@@ -163,7 +166,7 @@ export default function AdminPage() {
                           }
                         }}
                       >
-                        {simulatingRoundId === round.id ? t('actionSimulating') : t('actionSimulateRound')}
+                        {simulatingRoundId === String(round.orderNumber) ? t('actionSimulating') : t('actionSimulateRound')}
                       </button>
                     </td>
                   </tr>
@@ -186,23 +189,23 @@ export default function AdminPage() {
               </thead>
               <tbody>
                 {sortedUsers.map((managedUser) => (
-                  <tr key={managedUser.id}>
+                  <tr key={managedUser.username}>
                     <td>{managedUser.username}</td>
                     <td>{managedUser.role}</td>
                     <td>
                       <button
                         className="smallButton"
-                        disabled={managedUser.id === user.id || busyUserId === managedUser.id}
+                        disabled={managedUser.username === user.username || busyUserId === managedUser.username}
                         onClick={async () => {
                           if (!token) {
                             return;
                           }
 
-                          setBusyUserId(managedUser.id);
+                          setBusyUserId(managedUser.username);
                           setMessage(null);
 
                           try {
-                            await deleteUser(managedUser.id, token);
+                            await deleteUser(managedUser.username, token);
                             await mutateUsers();
                             setMessage(t('adminDeleteSuccess', { username: managedUser.username }));
                           } catch (deleteError) {
@@ -212,7 +215,7 @@ export default function AdminPage() {
                           }
                         }}
                       >
-                        {busyUserId === managedUser.id ? t('actionDeleting') : t('actionDelete')}
+                        {busyUserId === managedUser.username ? t('actionDeleting') : t('actionDelete')}
                       </button>
                     </td>
                   </tr>

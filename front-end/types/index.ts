@@ -2,10 +2,9 @@ export type UserRole = 'ADMIN' | 'REFEREE' | 'USER' | 'GUEST';
 export type MatchStatus = 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED';
 
 export type AuthUser = {
-  id: string;
   username: string;
   role: UserRole;
-  teamId: string | null;
+  teamName: string | null;
 };
 
 export type AuthResponse = {
@@ -14,7 +13,6 @@ export type AuthResponse = {
 };
 
 export type Team = {
-  id: string;
   name: string;
   country: string;
   countryShortName: string;
@@ -24,8 +22,8 @@ export type Team = {
 };
 
 export type Player = {
-  id: string;
-  teamId: string;
+  id: number;
+  teamName: string;
   firstName: string;
   lastName: string;
   shirtNumber: number;
@@ -35,7 +33,6 @@ export type Player = {
 };
 
 export type Round = {
-  id: string;
   name: string;
   orderNumber: number;
   createdAt: string;
@@ -43,13 +40,13 @@ export type Round = {
 };
 
 export type Match = {
-  id: string;
+  id: number;
   roundId: string;
   roundOrderNumber: number;
   roundName: string;
-  homeTeamId: string | null;
-  awayTeamId: string | null;
-  refereeId: string | null;
+  homeTeamName: string | null;
+  awayTeamName: string | null;
+  refereeUsername: string | null;
   refereeName: string | null;
   homeScore: number | null;
   awayScore: number | null;
@@ -61,34 +58,33 @@ export type Match = {
 };
 
 export type Goal = {
-  id: string;
-  matchId: string;
-  playerId: string;
-  teamId: string;
+  id: number;
+  matchId: number;
+  playerId: number;
+  teamName: string;
   createdAt: string;
 };
 
 export type MatchGoal = {
-  id: string;
-  playerId: string;
-  teamId: string;
-  playerName: string;
+  id: number;
+  playerId: number;
   teamName: string;
+  playerName: string;
   teamCountryFlag: string;
   createdAt: string;
 };
 
 export type MatchCreateInput = {
   roundId: string;
-  homeTeamId: string;
-  awayTeamId: string;
+  homeTeamName: string;
+  awayTeamName: string;
   matchDate: string;
-  refereeId?: string | null;
+  refereeUsername?: string | null;
 };
 
 export type GoalInput = {
-  playerId: string;
-  teamId: string;
+  playerId: number;
+  teamName: string;
 };
 
 export type RoundSimulationResult = {
@@ -104,7 +100,6 @@ export type TournamentResetResult = {
 };
 
 export type StandingRow = {
-  teamId: string;
   teamName: string;
   played: number;
   won: number;
@@ -117,9 +112,8 @@ export type StandingRow = {
 };
 
 export type TopScorerRow = {
-  playerId: string;
+  playerId: number;
   playerName: string;
-  teamId: string;
   teamName: string;
   teamCountryFlag: string;
   goals: number;

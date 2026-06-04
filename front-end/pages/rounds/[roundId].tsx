@@ -48,19 +48,19 @@ export default function RoundDetailPage() {
   }
 
   const orderedRounds = [...overview.rounds].sort((left, right) => left.orderNumber - right.orderNumber);
-  const round = orderedRounds.find((item) => item.id === roundId);
+  const round = orderedRounds.find((item) => String(item.orderNumber) === roundId);
 
   if (!round) {
     return <p className="errorText">{t('roundsNotFound')}</p>;
   }
 
   const previousRound = orderedRounds.find((item) => item.orderNumber === round.orderNumber - 1);
-  const previousMatches = previousRound ? overview.matches.filter((match) => match.roundId === previousRound.id) : [];
+  const previousMatches = previousRound ? overview.matches.filter((match) => match.roundId === String(previousRound.orderNumber)) : [];
   const canManageRound = round.orderNumber === 1 || (previousMatches.length > 0 && previousMatches.every((match) => match.status === 'FINISHED' || match.status === 'COMPLETED'));
 
-  const teamById = new Map(overview.teams.map((team) => [team.id, team]));
+  const teamByName = new Map(overview.teams.map((team) => [team.name, team]));
   const roundMatches = overview.matches
-    .filter((match) => match.roundId === round.id)
+    .filter((match) => match.roundId === String(round.orderNumber))
     .sort((left, right) => new Date(left.matchDate).getTime() - new Date(right.matchDate).getTime());
 
   const isAdmin = user?.role === 'ADMIN' && !!token;
@@ -95,7 +95,7 @@ export default function RoundDetailPage() {
                 setBusyAction('simulate');
                 setMessage(null);
                 try {
-                  const result = await simulateRound(round.id, token);
+                  const result = await simulateRound(String(round.orderNumber), token);
                   await mutate();
                   setMessage(t('roundsSimulateSuccess', { matches: result.matches.length, goals: result.goalsCreated }));
                 } catch (actionError) {
@@ -129,8 +129,8 @@ export default function RoundDetailPage() {
               </thead>
               <tbody>
                 {roundMatches.map((match) => {
-                  const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                  const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+                  const homeTeam = match.homeTeamName ? teamByName.get(match.homeTeamName) : undefined;
+                  const awayTeam = match.awayTeamName ? teamByName.get(match.awayTeamName) : undefined;
                   const homeName = homeTeam ? `${homeTeam.countryFlag} ${homeTeam.countryShortName}` : t('labelTBD');
                   const awayName = awayTeam ? `${awayTeam.countryFlag} ${awayTeam.countryShortName}` : t('labelTBD');
 

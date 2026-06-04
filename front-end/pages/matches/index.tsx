@@ -32,13 +32,13 @@ export default function MatchesPage() {
     return <p className="errorText">{t('matchesUnableToLoad')}</p>;
   }
 
-  const teamById = new Map(overview.teams.map((team) => [team.id, team]));
+  const teamByName = new Map(overview.teams.map((team) => [team.name, team]));
   const orderedRounds = [...overview.rounds].sort((left, right) => left.orderNumber - right.orderNumber);
   const roundsWithMatches = orderedRounds
     .map((round) => ({
       round,
       matches: overview.matches
-        .filter((match) => match.roundId === round.id)
+        .filter((match) => match.roundId === String(round.orderNumber))
         .sort((left, right) => new Date(left.matchDate).getTime() - new Date(right.matchDate).getTime()),
     }))
     .filter((item) => item.matches.length > 0);
@@ -51,7 +51,7 @@ export default function MatchesPage() {
         </section>
       ) : (
         roundsWithMatches.map(({ round, matches }) => (
-          <section key={round.id}>
+          <section key={`round-${round.orderNumber}`}>
             <article className="panelCard stack">
               <header className="sectionTitleCard sectionTitleCardPlain">
                 <div className="sectionTitleCopy">
@@ -73,8 +73,8 @@ export default function MatchesPage() {
                   </thead>
                   <tbody>
                     {matches.map((match) => {
-                      const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                      const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+                      const homeTeam = match.homeTeamName ? teamByName.get(match.homeTeamName) : undefined;
+                      const awayTeam = match.awayTeamName ? teamByName.get(match.awayTeamName) : undefined;
 
                       return (
                         <tr key={match.id}>

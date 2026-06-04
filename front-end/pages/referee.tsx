@@ -31,8 +31,8 @@ export default function RefereePage() {
     return <p className="muted">{t('refereeLoadingWorkspace')}</p>;
   }
 
-  const teamById = new Map(overview.teams.map((team) => [team.id, team]));
-  const assignedMatches = overview.matches.filter((match) => match.refereeId === user.id);
+  const teamByName = new Map(overview.teams.map((team) => [team.name, team]));
+  const assignedMatches = overview.matches.filter((match) => match.refereeUsername === user.username);
   const assignedMatchesHeading = `${t('refereeAssignedMatches')} (${user.username})`;
 
   return (
@@ -58,8 +58,8 @@ export default function RefereePage() {
             </thead>
             <tbody>
               {assignedMatches.map((match) => {
-                const homeTeam = match.homeTeamId ? teamById.get(match.homeTeamId) : undefined;
-                const awayTeam = match.awayTeamId ? teamById.get(match.awayTeamId) : undefined;
+                const homeTeam = match.homeTeamName ? teamByName.get(match.homeTeamName) : undefined;
+                const awayTeam = match.awayTeamName ? teamByName.get(match.awayTeamName) : undefined;
 
                 return (
                   <tr key={match.id}>

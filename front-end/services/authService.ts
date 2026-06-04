@@ -17,6 +17,6 @@ export async function listUsers(token: string): Promise<AuthUser[]> {
   return api.get<AuthUser[]>('/api/users', token);
 }
 
-export async function deleteUser(userId: string, token: string): Promise<void> {
-  return api.del<void>(`/api/users/${userId}`, token);
+export async function deleteUser(username: string, token: string): Promise<void> {
+  return api.del<void>(`/api/users/${username}`, token);
 }

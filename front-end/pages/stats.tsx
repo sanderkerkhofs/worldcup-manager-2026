@@ -32,7 +32,7 @@ export default function StatsPage() {
     return <p className="errorText">{t('statsUnableToLoad')}</p>;
   }
 
-  const teamById = new Map(overview.teams.map((team) => [team.id, team]));
+  const teamByName = new Map(overview.teams.map((team) => [team.name, team]));
 
   return (
     <div className="stack">
@@ -56,8 +56,8 @@ export default function StatsPage() {
               </thead>
               <tbody>
                 {overview.standings.map((row) => (
-                  <tr key={row.teamId}>
-                    <td>{teamById.get(row.teamId)?.countryFlag ? `${teamById.get(row.teamId)?.countryFlag} ` : ''}{row.teamName}</td>
+                  <tr key={row.teamName}>
+                    <td>{teamByName.get(row.teamName)?.countryFlag ? `${teamByName.get(row.teamName)?.countryFlag} ` : ''}{row.teamName}</td>
                     <td>{row.played}</td>
                     <td>{row.won}</td>
                     <td>{row.drawn}</td>

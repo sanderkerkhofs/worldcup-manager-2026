@@ -18,8 +18,8 @@ export default function MatchEditorPage() {
 
   const { data: overview } = useSWR(canViewMatch ? ['match-overview-public'] : null, () => getOverview());
   const { data: match, mutate: mutateMatch } = useSWR(canViewMatch && isReady ? ['match-public', matchId] : null, () => getMatch(matchId as string));
-  const { data: homePlayers } = useSWR(canViewMatch && match?.homeTeamId ? ['players-home-public', match.homeTeamId] : null, () => getPlayers(match!.homeTeamId as string));
-  const { data: awayPlayers } = useSWR(canViewMatch && match?.awayTeamId ? ['players-away-public', match.awayTeamId] : null, () => getPlayers(match!.awayTeamId as string));
+  const { data: homePlayers } = useSWR(canViewMatch && match?.homeTeamName ? ['players-home-public', match.homeTeamName] : null, () => getPlayers(match!.homeTeamName as string));
+  const { data: awayPlayers } = useSWR(canViewMatch && match?.awayTeamName ? ['players-away-public', match.awayTeamName] : null, () => getPlayers(match!.awayTeamName as string));
 
   const [status, setStatus] = useState('PLANNED');
   const [homeScore, setHomeScore] = useState('');
@@ -43,12 +43,12 @@ export default function MatchEditorPage() {
   }, [awayPlayers, homePlayers]);
 
   const homeAvailablePlayers = useMemo(
-    () => availablePlayers.filter((player) => player.teamId === match?.homeTeamId),
-    [availablePlayers, match?.homeTeamId],
+    () => availablePlayers.filter((player) => player.teamName === match?.homeTeamName),
+    [availablePlayers, match?.homeTeamName],
   );
   const awayAvailablePlayers = useMemo(
-    () => availablePlayers.filter((player) => player.teamId === match?.awayTeamId),
-    [availablePlayers, match?.awayTeamId],
+    () => availablePlayers.filter((player) => player.teamName === match?.awayTeamName),
+    [availablePlayers, match?.awayTeamName],
   );
 
   if (!canViewMatch) {
@@ -73,15 +73,15 @@ export default function MatchEditorPage() {
     return <p className="muted">{t('matchLoadingDetails')}</p>;
   }
 
-  const homeTeam = overview.teams.find((team) => team.id === match.homeTeamId);
-  const awayTeam = overview.teams.find((team) => team.id === match.awayTeamId);
+  const homeTeam = overview.teams.find((team) => team.name === match.homeTeamName);
+  const awayTeam = overview.teams.find((team) => team.name === match.awayTeamName);
   const overviewMatch = overview.matches.find((item) => item.id === match.id);
   const isAdmin = user?.role === 'ADMIN';
-  const isAssignedReferee = user?.role === 'REFEREE' && (match.refereeId === user?.id || overviewMatch?.refereeId === user?.id);
+  const isAssignedReferee = user?.role === 'REFEREE' && (match.refereeUsername === user?.username || overviewMatch?.refereeUsername === user?.username);
   const canEdit = isAdmin || isAssignedReferee;
   const isRefereeEditor = isAssignedReferee && !isAdmin;
-  const hasPlayableTeams = !!match.homeTeamId && !!match.awayTeamId;
-  const roundName = overview.rounds.find((round) => round.id === match.roundId)?.name ?? t('colRound');
+  const hasPlayableTeams = !!match.homeTeamName && !!match.awayTeamName;
+  const roundName = overview.rounds.find((round) => String(round.orderNumber) === match.roundId)?.name ?? t('colRound');
   const dateLabel = new Date(match.matchDate).toLocaleString(locale);
   const statusLabel = getMatchStatusLabel(match.status, locale);
   const canRefereeSetInProgress = hasPlayableTeams && (match.status === 'PLANNED' || match.status === 'NOT_STARTED');
@@ -106,8 +106,8 @@ export default function MatchEditorPage() {
     }
   };
 
-  const registerGoalForTeam = async (teamId: string | null, playerId: string, clearSelection: () => void) => {
-    if (!token || !teamId || !playerId) {
+  const registerGoalForTeam = async (teamName: string | null, playerId: number, clearSelection: () => void) => {
+    if (!token || !teamName || !playerId) {
       return;
     }
 
@@ -119,11 +119,11 @@ export default function MatchEditorPage() {
 
     await addGoal(match.id, {
       playerId,
-      teamId,
+      teamName,
     }, token);
 
     const scorerName = `${scorer.firstName} ${scorer.lastName}`;
-    const scoringTeamName = teamId === match.homeTeamId
+    const scoringTeamName = teamName === match.homeTeamName
       ? (homeTeam?.name ?? t('labelHomeTeam'))
       : (awayTeam?.name ?? t('labelAwayTeam'));
 
@@ -224,31 +224,30 @@ export default function MatchEditorPage() {
                 <div className="formGrid">
                   <label>
                     {t('labelMatchStatus')}
-                    <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!hasPlayableTeams}>
+                    <select value={status} onChange={(event) => setStatus(event.target.value)} disabled={!hasPlayableTeams || status === 'FINISHED'}>
                       <option value="PLANNED">{getMatchStatusLabel('PLANNED' as MatchStatus, locale)}</option>
                       <option value="NOT_STARTED">{getMatchStatusLabel('NOT_STARTED' as MatchStatus, locale)}</option>
                       <option value="IN_PROGRESS">{getMatchStatusLabel('IN_PROGRESS' as MatchStatus, locale)}</option>
                       <option value="FINISHED">{getMatchStatusLabel('FINISHED' as MatchStatus, locale)}</option>
-                      <option value="COMPLETED">{getMatchStatusLabel('COMPLETED' as MatchStatus, locale)}</option>
                     </select>
                   </label>
                   <label>
                     {t('labelHomeScore')}
-                    <input type="number" min={0} value={homeScore} onChange={(event) => setHomeScore(event.target.value)} disabled={!hasPlayableTeams} />
+                    <input type="number" min={0} value={homeScore} onChange={(event) => setHomeScore(event.target.value)} disabled={!hasPlayableTeams || status === 'FINISHED'} />
                   </label>
                   <label>
                     {t('labelAwayScore')}
-                    <input type="number" min={0} value={awayScore} onChange={(event) => setAwayScore(event.target.value)} disabled={!hasPlayableTeams} />
+                    <input type="number" min={0} value={awayScore} onChange={(event) => setAwayScore(event.target.value)} disabled={!hasPlayableTeams || status === 'FINISHED'} />
                   </label>
                 </div>
                 <div className="rowButtons">
                   <button
                     className="smallButton"
-                    disabled={!hasPlayableTeams}
+                    disabled={!hasPlayableTeams || status === 'FINISHED'}
                     onClick={async () => {
                       if (!token) return;
                       setMessage(null);
-                      await updateMatchStatus(match.id, status as 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED' | 'COMPLETED', token);
+                      await updateMatchStatus(match.id, status as 'PLANNED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'FINISHED', token);
                       if (homeScore !== '' && awayScore !== '') {
                         await updateMatchResult(match.id, Number(homeScore), Number(awayScore), token);
                       }
@@ -295,7 +294,7 @@ export default function MatchEditorPage() {
                   className="smallButton"
                   disabled={!hasPlayableTeams || !homeGoalPlayerId}
                   onClick={async () => {
-                    await registerGoalForTeam(match.homeTeamId, homeGoalPlayerId, () => setHomeGoalPlayerId(''));
+                    await registerGoalForTeam(match.homeTeamName, parseInt(homeGoalPlayerId, 10), () => setHomeGoalPlayerId(''));
                   }}
                 >
                   {t('actionAddHomeGoal')}
@@ -326,7 +325,7 @@ export default function MatchEditorPage() {
                   className="smallButton"
                   disabled={!hasPlayableTeams || !awayGoalPlayerId}
                   onClick={async () => {
-                    await registerGoalForTeam(match.awayTeamId, awayGoalPlayerId, () => setAwayGoalPlayerId(''));
+                    await registerGoalForTeam(match.awayTeamName, parseInt(awayGoalPlayerId, 10), () => setAwayGoalPlayerId(''));
                   }}
                 >
                   {t('actionAddAwayGoal')}

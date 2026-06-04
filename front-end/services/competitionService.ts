@@ -21,8 +21,8 @@ export function getMatch(matchId: string, token?: string | null) {
   return api.get<Match>(`/api/matches/${matchId}`, token);
 }
 
-export function getPlayers(teamId: string, token?: string | null) {
-  return api.get<Player[]>(`/api/players?teamId=${encodeURIComponent(teamId)}`, token);
+export function getPlayers(teamName: string, token?: string | null) {
+  return api.get<Player[]>(`/api/players?teamName=${encodeURIComponent(teamName)}`, token);
 }
 
 export function updateMatchStatus(matchId: string, status: MatchStatus, token: string) {
