@@ -34,8 +34,7 @@ PLANNED | NOT_STARTED | IN_PROGRESS | FINISHED
 
 ### Team
 
-- id: String (CUID, PK)
-- name: String (UNIQUE)
+- name: String (PK, UNIQUE)
 - country: String
 - countryShortName: String
 - countryFlag: String
@@ -44,12 +43,12 @@ PLANNED | NOT_STARTED | IN_PROGRESS | FINISHED
 
 ### Match
 
-- id: String (CUID, PK)
+- id: Int (AUTOINCREMENT, PK)
 - roundOrderNumber: Int
 - roundName: String
-- homeTeamId: String? (FK → Team, optional)
-- awayTeamId: String? (FK → Team, optional)
-- refereeId: String? (FK → User, optional)
+- homeTeamName: String? (FK → Team.name, optional)
+- awayTeamName: String? (FK → Team.name, optional)
+- refereeUsername: String? (FK → User.username, optional)
 - homeScore: Int?
 - awayScore: Int?
 - matchDate: DateTime
@@ -59,22 +58,22 @@ PLANNED | NOT_STARTED | IN_PROGRESS | FINISHED
 
 ### Player
 
-- id: String (CUID, PK)
-- teamId: String (FK → Team)
+- id: Int (AUTOINCREMENT, PK)
+- teamName: String (FK → Team.name)
 - firstName: String
 - lastName: String
 - shirtNumber: Int
 - position: String
 - createdAt: DateTime
 - updatedAt: DateTime
-- UNIQUE constraint: (teamId, shirtNumber)
+- UNIQUE constraint: (teamName, shirtNumber)
 
 ### Goal
 
-- id: String (CUID, PK)
-- matchId: String (FK → Match)
-- playerId: String (FK → Player)
-- teamId: String (FK → Team)
+- id: Int (AUTOINCREMENT, PK)
+- matchId: Int (FK → Match.id)
+- playerId: Int (FK → Player.id)
+- teamName: String (FK → Team.name)
 - createdAt: DateTime
 
 ## 3. Relationship Overview
@@ -127,8 +126,7 @@ classDiagram
   }
 
   class Team {
-    +String id
-    +String name
+    +String name (PK)
     +String country
     +String countryShortName
     +String countryFlag
@@ -137,12 +135,12 @@ classDiagram
   }
 
   class Match {
-    +String id
+    +Int id (PK)
     +Int roundOrderNumber
     +String roundName
-    +String? homeTeamId
-    +String? awayTeamId
-    +String? refereeId
+    +String? homeTeamName
+    +String? awayTeamName
+    +String? refereeUsername
     +Int? homeScore
     +Int? awayScore
     +DateTime matchDate
@@ -152,8 +150,8 @@ classDiagram
   }
 
   class Player {
-    +String id
-    +String teamId
+    +Int id (PK)
+    +String teamName
     +String firstName
     +String lastName
     +Int shirtNumber
@@ -163,10 +161,10 @@ classDiagram
   }
 
   class Goal {
-    +String id
-    +String matchId
-    +String playerId
-    +String teamId
+    +Int id (PK)
+    +Int matchId
+    +Int playerId
+    +String teamName
     +DateTime createdAt
   }
 
@@ -183,7 +181,7 @@ classDiagram
 
 ## 5. Conceptual ERD
 
-See [drawio/erd-conceptual-model.drawio](drawio/erd-conceptual-model.drawio) for the editable diagram (Chen notation with entities, attributes, and relationship diamonds).
+See [drawio/erd-conceptual-fresh.drawio](drawio/erd-conceptual-fresh.drawio) for the editable diagram (Chen notation with entities, attributes, and relationship diamonds).
 
 ```mermaid
 erDiagram
@@ -238,23 +236,20 @@ erDiagram
 
 ## 6. Logical ERD
 
-See [drawio/erd-logical-model.drawio](drawio/erd-logical-model.drawio) for the editable diagram.
+See [drawio/erd-logical.drawio](drawio/erd-logical.drawio) for the editable diagram.
 
 ```mermaid
 erDiagram
   USER {
-    String id PK
-    String username
+    String username PK
     String passwordHash
     UserRole role
-    String teamId FK
     DateTime createdAt
     DateTime updatedAt
   }
 
   TEAM {
-    String id PK
-    String name
+    String name PK
     String country
     String countryShortName
     String countryFlag
@@ -263,12 +258,12 @@ erDiagram
   }
 
   MATCH {
-    String id PK
+    Int id PK
     Int roundOrderNumber
     String roundName
-    String homeTeamId FK
-    String awayTeamId FK
-    String refereeId FK
+    String homeTeamName FK
+    String awayTeamName FK
+    String refereeUsername FK
     Int homeScore
     Int awayScore
     DateTime matchDate
@@ -278,8 +273,8 @@ erDiagram
   }
 
   PLAYER {
-    String id PK
-    String teamId FK
+    Int id PK
+    String teamName FK
     String firstName
     String lastName
     Int shirtNumber
@@ -289,10 +284,10 @@ erDiagram
   }
 
   GOAL {
-    String id PK
-    String matchId FK
-    String playerId FK
-    String teamId FK
+    Int id PK
+    Int matchId FK
+    Int playerId FK
+    String teamName FK
     DateTime createdAt
   }
 
