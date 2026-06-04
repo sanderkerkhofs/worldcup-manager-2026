@@ -5,24 +5,24 @@ describe('Match domain model', () => {
   describe('given: valid match data; when: creating a match; then: match is created successfully', () => {
     it('should create a match with all valid fields', () => {
       const match = new Match({
-        id: 'match-1',
+        id: 101,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
         status: 'PLANNED',
       });
 
-      expect(match.id).toBe('match-1');
+      expect(match.id).toBe(101);
       expect(match.roundOrderNumber).toBe(1);
       expect(match.roundName).toBe('8th Final');
-      expect(match.homeTeamId).toBe('team-1');
-      expect(match.awayTeamId).toBe('team-2');
-      expect(match.refereeId).toBeNull();
+      expect(match.homeTeamName).toBe('Argentina');
+      expect(match.awayTeamName).toBe('Brazil');
+      expect(match.refereeUsername).toBeNull();
       expect(match.homeScore).toBeNull();
       expect(match.awayScore).toBeNull();
       expect(match.status).toBe('PLANNED');
@@ -35,12 +35,12 @@ describe('Match domain model', () => {
 
       statuses.forEach((status) => {
         const match = new Match({
-          id: `match-${status}`,
+          id: 100,
           roundOrderNumber: 1,
           roundName: '8th Final',
-          homeTeamId: 'team-1',
-          awayTeamId: 'team-2',
-          refereeId: null,
+          homeTeamName: 'Argentina',
+          awayTeamName: 'Brazil',
+          refereeUsername: null,
           homeScore: null,
           awayScore: null,
           matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -52,29 +52,29 @@ describe('Match domain model', () => {
 
     it('should create match with assigned referee', () => {
       const match = new Match({
-        id: 'match-2',
+        id: 102,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: 'referee-1',
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: 'referee-1',
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
         status: 'PLANNED',
       });
 
-      expect(match.refereeId).toBe('referee-1');
+      expect(match.refereeUsername).toBe('referee-1');
     });
 
     it('should create finished match with scores', () => {
       const match = new Match({
-        id: 'match-3',
+        id: 103,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: 'referee-1',
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: 'referee-1',
         homeScore: 2,
         awayScore: 1,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -88,12 +88,12 @@ describe('Match domain model', () => {
 
     it('should create match with zero scores', () => {
       const match = new Match({
-        id: 'match-4',
+        id: 104,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: 0,
         awayScore: 0,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -106,12 +106,12 @@ describe('Match domain model', () => {
 
     it('should create match with high scores', () => {
       const match = new Match({
-        id: 'match-5',
+        id: 105,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: 10,
         awayScore: 9,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -125,12 +125,12 @@ describe('Match domain model', () => {
     it('should auto-generate timestamps when not provided', () => {
       const before = new Date();
       const match = new Match({
-        id: 'match-6',
+        id: 106,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -148,12 +148,12 @@ describe('Match domain model', () => {
       const createdAt = new Date('2026-01-01T00:00:00Z');
       const updatedAt = new Date('2026-02-01T00:00:00Z');
       const match = new Match({
-        id: 'match-7',
+        id: 107,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -168,44 +168,44 @@ describe('Match domain model', () => {
 
     it('should create match with pending teams (both null)', () => {
       const match = new Match({
-        id: 'match-8',
+        id: 108,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: null,
-        awayTeamId: null,
-        refereeId: null,
+        homeTeamName: null,
+        awayTeamName: null,
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
         status: 'PLANNED',
       });
 
-      expect(match.homeTeamId).toBeNull();
-      expect(match.awayTeamId).toBeNull();
+      expect(match.homeTeamName).toBeNull();
+      expect(match.awayTeamName).toBeNull();
     });
   });
 
   describe('given: invalid round order number; when: creating match; then: error is thrown', () => {
     it('should reject zero round order number', () => {
       expect(() => new Match({
-        id: 'match-9',
+        id: 109,
         roundOrderNumber: 0,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
         status: 'PLANNED',
       })).toThrow(ValidationError);
       expect(() => new Match({
-        id: 'match-9',
+        id: 109,
         roundOrderNumber: 0,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -215,12 +215,12 @@ describe('Match domain model', () => {
 
     it('should reject negative round order number', () => {
       expect(() => new Match({
-        id: 'match-10',
+        id: 110,
         roundOrderNumber: -1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -230,12 +230,12 @@ describe('Match domain model', () => {
 
     it('should reject floating point round order number', () => {
       expect(() => new Match({
-        id: 'match-11',
+        id: 111,
         roundOrderNumber: 1.5,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -247,12 +247,12 @@ describe('Match domain model', () => {
   describe('given: invalid round name; when: creating match; then: error is thrown', () => {
     it('should reject empty round name', () => {
       expect(() => new Match({
-        id: 'match-12',
+        id: 112,
         roundOrderNumber: 1,
         roundName: '',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -262,12 +262,12 @@ describe('Match domain model', () => {
 
     it('should reject whitespace-only round name', () => {
       expect(() => new Match({
-        id: 'match-13',
+        id: 113,
         roundOrderNumber: 1,
         roundName: '   ',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -279,12 +279,12 @@ describe('Match domain model', () => {
   describe('given: mismatched team presence; when: creating match; then: error is thrown', () => {
     it('should reject match with only home team', () => {
       expect(() => new Match({
-        id: 'match-14',
+        id: 114,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: null,
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: null,
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -294,12 +294,12 @@ describe('Match domain model', () => {
 
     it('should reject match with only away team', () => {
       expect(() => new Match({
-        id: 'match-15',
+        id: 115,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: null,
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: null,
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -311,12 +311,12 @@ describe('Match domain model', () => {
   describe('given: same home and away team; when: creating match; then: error is thrown', () => {
     it('should reject when home and away teams are identical', () => {
       expect(() => new Match({
-        id: 'match-16',
+        id: 116,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-1',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Argentina',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -328,12 +328,12 @@ describe('Match domain model', () => {
   describe('given: invalid match date; when: creating match; then: error is thrown', () => {
     it('should reject invalid date', () => {
       expect(() => new Match({
-        id: 'match-17',
+        id: 117,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('invalid-date'),
@@ -343,12 +343,12 @@ describe('Match domain model', () => {
 
     it('should reject NaN date', () => {
       expect(() => new Match({
-        id: 'match-18',
+        id: 118,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date(NaN),
@@ -360,12 +360,12 @@ describe('Match domain model', () => {
   describe('given: invalid status; when: creating match; then: error is thrown', () => {
     it('should reject invalid status string', () => {
       expect(() => new Match({
-        id: 'match-19',
+        id: 119,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -375,12 +375,12 @@ describe('Match domain model', () => {
 
     it('should reject lowercase status', () => {
       expect(() => new Match({
-        id: 'match-20',
+        id: 120,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -392,12 +392,12 @@ describe('Match domain model', () => {
   describe('given: invalid home score; when: creating match; then: error is thrown', () => {
     it('should reject negative home score', () => {
       expect(() => new Match({
-        id: 'match-21',
+        id: 121,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: -1,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -407,12 +407,12 @@ describe('Match domain model', () => {
 
     it('should reject floating point home score', () => {
       expect(() => new Match({
-        id: 'match-22',
+        id: 122,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: 2.5,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -424,12 +424,12 @@ describe('Match domain model', () => {
   describe('given: invalid away score; when: creating match; then: error is thrown', () => {
     it('should reject negative away score', () => {
       expect(() => new Match({
-        id: 'match-23',
+        id: 123,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: -1,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -439,12 +439,12 @@ describe('Match domain model', () => {
 
     it('should reject floating point away score', () => {
       expect(() => new Match({
-        id: 'match-24',
+        id: 124,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: 3.7,
         matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -456,19 +456,19 @@ describe('Match domain model', () => {
   describe('given: match properties; when: checking if properties are accessible; then: properties are properly set', () => {
     it('should have properties properly initialized', () => {
       const match = new Match({
-        id: 'match-25',
+        id: 125,
         roundOrderNumber: 1,
         roundName: '8th Final',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),
         status: 'PLANNED',
       });
 
-      expect(match.id).toBe('match-25');
+      expect(match.id).toBe(125);
       expect(match.status).toBe('PLANNED');
       expect(match.homeScore).toBeNull();
     });
@@ -480,12 +480,12 @@ describe('Match domain model', () => {
 
       roundNames.forEach((roundName) => {
         const match = new Match({
-          id: `match-${roundName}`,
+          id: 200,
           roundOrderNumber: 1,
           roundName,
-          homeTeamId: 'team-1',
-          awayTeamId: 'team-2',
-          refereeId: null,
+          homeTeamName: 'Argentina',
+          awayTeamName: 'Brazil',
+          refereeUsername: null,
           homeScore: null,
           awayScore: null,
           matchDate: new Date('2026-06-15T18:00:00Z'),
@@ -497,12 +497,12 @@ describe('Match domain model', () => {
 
     it('should accept high round order numbers', () => {
       const match = new Match({
-        id: 'match-26',
+        id: 126,
         roundOrderNumber: 100,
         roundName: 'Final Round',
-        homeTeamId: 'team-1',
-        awayTeamId: 'team-2',
-        refereeId: null,
+        homeTeamName: 'Argentina',
+        awayTeamName: 'Brazil',
+        refereeUsername: null,
         homeScore: null,
         awayScore: null,
         matchDate: new Date('2026-06-15T18:00:00Z'),

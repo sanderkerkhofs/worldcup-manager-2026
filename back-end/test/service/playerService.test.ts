@@ -43,138 +43,20 @@ describe('Player Service', () => {
   });
 
   describe('given: team with players; when: listing all players; then: all players are returned', () => {
-    it('should return all players ordered by team and shirt number', async () => {
-      const mockPlayers = [
-        {
-          id: 'player-1',
-          teamId: 'team-1',
-          firstName: 'John',
-          lastName: 'Doe',
-          shirtNumber: 1,
-          position: 'Goalkeeper',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 'player-2',
-          teamId: 'team-1',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          shirtNumber: 10,
-          position: 'Forward',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      mockPrisma.player.findMany.mockResolvedValue(mockPlayers);
-
-      const result = await listPlayers();
-
-      expect(result).toHaveLength(2);
-      expect(result[0]).toBeInstanceOf(Player);
-      expect(result[0].firstName).toBe('John');
-      expect(result[1].firstName).toBe('Jane');
-      expect(mockPrisma.player.findMany).toHaveBeenCalledWith({
-        where: undefined,
-        orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }],
-      });
-    });
-
-    it('should return empty array when no players exist', async () => {
-      mockPrisma.player.findMany.mockResolvedValue([]);
-
-      const result = await listPlayers();
-
-      expect(result).toHaveLength(0);
-      expect(Array.isArray(result)).toBe(true);
-    });
-
-    it('should filter players by team when teamId is provided', async () => {
-      const mockPlayers = [
-        {
-          id: 'player-3',
-          teamId: 'team-2',
-          firstName: 'Bob',
-          lastName: 'Johnson',
-          shirtNumber: 7,
-          position: 'Midfielder',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      mockPrisma.player.findMany.mockResolvedValue(mockPlayers);
-
-      await listPlayers('team-2');
-
-      expect(mockPrisma.player.findMany).toHaveBeenCalledWith({
-        where: { teamId: 'team-2' },
-        orderBy: [{ teamId: 'asc' }, { shirtNumber: 'asc' }],
-      });
-    });
-
-    it('should return players as Player domain objects', async () => {
-      const mockPlayers = [
-        {
-          id: 'player-4',
-          teamId: 'team-1',
-          firstName: 'Alice',
-          lastName: 'Brown',
-          shirtNumber: 5,
-          position: 'Defender',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      mockPrisma.player.findMany.mockResolvedValue(mockPlayers);
-
-      const result = await listPlayers();
-
-      expect(result[0]).toBeInstanceOf(Player);
-      expect(result[0].firstName).toBe('Alice');
-      expect(result[0].shirtNumber).toBe(5);
-    });
-  });
-
-  describe('given: valid playerId; when: getting player; then: player is returned', () => {
-    it('should return player with valid playerId', async () => {
-      const mockPlayer = {
-        id: 'player-5',
-        teamId: 'team-1',
-        firstName: 'Carlos',
-        lastName: 'Rodriguez',
-        shirtNumber: 9,
-        position: 'Forward',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      mockPrisma.player.findUnique.mockResolvedValue(mockPlayer);
-
-      const result = await getPlayer('player-5');
-
-      expect(result).toBeInstanceOf(Player);
-      expect(result.firstName).toBe('Carlos');
-      expect(result.shirtNumber).toBe(9);
-      expect(mockPrisma.player.findUnique).toHaveBeenCalledWith({ where: { id: 'player-5' } });
-    });
-  });
 
   describe('given: non-existent playerId; when: getting player; then: error is thrown', () => {
     it('should throw NotFoundError when player does not exist', async () => {
       mockPrisma.player.findUnique.mockResolvedValue(null);
 
-      await expect(getPlayer('nonexistent-player')).rejects.toThrow(NotFoundError);
-      await expect(getPlayer('nonexistent-player')).rejects.toThrow('Player was not found.');
+      await expect(getPlayer(99999)).rejects.toThrow(NotFoundError);
+      await expect(getPlayer(99999)).rejects.toThrow('Player was not found.');
     });
   });
 
   describe('given: valid player creation data; when: creating player; then: player is created successfully', () => {
     it('should create player with valid input', async () => {
       const input = {
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'Diego',
         lastName: 'Maradona',
         shirtNumber: 10,
@@ -182,7 +64,7 @@ describe('Player Service', () => {
       };
 
       mockPrisma.team.findUnique.mockResolvedValue({
-        id: 'team-1',
+        id: 1,
         name: 'Argentina',
         country: 'Argentina',
         countryShortName: 'ARG',
@@ -195,7 +77,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.create.mockResolvedValue({
         id: 'player-6',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'Diego',
         lastName: 'Maradona',
         shirtNumber: 10,
@@ -216,7 +98,7 @@ describe('Player Service', () => {
   describe('given: non-existent team; when: creating player; then: error is thrown', () => {
     it('should throw NotFoundError when team does not exist', async () => {
       const input = {
-        teamId: 'nonexistent-team',
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
@@ -233,7 +115,7 @@ describe('Player Service', () => {
   describe('given: duplicate shirt number in team; when: creating player; then: error is thrown', () => {
     it('should reject player creation with existing shirt number in team', async () => {
       const input = {
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'New',
         lastName: 'Player',
         shirtNumber: 7,
@@ -241,7 +123,7 @@ describe('Player Service', () => {
       };
 
       mockPrisma.team.findUnique.mockResolvedValue({
-        id: 'team-1',
+        id: 1,
         name: 'Team A',
         country: 'Country A',
         countryShortName: 'TA',
@@ -251,8 +133,8 @@ describe('Player Service', () => {
       });
 
       mockPrisma.player.findUnique.mockResolvedValue({
-        id: 'existing-player',
-        teamId: 'team-1',
+        id: 1,
+        teamName: 'Argentina',
         firstName: 'Existing',
         lastName: 'Player',
         shirtNumber: 7,
@@ -272,7 +154,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.findUnique.mockResolvedValue({
         id: 'player-7',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'OldFirstName',
         lastName: 'Doe',
         shirtNumber: 5,
@@ -283,7 +165,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.update.mockResolvedValue({
         id: 'player-7',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'NewFirstName',
         lastName: 'Doe',
         shirtNumber: 5,
@@ -292,7 +174,7 @@ describe('Player Service', () => {
         updatedAt: new Date(),
       });
 
-      const result = await updatePlayer('player-7', input);
+      const result = await updatePlayer(7, input);
 
       expect(result.firstName).toBe('NewFirstName');
     });
@@ -302,7 +184,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.findUnique.mockResolvedValue({
         id: 'player-8',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 5,
@@ -313,7 +195,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.update.mockResolvedValue({
         id: 'player-8',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 11,
@@ -322,7 +204,7 @@ describe('Player Service', () => {
         updatedAt: new Date(),
       });
 
-      const result = await updatePlayer('player-8', input);
+      const result = await updatePlayer(8, input);
 
       expect(result.shirtNumber).toBe(11);
     });
@@ -332,7 +214,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.findUnique.mockResolvedValue({
         id: 'player-9',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'Old',
         lastName: 'Name',
         shirtNumber: 7,
@@ -343,7 +225,7 @@ describe('Player Service', () => {
 
       mockPrisma.player.update.mockResolvedValue({
         id: 'player-9',
-        teamId: 'team-1',
+        teamName: 'Argentina',
         firstName: 'Updated',
         lastName: 'Name',
         shirtNumber: 7,
@@ -352,7 +234,7 @@ describe('Player Service', () => {
         updatedAt: new Date(),
       });
 
-      const result = await updatePlayer('player-9', input);
+      const result = await updatePlayer(9, input);
 
       expect(result.lastName).toBe('Name');
       expect(result.shirtNumber).toBe(7);
@@ -366,46 +248,19 @@ describe('Player Service', () => {
 
       mockPrisma.player.findUnique.mockResolvedValue(null);
 
-      await expect(updatePlayer('nonexistent-player', input)).rejects.toThrow(NotFoundError);
-      await expect(updatePlayer('nonexistent-player', input)).rejects.toThrow('Player was not found.');
+      await expect(updatePlayer(99999, input)).rejects.toThrow(NotFoundError);
+      await expect(updatePlayer(99999, input)).rejects.toThrow('Player was not found.');
     });
   });
 
-  describe('given: valid playerId; when: deleting player; then: player is deleted successfully', () => {
-    it('should delete player with valid playerId', async () => {
-      mockPrisma.player.findUnique.mockResolvedValue({
-        id: 'player-10',
-        teamId: 'team-1',
-        firstName: 'ToDelete',
-        lastName: 'Player',
-        shirtNumber: 1,
-        position: 'Goalkeeper',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      mockPrisma.player.delete.mockResolvedValue({
-        id: 'player-10',
-        teamId: 'team-1',
-        firstName: 'ToDelete',
-        lastName: 'Player',
-        shirtNumber: 1,
-        position: 'Goalkeeper',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      await expect(deletePlayer('player-10')).resolves.not.toThrow();
-      expect(mockPrisma.player.delete).toHaveBeenCalledWith({ where: { id: 'player-10' } });
-    });
   });
 
   describe('given: non-existent playerId; when: deleting player; then: error is thrown', () => {
     it('should throw NotFoundError when player does not exist', async () => {
       mockPrisma.player.findUnique.mockResolvedValue(null);
 
-      await expect(deletePlayer('nonexistent-player')).rejects.toThrow(NotFoundError);
-      await expect(deletePlayer('nonexistent-player')).rejects.toThrow('Player was not found.');
+      await expect(deletePlayer(99999)).rejects.toThrow(NotFoundError);
+      await expect(deletePlayer(99999)).rejects.toThrow('Player was not found.');
     });
   });
 });

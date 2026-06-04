@@ -5,16 +5,16 @@ describe('Player domain model', () => {
   describe('given: valid player data; when: creating a player; then: player is created successfully', () => {
     it('should create a player with all valid fields', () => {
       const player = new Player({
-        id: 'player-1',
-        teamId: 'team-1',
+        id: 1,
+        teamName: 'Argentina',
         firstName: 'Lionel',
         lastName: 'Messi',
         shirtNumber: 10,
         position: 'Forward',
       });
 
-      expect(player.id).toBe('player-1');
-      expect(player.teamId).toBe('team-1');
+      expect(player.id).toBe(1);
+      expect(player.teamName).toBe('Argentina');
       expect(player.firstName).toBe('Lionel');
       expect(player.lastName).toBe('Messi');
       expect(player.shirtNumber).toBe(10);
@@ -26,10 +26,10 @@ describe('Player domain model', () => {
     it('should create player with various positions', () => {
       const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward', 'Winger'];
       
-      positions.forEach((position) => {
+      positions.forEach((position, index) => {
         const player = new Player({
-          id: `player-${position}`,
-          teamId: 'team-1',
+          id: index + 1,
+          teamName: 'Argentina',
           firstName: 'Test',
           lastName: 'Player',
           shirtNumber: 1,
@@ -42,8 +42,8 @@ describe('Player domain model', () => {
     it('should create player with shirt numbers 1 through 99', () => {
       [1, 5, 11, 23, 50, 99].forEach((shirtNumber) => {
         const player = new Player({
-          id: `player-${shirtNumber}`,
-          teamId: 'team-1',
+          id: shirtNumber,
+          teamName: 'Argentina',
           firstName: 'Test',
           lastName: 'Player',
           shirtNumber,
@@ -56,8 +56,8 @@ describe('Player domain model', () => {
     it('should auto-generate timestamps when not provided', () => {
       const before = new Date();
       const player = new Player({
-        id: 'player-2',
-        teamId: 'team-1',
+        id: 2,
+        teamName: 'Argentina',
         firstName: 'John',
         lastName: 'Doe',
         shirtNumber: 7,
@@ -75,8 +75,8 @@ describe('Player domain model', () => {
       const createdAt = new Date('2026-01-01T00:00:00Z');
       const updatedAt = new Date('2026-02-01T00:00:00Z');
       const player = new Player({
-        id: 'player-3',
-        teamId: 'team-1',
+        id: 3,
+        teamName: 'Argentina',
         firstName: 'Historical',
         lastName: 'Player',
         shirtNumber: 5,
@@ -93,16 +93,16 @@ describe('Player domain model', () => {
   describe('given: invalid teamId; when: creating player; then: error is thrown', () => {
     it('should reject empty teamId', () => {
       expect(() => new Player({
-        id: 'player-4',
-        teamId: '',
+        id: 4,
+        teamName: '',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
         position: 'Forward',
       })).toThrow(ValidationError);
       expect(() => new Player({
-        id: 'player-4',
-        teamId: '',
+        id: 4,
+        teamName: '',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
@@ -112,8 +112,8 @@ describe('Player domain model', () => {
 
     it('should reject whitespace-only teamId', () => {
       expect(() => new Player({
-        id: 'player-5',
-        teamId: '   ',
+        id: 5,
+        teamName: '   ',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
@@ -125,16 +125,16 @@ describe('Player domain model', () => {
   describe('given: invalid player name; when: creating player; then: error is thrown', () => {
     it('should reject empty firstName', () => {
       expect(() => new Player({
-        id: 'player-6',
-        teamId: 'team-1',
+        id: 6,
+        teamName: 'Argentina',
         firstName: '',
         lastName: 'Player',
         shirtNumber: 1,
         position: 'Forward',
       })).toThrow(ValidationError);
       expect(() => new Player({
-        id: 'player-6',
-        teamId: 'team-1',
+        id: 6,
+        teamName: 'Argentina',
         firstName: '',
         lastName: 'Player',
         shirtNumber: 1,
@@ -144,8 +144,8 @@ describe('Player domain model', () => {
 
     it('should reject whitespace-only firstName', () => {
       expect(() => new Player({
-        id: 'player-7',
-        teamId: 'team-1',
+        id: 7,
+        teamName: 'Argentina',
         firstName: '   ',
         lastName: 'Player',
         shirtNumber: 1,
@@ -155,8 +155,8 @@ describe('Player domain model', () => {
 
     it('should reject empty lastName', () => {
       expect(() => new Player({
-        id: 'player-8',
-        teamId: 'team-1',
+        id: 8,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: '',
         shirtNumber: 1,
@@ -166,8 +166,8 @@ describe('Player domain model', () => {
 
     it('should reject whitespace-only lastName', () => {
       expect(() => new Player({
-        id: 'player-9',
-        teamId: 'team-1',
+        id: 9,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: '   ',
         shirtNumber: 1,
@@ -177,8 +177,8 @@ describe('Player domain model', () => {
 
     it('should reject both empty firstName and lastName', () => {
       expect(() => new Player({
-        id: 'player-10',
-        teamId: 'team-1',
+        id: 10,
+        teamName: 'Argentina',
         firstName: '',
         lastName: '',
         shirtNumber: 1,
@@ -190,16 +190,16 @@ describe('Player domain model', () => {
   describe('given: invalid shirt number; when: creating player; then: error is thrown', () => {
     it('should reject zero shirt number', () => {
       expect(() => new Player({
-        id: 'player-11',
-        teamId: 'team-1',
+        id: 11,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 0,
         position: 'Forward',
       })).toThrow(ValidationError);
       expect(() => new Player({
-        id: 'player-11',
-        teamId: 'team-1',
+        id: 11,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 0,
@@ -209,8 +209,8 @@ describe('Player domain model', () => {
 
     it('should reject negative shirt number', () => {
       expect(() => new Player({
-        id: 'player-12',
-        teamId: 'team-1',
+        id: 12,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: -5,
@@ -220,8 +220,8 @@ describe('Player domain model', () => {
 
     it('should reject floating point shirt number', () => {
       expect(() => new Player({
-        id: 'player-13',
-        teamId: 'team-1',
+        id: 13,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 7.5,
@@ -231,8 +231,8 @@ describe('Player domain model', () => {
 
     it('should reject non-integer shirt number', () => {
       expect(() => new Player({
-        id: 'player-14',
-        teamId: 'team-1',
+        id: 14,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: NaN,
@@ -244,16 +244,16 @@ describe('Player domain model', () => {
   describe('given: invalid position; when: creating player; then: error is thrown', () => {
     it('should reject empty position', () => {
       expect(() => new Player({
-        id: 'player-15',
-        teamId: 'team-1',
+        id: 15,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
         position: '',
       })).toThrow(ValidationError);
       expect(() => new Player({
-        id: 'player-15',
-        teamId: 'team-1',
+        id: 15,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
@@ -263,8 +263,8 @@ describe('Player domain model', () => {
 
     it('should reject whitespace-only position', () => {
       expect(() => new Player({
-        id: 'player-16',
-        teamId: 'team-1',
+        id: 16,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 1,
@@ -276,8 +276,8 @@ describe('Player domain model', () => {
   describe('given: prisma player object; when: converting to Player; then: player is created from prisma data', () => {
     it('should create Player from Prisma player object', () => {
       const prismaPlayer = {
-        id: 'player-17',
-        teamId: 'team-1',
+        id: 17,
+        teamName: 'Argentina',
         firstName: 'Cristiano',
         lastName: 'Ronaldo',
         shirtNumber: 7,
@@ -288,8 +288,8 @@ describe('Player domain model', () => {
 
       const player = Player.from(prismaPlayer);
 
-      expect(player.id).toBe('player-17');
-      expect(player.teamId).toBe('team-1');
+      expect(player.id).toBe(17);
+      expect(player.teamName).toBe('Argentina');
       expect(player.firstName).toBe('Cristiano');
       expect(player.lastName).toBe('Ronaldo');
       expect(player.shirtNumber).toBe(7);
@@ -302,15 +302,15 @@ describe('Player domain model', () => {
   describe('given: player properties; when: checking if properties are accessible; then: properties are properly set', () => {
     it('should have properties properly initialized', () => {
       const player = new Player({
-        id: 'player-18',
-        teamId: 'team-1',
+        id: 18,
+        teamName: 'Argentina',
         firstName: 'Test',
         lastName: 'Player',
         shirtNumber: 10,
         position: 'Midfielder',
       });
 
-      expect(player.id).toBe('player-18');
+      expect(player.id).toBe(18);
       expect(player.shirtNumber).toBe(10);
       expect(player.position).toBe('Midfielder');
     });
@@ -319,8 +319,8 @@ describe('Player domain model', () => {
   describe('given: player with common names; when: creating; then: names are accepted', () => {
     it('should accept single character names', () => {
       const player = new Player({
-        id: 'player-19',
-        teamId: 'team-1',
+        id: 19,
+        teamName: 'Argentina',
         firstName: 'A',
         lastName: 'B',
         shirtNumber: 1,
@@ -332,8 +332,8 @@ describe('Player domain model', () => {
 
     it('should accept names with hyphens and apostrophes', () => {
       const player = new Player({
-        id: 'player-20',
-        teamId: 'team-1',
+        id: 20,
+        teamName: 'Argentina',
         firstName: "Jean-Marie",
         lastName: "O'Neill",
         shirtNumber: 1,
@@ -345,8 +345,8 @@ describe('Player domain model', () => {
 
     it('should accept long names', () => {
       const player = new Player({
-        id: 'player-21',
-        teamId: 'team-1',
+        id: 21,
+        teamName: 'Argentina',
         firstName: 'Alexanderplatzbyzantine',
         lastName: 'Maximiliangonzalezrodriguez',
         shirtNumber: 1,

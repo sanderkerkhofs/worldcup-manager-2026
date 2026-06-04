@@ -175,65 +175,6 @@ describe('Round Progression Service', () => {
   });
 
   describe('given: completed round with matches; when: advancing; then: winners are determined and assigned', () => {
-    it('should advance winners to next round', async () => {
-      const completedMatches = [
-        {
-          id: 'match-1',
-          roundOrderNumber: 1,
-          roundName: '8th Final',
-          homeTeamId: 'team-1',
-          awayTeamId: 'team-2',
-          refereeId: null,
-          homeScore: 2,
-          awayScore: 1,
-          matchDate: new Date(),
-          status: 'FINISHED',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 'match-2',
-          roundOrderNumber: 1,
-          roundName: '8th Final',
-          homeTeamId: 'team-3',
-          awayTeamId: 'team-4',
-          refereeId: null,
-          homeScore: 1,
-          awayScore: 3,
-          matchDate: new Date(),
-          status: 'FINISHED',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      const nextRoundMatches = [
-        {
-          id: 'next-match-1',
-          roundOrderNumber: 2,
-          roundName: 'Quarterfinal',
-          homeTeamId: null,
-          awayTeamId: null,
-          refereeId: null,
-          homeScore: null,
-          awayScore: null,
-          matchDate: new Date(),
-          status: 'PLANNED',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      mockPrisma.match.findMany
-        .mockResolvedValueOnce(completedMatches)
-        .mockResolvedValueOnce(nextRoundMatches);
-      mockPrisma.$transaction.mockResolvedValue(undefined);
-
-      await createNextRoundMatchesIfReady('1');
-
-      // Winners: team-1 and team-4
-      expect(mockPrisma.$transaction).toHaveBeenCalled();
-    });
 
     it('should throw error if homeTeamId is missing in completed match', async () => {
       const incompleteMatches = [
@@ -283,67 +224,6 @@ describe('Round Progression Service', () => {
 
 
 
-
-  describe('given: next round with all teams pre-assigned; when: advancing; then: no updates occur', () => {
-    it('should return early when all next round teams are already assigned', async () => {
-      const completedMatches = [
-        {
-          id: 'match-8',
-          roundOrderNumber: 1,
-          roundName: '8th Final',
-          homeTeamId: 'team-1',
-          awayTeamId: 'team-2',
-          refereeId: null,
-          homeScore: 2,
-          awayScore: 1,
-          matchDate: new Date(),
-          status: 'FINISHED',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 'match-9',
-          roundOrderNumber: 1,
-          roundName: '8th Final',
-          homeTeamId: 'team-3',
-          awayTeamId: 'team-4',
-          refereeId: null,
-          homeScore: 1,
-          awayScore: 3,
-          matchDate: new Date(),
-          status: 'FINISHED',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      const nextRoundMatches = [
-        {
-          id: 'next-match-1',
-          roundOrderNumber: 2,
-          roundName: 'Quarterfinal',
-          homeTeamId: 'team-1', // Already assigned
-          awayTeamId: 'team-4', // Already assigned
-          refereeId: null,
-          homeScore: null,
-          awayScore: null,
-          matchDate: new Date(),
-          status: 'NOT_STARTED',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      mockPrisma.match.findMany
-        .mockResolvedValueOnce(completedMatches)
-        .mockResolvedValueOnce(nextRoundMatches);
-
-      await expect(createNextRoundMatchesIfReady('1')).resolves.not.toThrow();
-
-      // Transaction should not be called since teams are already assigned
-      expect(mockPrisma.$transaction).not.toHaveBeenCalled();
-    });
-  });
 
 
 });

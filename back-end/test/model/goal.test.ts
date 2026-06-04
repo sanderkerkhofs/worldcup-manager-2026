@@ -5,39 +5,39 @@ describe('Goal domain model', () => {
   describe('given: valid goal data; when: creating a goal; then: goal is created successfully', () => {
     it('should create a goal with all valid fields', () => {
       const goal = new Goal({
-        id: 'goal-1',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 1,
+        matchId: 1,
+        playerId: 1,
+        teamName: 'Argentina',
       });
 
-      expect(goal.id).toBe('goal-1');
-      expect(goal.matchId).toBe('match-1');
-      expect(goal.playerId).toBe('player-1');
-      expect(goal.teamId).toBe('team-1');
+      expect(goal.id).toBe(1);
+      expect(goal.matchId).toBe(1);
+      expect(goal.playerId).toBe(1);
+      expect(goal.teamName).toBe('Argentina');
       expect(goal.createdAt).toBeInstanceOf(Date);
     });
 
     it('should create multiple goals for the same match', () => {
       const goals = [
-        { id: 'goal-1', matchId: 'match-1', playerId: 'player-1', teamId: 'team-1' },
-        { id: 'goal-2', matchId: 'match-1', playerId: 'player-2', teamId: 'team-1' },
-        { id: 'goal-3', matchId: 'match-1', playerId: 'player-3', teamId: 'team-2' },
+        { id: 1, matchId: 1, playerId: 1, teamName: 'Argentina' },
+        { id: 2, matchId: 1, playerId: 2, teamName: 'Argentina' },
+        { id: 3, matchId: 1, playerId: 3, teamName: 'Brazil' },
       ];
 
       goals.forEach((goalData) => {
         const goal = new Goal(goalData);
-        expect(goal.matchId).toBe('match-1');
+        expect(goal.matchId).toBe(1);
       });
     });
 
     it('should auto-generate timestamp when not provided', () => {
       const before = new Date();
       const goal = new Goal({
-        id: 'goal-2',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 4,
+        matchId: 1,
+        playerId: 1,
+        teamName: 'Argentina',
       });
       const after = new Date();
 
@@ -48,10 +48,10 @@ describe('Goal domain model', () => {
     it('should use provided timestamp', () => {
       const createdAt = new Date('2026-06-15T18:30:00Z');
       const goal = new Goal({
-        id: 'goal-3',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 5,
+        matchId: 1,
+        playerId: 1,
+        teamName: 'Argentina',
         createdAt,
       });
 
@@ -60,135 +60,135 @@ describe('Goal domain model', () => {
   });
 
   describe('given: invalid matchId; when: creating goal; then: error is thrown', () => {
-    it('should reject empty matchId', () => {
+    it('should reject zero matchId', () => {
       expect(() => new Goal({
-        id: 'goal-4',
-        matchId: '',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 6,
+        matchId: 0,
+        playerId: 1,
+        teamName: 'Argentina',
       })).toThrow(ValidationError);
       expect(() => new Goal({
-        id: 'goal-4',
-        matchId: '',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 6,
+        matchId: 0,
+        playerId: 1,
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
-    it('should reject whitespace-only matchId', () => {
+    it('should reject negative matchId', () => {
       expect(() => new Goal({
-        id: 'goal-5',
-        matchId: '   ',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 7,
+        matchId: -1,
+        playerId: 1,
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
     it('should reject null matchId', () => {
       expect(() => new Goal({
-        id: 'goal-6',
+        id: 8,
         matchId: null as any,
-        playerId: 'player-1',
-        teamId: 'team-1',
+        playerId: 1,
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
   });
 
   describe('given: invalid playerId; when: creating goal; then: error is thrown', () => {
-    it('should reject empty playerId', () => {
+    it('should reject zero playerId', () => {
       expect(() => new Goal({
-        id: 'goal-7',
-        matchId: 'match-1',
-        playerId: '',
-        teamId: 'team-1',
+        id: 9,
+        matchId: 1,
+        playerId: 0,
+        teamName: 'Argentina',
       })).toThrow(ValidationError);
       expect(() => new Goal({
-        id: 'goal-7',
-        matchId: 'match-1',
-        playerId: '',
-        teamId: 'team-1',
+        id: 9,
+        matchId: 1,
+        playerId: 0,
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
-    it('should reject whitespace-only playerId', () => {
+    it('should reject negative playerId', () => {
       expect(() => new Goal({
-        id: 'goal-8',
-        matchId: 'match-1',
-        playerId: '   ',
-        teamId: 'team-1',
+        id: 10,
+        matchId: 1,
+        playerId: -1,
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
     it('should reject null playerId', () => {
       expect(() => new Goal({
-        id: 'goal-9',
-        matchId: 'match-1',
+        id: 11,
+        matchId: 1,
         playerId: null as any,
-        teamId: 'team-1',
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
   });
 
-  describe('given: invalid teamId; when: creating goal; then: error is thrown', () => {
-    it('should reject empty teamId', () => {
+  describe('given: invalid teamName; when: creating goal; then: error is thrown', () => {
+    it('should reject empty teamName', () => {
       expect(() => new Goal({
-        id: 'goal-10',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: '',
+        id: 12,
+        matchId: 1,
+        playerId: 1,
+        teamName: '',
       })).toThrow(ValidationError);
       expect(() => new Goal({
-        id: 'goal-10',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: '',
+        id: 12,
+        matchId: 1,
+        playerId: 1,
+        teamName: '',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
-    it('should reject whitespace-only teamId', () => {
+    it('should reject whitespace-only teamName', () => {
       expect(() => new Goal({
-        id: 'goal-11',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: '   ',
+        id: 13,
+        matchId: 1,
+        playerId: 1,
+        teamName: '   ',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
-    it('should reject null teamId', () => {
+    it('should reject null teamName', () => {
       expect(() => new Goal({
-        id: 'goal-12',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: null as any,
+        id: 14,
+        matchId: 1,
+        playerId: 1,
+        teamName: null as any,
       })).toThrow('Goal must belong to a match, player, and team.');
     });
   });
 
   describe('given: multiple invalid fields; when: creating goal; then: error is thrown for first validation', () => {
-    it('should reject goal with all empty fields', () => {
+    it('should reject goal with all zero/empty fields', () => {
       expect(() => new Goal({
-        id: 'goal-13',
-        matchId: '',
-        playerId: '',
-        teamId: '',
+        id: 15,
+        matchId: 0,
+        playerId: 0,
+        teamName: '',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
-    it('should reject goal with empty matchId and playerId', () => {
+    it('should reject goal with zero matchId and playerId', () => {
       expect(() => new Goal({
-        id: 'goal-14',
-        matchId: '',
-        playerId: '',
-        teamId: 'team-1',
+        id: 16,
+        matchId: 0,
+        playerId: 0,
+        teamName: 'Argentina',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
 
-    it('should reject goal with empty playerId and teamId', () => {
+    it('should reject goal with zero playerId and empty teamName', () => {
       expect(() => new Goal({
-        id: 'goal-15',
-        matchId: 'match-1',
-        playerId: '',
-        teamId: '',
+        id: 17,
+        matchId: 1,
+        playerId: 0,
+        teamName: '',
       })).toThrow('Goal must belong to a match, player, and team.');
     });
   });
@@ -196,19 +196,19 @@ describe('Goal domain model', () => {
   describe('given: prisma goal object; when: converting to Goal; then: goal is created from prisma data', () => {
     it('should create Goal from Prisma goal object', () => {
       const prismaGoal = {
-        id: 'goal-16',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 18,
+        matchId: 1,
+        playerId: 1,
+        teamName: 'Argentina',
         createdAt: new Date('2026-06-15T18:30:00Z'),
       };
 
       const goal = Goal.from(prismaGoal);
 
-      expect(goal.id).toBe('goal-16');
-      expect(goal.matchId).toBe('match-1');
-      expect(goal.playerId).toBe('player-1');
-      expect(goal.teamId).toBe('team-1');
+      expect(goal.id).toBe(18);
+      expect(goal.matchId).toBe(1);
+      expect(goal.playerId).toBe(1);
+      expect(goal.teamName).toBe('Argentina');
       expect(goal.createdAt).toEqual(prismaGoal.createdAt);
     });
   });
@@ -216,26 +216,26 @@ describe('Goal domain model', () => {
   describe('given: goal properties; when: checking if properties are accessible; then: properties are properly set', () => {
     it('should have properties properly initialized', () => {
       const goal = new Goal({
-        id: 'goal-17',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 17,
+        matchId: 1,
+        playerId: 1,
+        teamName: 'Argentina',
       });
 
-      expect(goal.id).toBe('goal-17');
-      expect(goal.matchId).toBe('match-1');
-      expect(goal.playerId).toBe('player-1');
-      expect(goal.teamId).toBe('team-1');
+      expect(goal.id).toBe(17);
+      expect(goal.matchId).toBe(1);
+      expect(goal.playerId).toBe(1);
+      expect(goal.teamName).toBe('Argentina');
     });
   });
 
   describe('given: goals in sequence; when: creating multiple goals; then: order is maintained', () => {
     it('should create goals with different timestamps', async () => {
       const goal1 = new Goal({
-        id: 'goal-18',
-        matchId: 'match-1',
-        playerId: 'player-1',
-        teamId: 'team-1',
+        id: 18,
+        matchId: 1,
+        playerId: 1,
+        teamName: 'Argentina',
         createdAt: new Date('2026-06-15T18:00:00Z'),
       });
 
@@ -243,10 +243,10 @@ describe('Goal domain model', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       const goal2 = new Goal({
-        id: 'goal-19',
-        matchId: 'match-1',
-        playerId: 'player-2',
-        teamId: 'team-1',
+        id: 19,
+        matchId: 1,
+        playerId: 2,
+        teamName: 'Argentina',
         createdAt: new Date('2026-06-15T18:05:00Z'),
       });
 
@@ -256,16 +256,16 @@ describe('Goal domain model', () => {
     it('should allow same player to score multiple goals', () => {
       const goals = [
         new Goal({
-          id: 'goal-20',
-          matchId: 'match-1',
-          playerId: 'player-1',
-          teamId: 'team-1',
+          id: 20,
+          matchId: 1,
+          playerId: 1,
+          teamName: 'Argentina',
         }),
         new Goal({
-          id: 'goal-21',
-          matchId: 'match-1',
-          playerId: 'player-1',
-          teamId: 'team-1',
+          id: 21,
+          matchId: 1,
+          playerId: 1,
+          teamName: 'Argentina',
         }),
       ];
 
@@ -274,27 +274,31 @@ describe('Goal domain model', () => {
     });
   });
 
-  describe('given: goal with long ID strings; when: creating; then: IDs are accepted', () => {
-    it('should accept long goal IDs', () => {
+  describe('given: goal with various numeric IDs; when: creating; then: IDs are accepted', () => {
+    it('should accept numeric goal IDs', () => {
       const goal = new Goal({
-        id: 'goal-very-long-identifier-with-many-characters-12345',
-        matchId: 'match-very-long-identifier-with-many-characters-12345',
-        playerId: 'player-very-long-identifier-with-many-characters-12345',
-        teamId: 'team-very-long-identifier-with-many-characters-12345',
+        id: 100,
+        matchId: 50,
+        playerId: 75,
+        teamName: 'Argentina',
       });
 
-      expect(goal.id).toBe('goal-very-long-identifier-with-many-characters-12345');
+      expect(goal.id).toBe(100);
+      expect(goal.matchId).toBe(50);
+      expect(goal.playerId).toBe(75);
     });
 
-    it('should accept UUID-style IDs', () => {
+    it('should accept large numeric IDs', () => {
       const goal = new Goal({
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        matchId: '550e8400-e29b-41d4-a716-446655440001',
-        playerId: '550e8400-e29b-41d4-a716-446655440002',
-        teamId: '550e8400-e29b-41d4-a716-446655440003',
+        id: 999999,
+        matchId: 888888,
+        playerId: 777777,
+        teamName: 'Brazil',
       });
 
-      expect(goal.id).toBe('550e8400-e29b-41d4-a716-446655440000');
+      expect(goal.id).toBe(999999);
+      expect(goal.matchId).toBe(888888);
+      expect(goal.playerId).toBe(777777);
     });
   });
 });

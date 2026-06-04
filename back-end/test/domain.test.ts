@@ -5,7 +5,6 @@ import { Match } from '../model/match';
 describe('Team domain validation', () => {
   it('creates a valid team', () => {
     const team = new Team({
-      id: 'team-1',
       name: 'Argentina',
       country: 'Argentina',
       countryShortName: 'ARG',
@@ -18,7 +17,6 @@ describe('Team domain validation', () => {
 
   it('rejects an empty team name', () => {
     expect(() => new Team({
-      id: 'team-2',
       name: '   ',
       country: 'Argentina',
       countryShortName: 'ARG',
@@ -30,8 +28,8 @@ describe('Team domain validation', () => {
 describe('Player domain validation', () => {
   it('creates a valid player', () => {
     const player = new Player({
-      id: 'player-1',
-      teamId: 'team-1',
+      id: 1,
+      teamName: 'Argentina',
       firstName: 'Lionel',
       lastName: 'Messi',
       shirtNumber: 10,
@@ -43,8 +41,8 @@ describe('Player domain validation', () => {
 
   it('rejects an invalid shirt number', () => {
     expect(() => new Player({
-      id: 'player-2',
-      teamId: 'team-1',
+      id: 2,
+      teamName: 'Argentina',
       firstName: 'Test',
       lastName: 'Player',
       shirtNumber: 0,
@@ -56,30 +54,30 @@ describe('Player domain validation', () => {
 describe('Match domain validation', () => {
   it('creates a valid match', () => {
     const match = new Match({
-      id: 'match-1',
+      id: 1,
       roundOrderNumber: 1,
       roundName: '8th Final',
-      homeTeamId: 'team-1',
-      awayTeamId: 'team-2',
-      refereeId: null,
+      homeTeamName: 'Argentina',
+      awayTeamName: 'Brazil',
+      refereeUsername: null,
       homeScore: null,
       awayScore: null,
       matchDate: new Date('2026-05-10T18:00:00.000Z'),
       status: 'PLANNED',
     });
 
-    expect(match.homeTeamId).toBe('team-1');
+    expect(match.homeTeamName).toBe('Argentina');
     expect(match.status).toBe('PLANNED');
   });
 
   it('rejects matches where the same team plays itself', () => {
     expect(() => new Match({
-      id: 'match-2',
+      id: 2,
       roundOrderNumber: 1,
       roundName: '8th Final',
-      homeTeamId: 'team-1',
-      awayTeamId: 'team-1',
-      refereeId: null,
+      homeTeamName: 'Argentina',
+      awayTeamName: 'Argentina',
+      refereeUsername: null,
       homeScore: null,
       awayScore: null,
       matchDate: new Date('2026-05-10T18:00:00.000Z'),

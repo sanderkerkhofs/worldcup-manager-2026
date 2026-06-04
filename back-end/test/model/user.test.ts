@@ -71,13 +71,11 @@ describe('User domain model', () => {
   describe('given: invalid username; when: creating user; then: error is thrown', () => {
     it('should reject empty username', () => {
       expect(() => new User({
-        id: 'user-5',
         username: '',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
       })).toThrow(ValidationError);
       expect(() => new User({
-        id: 'user-5',
         username: '',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
@@ -86,7 +84,6 @@ describe('User domain model', () => {
 
     it('should reject whitespace-only username', () => {
       expect(() => new User({
-        id: 'user-6',
         username: '   ',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
@@ -95,7 +92,6 @@ describe('User domain model', () => {
 
     it('should reject tab and newline characters in username', () => {
       expect(() => new User({
-        id: 'user-7',
         username: '\t\n',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
@@ -106,13 +102,11 @@ describe('User domain model', () => {
   describe('given: invalid password hash; when: creating user; then: error is thrown', () => {
     it('should reject empty password hash', () => {
       expect(() => new User({
-        id: 'user-8',
         username: 'testuser',
         passwordHash: '',
         role: 'USER',
       })).toThrow(ValidationError);
       expect(() => new User({
-        id: 'user-8',
         username: 'testuser',
         passwordHash: '',
         role: 'USER',
@@ -121,7 +115,6 @@ describe('User domain model', () => {
 
     it('should reject whitespace-only password hash', () => {
       expect(() => new User({
-        id: 'user-9',
         username: 'testuser',
         passwordHash: '   ',
         role: 'USER',
@@ -132,7 +125,6 @@ describe('User domain model', () => {
   describe('given: invalid role; when: creating user; then: error is thrown', () => {
     it('should reject invalid role string', () => {
       expect(() => new User({
-        id: 'user-10',
         username: 'testuser',
         passwordHash: '$2b$10$hashedpassword',
         role: 'INVALID_ROLE' as any,
@@ -141,7 +133,6 @@ describe('User domain model', () => {
 
     it('should reject lowercase role strings', () => {
       expect(() => new User({
-        id: 'user-11',
         username: 'testuser',
         passwordHash: '$2b$10$hashedpassword',
         role: 'admin' as any,
@@ -150,7 +141,6 @@ describe('User domain model', () => {
 
     it('should reject null role', () => {
       expect(() => new User({
-        id: 'user-12',
         username: 'testuser',
         passwordHash: '$2b$10$hashedpassword',
         role: null as any,
@@ -161,7 +151,6 @@ describe('User domain model', () => {
   describe('given: valid role values; when: creating user with each role; then: all roles are accepted', () => {
     it('should accept ADMIN role', () => {
       const user = new User({
-        id: 'user-13',
         username: 'admin',
         passwordHash: '$2b$10$hashedpassword',
         role: 'ADMIN',
@@ -171,7 +160,6 @@ describe('User domain model', () => {
 
     it('should accept REFEREE role', () => {
       const user = new User({
-        id: 'user-14',
         username: 'referee',
         passwordHash: '$2b$10$hashedpassword',
         role: 'REFEREE',
@@ -181,7 +169,6 @@ describe('User domain model', () => {
 
     it('should accept USER role', () => {
       const user = new User({
-        id: 'user-15',
         username: 'user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
@@ -191,7 +178,6 @@ describe('User domain model', () => {
 
     it('should accept GUEST role', () => {
       const user = new User({
-        id: 'user-16',
         username: 'guest',
         passwordHash: '$2b$10$hashedpassword',
         role: 'GUEST',

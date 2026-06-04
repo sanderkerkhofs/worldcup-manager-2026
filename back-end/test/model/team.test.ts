@@ -5,15 +5,12 @@ describe('Team domain model', () => {
   describe('given: valid team data; when: creating a team; then: team is created successfully', () => {
     it('should create a team with all valid fields', () => {
       const team = new Team({
-        id: 'team-1',
         name: 'Argentina',
         country: 'Argentina',
         countryShortName: 'ARG',
         countryFlag: '🇦🇷',
       });
-
-      expect(team.id).toBe('team-1');
-      expect(team.name).toBe('Argentina');
+expect(team.name).toBe('Argentina');
       expect(team.country).toBe('Argentina');
       expect(team.countryShortName).toBe('ARG');
       expect(team.countryFlag).toBe('🇦🇷');
@@ -32,7 +29,6 @@ describe('Team domain model', () => {
 
       teams.forEach((teamData) => {
         const team = new Team({
-          id: `team-${teamData.shortName}`,
           name: teamData.name,
           country: teamData.country,
           countryShortName: teamData.shortName,
@@ -49,7 +45,6 @@ describe('Team domain model', () => {
     it('should auto-generate timestamps when not provided', () => {
       const before = new Date();
       const team = new Team({
-        id: 'team-2',
         name: 'Spain',
         country: 'Spain',
         countryShortName: 'ESP',
@@ -67,7 +62,6 @@ describe('Team domain model', () => {
       const createdAt = new Date('2026-01-01T00:00:00Z');
       const updatedAt = new Date('2026-02-01T00:00:00Z');
       const team = new Team({
-        id: 'team-3',
         name: 'Portugal',
         country: 'Portugal',
         countryShortName: 'POR',
@@ -84,14 +78,12 @@ describe('Team domain model', () => {
   describe('given: invalid team name; when: creating team; then: error is thrown', () => {
     it('should reject empty team name', () => {
       expect(() => new Team({
-        id: 'team-4',
         name: '',
         country: 'Some Country',
         countryShortName: 'SC',
         countryFlag: '🚩',
       })).toThrow(ValidationError);
       expect(() => new Team({
-        id: 'team-4',
         name: '',
         country: 'Some Country',
         countryShortName: 'SC',
@@ -101,7 +93,6 @@ describe('Team domain model', () => {
 
     it('should reject whitespace-only team name', () => {
       expect(() => new Team({
-        id: 'team-5',
         name: '   ',
         country: 'Some Country',
         countryShortName: 'SC',
@@ -111,7 +102,6 @@ describe('Team domain model', () => {
 
     it('should reject tabs and newlines in team name', () => {
       expect(() => new Team({
-        id: 'team-6',
         name: '\t\n',
         country: 'Some Country',
         countryShortName: 'SC',
@@ -123,14 +113,12 @@ describe('Team domain model', () => {
   describe('given: invalid country; when: creating team; then: error is thrown', () => {
     it('should reject empty country', () => {
       expect(() => new Team({
-        id: 'team-7',
         name: 'Team Name',
         country: '',
         countryShortName: 'TN',
         countryFlag: '🚩',
       })).toThrow(ValidationError);
       expect(() => new Team({
-        id: 'team-7',
         name: 'Team Name',
         country: '',
         countryShortName: 'TN',
@@ -140,7 +128,6 @@ describe('Team domain model', () => {
 
     it('should reject whitespace-only country', () => {
       expect(() => new Team({
-        id: 'team-8',
         name: 'Team Name',
         country: '   ',
         countryShortName: 'TN',
@@ -152,14 +139,12 @@ describe('Team domain model', () => {
   describe('given: invalid country short name; when: creating team; then: error is thrown', () => {
     it('should reject empty country short name', () => {
       expect(() => new Team({
-        id: 'team-9',
         name: 'Team Name',
         country: 'Some Country',
         countryShortName: '',
         countryFlag: '🚩',
       })).toThrow(ValidationError);
       expect(() => new Team({
-        id: 'team-9',
         name: 'Team Name',
         country: 'Some Country',
         countryShortName: '',
@@ -169,7 +154,6 @@ describe('Team domain model', () => {
 
     it('should reject whitespace-only country short name', () => {
       expect(() => new Team({
-        id: 'team-10',
         name: 'Team Name',
         country: 'Some Country',
         countryShortName: '   ',
@@ -181,14 +165,12 @@ describe('Team domain model', () => {
   describe('given: invalid country flag; when: creating team; then: error is thrown', () => {
     it('should reject empty country flag', () => {
       expect(() => new Team({
-        id: 'team-11',
         name: 'Team Name',
         country: 'Some Country',
         countryShortName: 'TN',
         countryFlag: '',
       })).toThrow(ValidationError);
       expect(() => new Team({
-        id: 'team-11',
         name: 'Team Name',
         country: 'Some Country',
         countryShortName: 'TN',
@@ -198,7 +180,6 @@ describe('Team domain model', () => {
 
     it('should reject whitespace-only country flag', () => {
       expect(() => new Team({
-        id: 'team-12',
         name: 'Team Name',
         country: 'Some Country',
         countryShortName: 'TN',
@@ -210,7 +191,6 @@ describe('Team domain model', () => {
   describe('given: multiple invalid fields; when: creating team; then: error is thrown for first validation', () => {
     it('should reject team with empty name and country', () => {
       expect(() => new Team({
-        id: 'team-13',
         name: '',
         country: '',
         countryShortName: 'TN',
@@ -232,9 +212,7 @@ describe('Team domain model', () => {
       };
 
       const team = Team.from(prismaTeam);
-
-      expect(team.id).toBe('team-14');
-      expect(team.name).toBe('Uruguay');
+expect(team.name).toBe('Uruguay');
       expect(team.country).toBe('Uruguay');
       expect(team.countryShortName).toBe('URU');
       expect(team.countryFlag).toBe('🇺🇾');
@@ -246,15 +224,12 @@ describe('Team domain model', () => {
   describe('given: team properties; when: checking if properties are accessible; then: properties are properly set', () => {
     it('should have properties properly initialized', () => {
       const team = new Team({
-        id: 'team-15',
         name: 'Mexico',
         country: 'Mexico',
         countryShortName: 'MEX',
         countryFlag: '🇲🇽',
       });
-
-      expect(team.id).toBe('team-15');
-      expect(team.name).toBe('Mexico');
+expect(team.name).toBe('Mexico');
       expect(team.country).toBe('Mexico');
     });
   });
@@ -262,7 +237,6 @@ describe('Team domain model', () => {
   describe('given: team with various country short names; when: creating; then: names are accepted', () => {
     it('should accept 3-letter country codes', () => {
       const team = new Team({
-        id: 'team-16',
         name: 'Test Team',
         country: 'Test Country',
         countryShortName: 'TST',
@@ -273,7 +247,6 @@ describe('Team domain model', () => {
 
     it('should accept 2-letter country codes', () => {
       const team = new Team({
-        id: 'team-17',
         name: 'Test Team',
         country: 'Test Country',
         countryShortName: 'TS',
@@ -284,7 +257,6 @@ describe('Team domain model', () => {
 
     it('should accept single character codes', () => {
       const team = new Team({
-        id: 'team-18',
         name: 'Test Team',
         country: 'Test Country',
         countryShortName: 'T',
@@ -295,7 +267,6 @@ describe('Team domain model', () => {
 
     it('should accept long country names', () => {
       const team = new Team({
-        id: 'team-19',
         name: 'Democratic Republic of the Congo',
         country: 'Democratic Republic of the Congo',
         countryShortName: 'DRC',
@@ -312,7 +283,6 @@ describe('Team domain model', () => {
       
       flags.forEach((flag, index) => {
         const team = new Team({
-          id: `team-flag-${index}`,
           name: 'Test Team',
           country: 'Test Country',
           countryShortName: 'TS',
@@ -324,7 +294,6 @@ describe('Team domain model', () => {
 
     it('should accept custom flag characters', () => {
       const team = new Team({
-        id: 'team-20',
         name: 'Test Team',
         country: 'Test Country',
         countryShortName: 'TS',
