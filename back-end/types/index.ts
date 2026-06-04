@@ -12,7 +12,6 @@ export type CompetitionMetadata = {
 export type AuthUser = {
   username: string;
   role: UserRole;
-  teamName: string | null;
 };
 
 export type RegisterDto = {
@@ -89,7 +88,6 @@ export type TournamentResetResponse = {
 export type UserResponse = {
   username: string;
   role: UserRole;
-  teamName: string | null;
   createdAt: string;
   updatedAt: string;
 };

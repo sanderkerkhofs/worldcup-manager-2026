@@ -25,10 +25,8 @@ model User {
   username        String    @id
   passwordHash    String
   role            UserRole  @default(USER)
-  teamName        String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  team            Team?     @relation(fields: [teamName], references: [name], onDelete: SetNull)
   assignedMatches Match[]   @relation("AssignedReferee")
 }
 
@@ -40,7 +38,6 @@ model Team {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   players          Player[]
-  users            User[]
   homeMatches      Match[]  @relation("HomeTeam")
   awayMatches      Match[]  @relation("AwayTeam")
   goals            Goal[]

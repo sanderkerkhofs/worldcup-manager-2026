@@ -5,7 +5,6 @@ import { verifyAccessToken } from './jwt';
 export type RequestUser = {
     username: string;
     role: string;
-    teamName: string | null;
 };
 
 export function getAuthenticatedUser(req: Request): RequestUser {
@@ -32,7 +31,6 @@ export function authenticateToken(req: Request, _res: Response, next: NextFuncti
     (req as Request & { user?: RequestUser }).user = {
         username: payload.username,
         role: payload.role,
-        teamName: payload.teamName,
     };
 
     next();

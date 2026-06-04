@@ -5,25 +5,20 @@ describe('User domain model', () => {
   describe('given: valid user data; when: creating a user; then: user is created successfully', () => {
     it('should create a user with all valid fields', () => {
       const user = new User({
-        id: 'user-1',
         username: 'john_doe',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
-        teamId: null,
       });
 
-      expect(user.id).toBe('user-1');
       expect(user.username).toBe('john_doe');
       expect(user.passwordHash).toBe('$2b$10$hashedpassword');
       expect(user.role).toBe('USER');
-      expect(user.teamId).toBeNull();
       expect(user.createdAt).toBeInstanceOf(Date);
       expect(user.updatedAt).toBeInstanceOf(Date);
     });
 
     it('should create admin user with role ADMIN', () => {
       const user = new User({
-        id: 'admin-1',
         username: 'admin_user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'ADMIN',
@@ -34,7 +29,6 @@ describe('User domain model', () => {
 
     it('should create referee user with role REFEREE', () => {
       const user = new User({
-        id: 'ref-1',
         username: 'referee_john',
         passwordHash: '$2b$10$hashedpassword',
         role: 'REFEREE',
@@ -43,22 +37,9 @@ describe('User domain model', () => {
       expect(user.role).toBe('REFEREE');
     });
 
-    it('should create user assigned to a team', () => {
-      const user = new User({
-        id: 'user-2',
-        username: 'team_coach',
-        passwordHash: '$2b$10$hashedpassword',
-        role: 'USER',
-        teamId: 'team-1',
-      });
-
-      expect(user.teamId).toBe('team-1');
-    });
-
     it('should auto-generate timestamps when not provided', () => {
       const before = new Date();
       const user = new User({
-        id: 'user-3',
         username: 'new_user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
@@ -75,7 +56,6 @@ describe('User domain model', () => {
       const createdAt = new Date('2026-01-01T00:00:00Z');
       const updatedAt = new Date('2026-02-01T00:00:00Z');
       const user = new User({
-        id: 'user-4',
         username: 'historical_user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
@@ -223,49 +203,27 @@ describe('User domain model', () => {
   describe('given: prisma user object; when: converting to User; then: user is created from prisma data', () => {
     it('should create User from Prisma user object', () => {
       const prismaUser = {
-        id: 'user-17',
         username: 'prisma_user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER' as const,
-        teamId: 'team-1',
         createdAt: new Date('2026-01-01T00:00:00Z'),
         updatedAt: new Date('2026-01-02T00:00:00Z'),
       };
 
       const user = User.from(prismaUser);
 
-      expect(user.id).toBe('user-17');
       expect(user.username).toBe('prisma_user');
       expect(user.passwordHash).toBe('$2b$10$hashedpassword');
       expect(user.role).toBe('USER');
-      expect(user.teamId).toBe('team-1');
       expect(user.createdAt).toEqual(prismaUser.createdAt);
       expect(user.updatedAt).toEqual(prismaUser.updatedAt);
     });
 
-    it('should handle Prisma user with null teamId', () => {
-      const prismaUser = {
-        id: 'user-18',
-        username: 'no_team_user',
-        passwordHash: '$2b$10$hashedpassword',
-        role: 'ADMIN' as const,
-        teamId: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      const user = User.from(prismaUser);
-
-      expect(user.teamId).toBeNull();
-    });
-
     it('should reject Prisma user with invalid role', () => {
       const prismaUser = {
-        id: 'user-19',
         username: 'invalid_role_user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'INVALID_ROLE',
-        teamId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -277,13 +235,11 @@ describe('User domain model', () => {
   describe('given: user properties; when: checking if properties are accessible; then: properties are properly set', () => {
     it('should have properties properly initialized', () => {
       const user = new User({
-        id: 'user-20',
         username: 'readonly_user',
         passwordHash: '$2b$10$hashedpassword',
         role: 'USER',
       });
 
-      expect(user.id).toBe('user-20');
       expect(user.username).toBe('readonly_user');
       expect(user.role).toBe('USER');
     });

@@ -4,7 +4,6 @@ import { UnauthorizedError } from './errors';
 export type JwtPayload = {
     username: string;
     role: string;
-    teamName: string | null;
 };
 
 export function signAccessToken(payload: JwtPayload): string {

@@ -10,7 +10,6 @@ export class User {
   public readonly username: string;
   public readonly passwordHash: string;
   public readonly role: UserRole;
-  public readonly teamName: string | null;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -18,14 +17,12 @@ export class User {
     username,
     passwordHash,
     role,
-    teamName = null,
     createdAt,
     updatedAt,
   }: {
     username: string;
     passwordHash: string;
     role: UserRole;
-    teamName?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
   }) {
@@ -44,7 +41,6 @@ export class User {
     this.username = username;
     this.passwordHash = passwordHash;
     this.role = role;
-    this.teamName = teamName;
     this.createdAt = createdAt ?? new Date();
     this.updatedAt = updatedAt ?? new Date();
   }
@@ -60,7 +56,6 @@ export class User {
       username: prismaUser.username,
       passwordHash: prismaUser.passwordHash,
       role,
-      teamName: prismaUser.teamName,
       createdAt: prismaUser.createdAt,
       updatedAt: prismaUser.updatedAt,
     });

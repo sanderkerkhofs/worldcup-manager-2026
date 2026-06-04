@@ -7,7 +7,6 @@ function toPublicUser(user: User): AuthUser {
   return {
     username: user.username,
     role: user.role,
-    teamName: user.teamName,
   };
 }
 

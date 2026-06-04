@@ -34,16 +34,12 @@ export const swaggerDocument = {
       AuthUser: {
         type: 'object',
         properties: {
-          id: { type: 'string' },
           username: { type: 'string' },
           role: { type: 'string', enum: ['ADMIN', 'REFEREE', 'USER', 'GUEST'] },
-          teamId: { type: ['string', 'null'] },
         },
         example: {
-          id: '1',
           username: 'john_doe',
           role: 'USER',
-          teamId: null,
         },
       },
       AuthResponse: {

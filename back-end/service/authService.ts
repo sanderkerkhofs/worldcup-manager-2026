@@ -9,7 +9,6 @@ function toPublicUser(user: User): AuthUser {
   return {
     username: user.username,
     role: user.role,
-    teamName: user.teamName,
   };
 }
 
@@ -17,7 +16,6 @@ function toAuthResponse(user: User) {
   const token = signAccessToken({
     username: user.username,
     role: user.role,
-    teamName: user.teamName,
   });
 
   return { user: toPublicUser(user), token };
