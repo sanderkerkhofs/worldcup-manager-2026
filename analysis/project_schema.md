@@ -95,88 +95,60 @@ Business rule highlights:
 - `Goal.teamId` must match a team that is playing in the match
 - `Goal.playerId` must belong to `Goal.teamId`
 
-## 4. UML Class Diagram
+## 4. UML Domain Model (Business Perspective)
 
-See [drawio/uml-class-diagram.drawio](drawio/uml-class-diagram.drawio) for the editable diagram.
+The domain model represents the **business logic** and **object interactions** in the tournament management system, independent of database implementation. This shows the entities as they exist in the problem domain and their relationships.
 
 ```mermaid
 classDiagram
-  class UserRole {
-    <<enumeration>>
-    ADMIN
-    REFEREE
-    USER
-    GUEST
-  }
-
-  class MatchStatus {
-    <<enumeration>>
-    PLANNED
-    NOT_STARTED
-    IN_PROGRESS
-    FINISHED
-  }
-
   class User {
-    +String username (PK)
-    +String passwordHash
-    +UserRole role
-    +DateTime createdAt
-    +DateTime updatedAt
+    -username: String
+    -role: UserRole
+    +registerUser()
+    +authenticate()*
+    +assignToMatch(match)*
   }
 
   class Team {
-    +String name (PK)
-    +String country
-    +String countryShortName
-    +String countryFlag
-    +DateTime createdAt
-    +DateTime updatedAt
+    -name: String
+    -country: String
+    -countryShortName: String
+    -countryFlag: String
+    +addPlayer(player)
   }
 
   class Match {
-    +Int id (PK)
-    +Int roundOrderNumber
-    +String roundName
-    +String? homeTeamName
-    +String? awayTeamName
-    +String? refereeUsername
-    +Int? homeScore
-    +Int? awayScore
-    +DateTime matchDate
-    +MatchStatus status
-    +DateTime createdAt
-    +DateTime updatedAt
+    -roundOrderNumber: Int
+    -roundName: String
+    -matchDate: DateTime
+    -status: MatchStatus
+    -homeScore: Int
+    -awayScore: Int
+    +assignTeams(homeTeam, awayTeam)
+    +recordGoal(player, team)
+    +updateStatus(newStatus)
+    +getWinner(): Team
   }
 
   class Player {
-    +Int id (PK)
-    +String teamName
-    +String firstName
-    +String lastName
-    +Int shirtNumber
-    +String position
-    +DateTime createdAt
-    +DateTime updatedAt
+    -firstName: String
+    -lastName: String
+    -shirtNumber: Int
+    -position: String
+    +scoreGoal(match, team)
+    +getGoalCount(): Int
   }
 
   class Goal {
-    +Int id (PK)
-    +Int matchId
-    +Int playerId
-    +String teamName
-    +DateTime createdAt
+    +record()
   }
 
-  Team "1" --> "*" Player : has
-  Team "1" --> "*" Goal : for_team
-  Team "1" --> "*" Match : home_or_away
-  Match "1" --> "*" Goal : records
-  Player "1" --> "*" Goal : scores
+  Team "1" --> "0..*" Player : has
+  Team "2" --> "*" Match : plays_in
   User "0..1" --> "*" Match : referees
-
-  User --> UserRole
-  Match --> MatchStatus
+  Match "1" --> "*" Goal : produces
+  Player "0..*" --> "*" Goal : scores
+  Team "1" --> "*" Goal : for_team
 ```
 
 ## 5. Conceptual ERD

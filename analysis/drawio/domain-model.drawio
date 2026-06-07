@@ -1,11 +1,11 @@
 <mxfile host="app.diagrams.net">
   <diagram name="UML Class Diagram" id="uml-class-diagram">
-    <mxGraphModel dx="1230" dy="734" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1884" dy="878" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="class_user" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="User" vertex="1">
-          <mxGeometry height="200" width="230" x="880" y="80" as="geometry" />
+          <mxGeometry height="210" width="200" x="920" y="80" as="geometry" />
         </mxCell>
         <mxCell id="user_pk" parent="class_user" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- username: String" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -13,38 +13,60 @@
         <mxCell id="user_attrs" parent="class_user" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;" value="- passwordHash: String&#xa;- role: UserRole&#xa;- createdAt: DateTime&#xa;- updatedAt: DateTime" vertex="1">
           <mxGeometry height="100" width="230" y="51" as="geometry" />
         </mxCell>
-        <mxCell id="user_ops" parent="class_user" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="+ authenticate(): boolean&#xa;+ getRole(): UserRole" vertex="1">
-          <mxGeometry height="40" width="230" y="151" as="geometry" />
+        <mxCell id="user_ops" parent="class_user" style="text;align=left;strokeColor=default;fillColor=none;fontSize=10;" value="+ registerUser()&#xa;+ authenticate()&#xa;+ getRole()" vertex="1">
+          <mxGeometry height="59" width="200" y="151" as="geometry" />
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-4" edge="1" parent="1" source="5Wszh4CmjhDldM9S3pPi-18" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="310" y="199.890350877193" as="sourcePoint" />
+            <mxPoint x="480" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-9" connectable="0" parent="5Wszh4CmjhDldM9S3pPi-4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="plays_in" vertex="1">
+          <mxGeometry relative="1" x="-0.0953" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="class_team" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="Team" vertex="1">
-          <mxGeometry height="220" width="230" x="80" y="80" as="geometry" />
+          <mxGeometry height="200" width="240" x="80" y="80" as="geometry" />
         </mxCell>
         <mxCell id="team_pk" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- name: String" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
         </mxCell>
         <mxCell id="team_attrs" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;" value="- country: String&#xa;- countryShortName: String&#xa;- countryFlag: String&#xa;- createdAt: DateTime&#xa;- updatedAt: DateTime" vertex="1">
-          <mxGeometry height="110" width="230" y="51" as="geometry" />
+          <mxGeometry height="89" width="230" y="51" as="geometry" />
         </mxCell>
-        <mxCell id="team_ops" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="+ getPlayers(): Player[]" vertex="1">
-          <mxGeometry height="40" width="230" y="161" as="geometry" />
+        <mxCell id="team_ops" parent="class_team" style="text;align=left;strokeColor=default;fillColor=none;fontSize=10;" value="+ addPlayer(player)" vertex="1">
+          <mxGeometry height="39" width="240" y="161" as="geometry" />
         </mxCell>
         <mxCell id="class_match" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor:#e1f5e1;" value="Match" vertex="1">
-          <mxGeometry height="300" width="280" x="480" y="80" as="geometry" />
+          <mxGeometry height="250" width="240" x="480" y="80" as="geometry" />
         </mxCell>
         <mxCell id="match_pk" parent="class_match" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- id: Int" vertex="1">
           <mxGeometry height="25" width="280" y="26" as="geometry" />
         </mxCell>
         <mxCell id="match_fk" parent="class_match" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;fontStyle=4;" value="- homeTeamName: String [FK]&#xa;- awayTeamName: String [FK]&#xa;- refereeUsername: String [FK]" vertex="1">
-          <mxGeometry height="75" width="280" y="51" as="geometry" />
+          <mxGeometry height="75" width="220" y="51" as="geometry" />
         </mxCell>
         <mxCell id="match_attrs" parent="class_match" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="- roundOrderNumber: Int&#xa;- roundName: String&#xa;- homeScore: Int?&#xa;- awayScore: Int?&#xa;- matchDate: DateTime&#xa;- status: MatchStatus&#xa;- createdAt: DateTime&#xa;- updatedAt: DateTime" vertex="1">
-          <mxGeometry height="140" width="280" y="126" as="geometry" />
+          <mxGeometry height="114" width="220" y="99" as="geometry" />
         </mxCell>
-        <mxCell id="match_ops" parent="class_match" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="+ recordGoal(Player): void" vertex="1">
-          <mxGeometry height="20" width="280" y="266" as="geometry" />
+        <mxCell id="match_ops" parent="class_match" style="text;align=left;strokeColor=default;fillColor=none;fontSize=10;" value="+ recordGoal(Player):" vertex="1">
+          <mxGeometry height="40" width="240" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-1" edge="1" parent="1" source="class_player" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" target="5Wszh4CmjhDldM9S3pPi-22">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="410" as="sourcePoint" />
+            <mxPoint x="200" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-11" connectable="0" parent="5Wszh4CmjhDldM9S3pPi-1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="has" vertex="1">
+          <mxGeometry relative="1" x="-0.1799" y="1" as="geometry">
+            <mxPoint x="1" y="-9" as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="class_player" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor:#e1f5e1;" value="Player" vertex="1">
-          <mxGeometry height="250" width="230" x="80" y="480" as="geometry" />
+          <mxGeometry height="210" width="240" x="80" y="480" as="geometry" />
         </mxCell>
         <mxCell id="player_pk" parent="class_player" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- id: Int" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -53,13 +75,13 @@
           <mxGeometry height="25" width="230" y="51" as="geometry" />
         </mxCell>
         <mxCell id="player_attrs" parent="class_player" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="- firstName: String&#xa;- lastName: String&#xa;- shirtNumber: Int&#xa;- position: String&#xa;- createdAt: DateTime&#xa;- updatedAt: DateTime" vertex="1">
-          <mxGeometry height="130" width="230" y="76" as="geometry" />
+          <mxGeometry height="84" width="230" y="76" as="geometry" />
         </mxCell>
-        <mxCell id="player_ops" parent="class_player" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="+ getFullName(): String&#xa;+ scoreGoal(Match): void" vertex="1">
-          <mxGeometry height="40" width="230" y="206" as="geometry" />
+        <mxCell id="player_ops" parent="class_player" style="text;align=left;strokeColor=default;fillColor=none;fontSize=10;" value="+ scoreGoal(Match)&#xa;+ getGoalCount()" vertex="1">
+          <mxGeometry height="40" width="240" y="170" as="geometry" />
         </mxCell>
         <mxCell id="class_goal" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor:#e1f5e1;" value="Goal" vertex="1">
-          <mxGeometry height="160" width="230" x="480" y="480" as="geometry" />
+          <mxGeometry height="140" width="240" x="480" y="480" as="geometry" />
         </mxCell>
         <mxCell id="goal_pk" parent="class_goal" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- id: Int" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -68,90 +90,67 @@
           <mxGeometry height="75" width="230" y="51" as="geometry" />
         </mxCell>
         <mxCell id="goal_attrs" parent="class_goal" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="- createdAt: DateTime" vertex="1">
-          <mxGeometry height="30" width="230" y="126" as="geometry" />
+          <mxGeometry height="30" width="230" y="96" as="geometry" />
         </mxCell>
-        <mxCell id="rel_user_match" edge="1" parent="1" source="class_user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=0;endArrow=baseDash;endFill=0;" target="class_match">
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-6" edge="1" parent="1" source="user_attrs" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.69;exitDx=0;exitDy=0;exitPerimeter=0;">
           <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="490" y="150" />
-              <mxPoint x="490" y="150" />
-            </Array>
-            <mxPoint x="280" y="150" as="sourcePoint" />
-            <mxPoint x="670" y="150" as="targetPoint" />
+            <mxPoint x="880" y="200" as="sourcePoint" />
+            <mxPoint x="720" y="200" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="label_user_match" connectable="0" parent="rel_user_match" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="referees 0..1">
-          <mxGeometry relative="1" y="-1" as="geometry">
-            <mxPoint y="-10" as="offset" />
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-10" connectable="0" parent="5Wszh4CmjhDldM9S3pPi-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="referees" vertex="1">
+          <mxGeometry relative="1" x="-0.2644" y="-2" as="geometry">
+            <mxPoint x="-16" y="2" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rel_team_player" edge="1" parent="1" source="class_team" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=1;endArrow=baseDash;endFill=0;" target="class_player">
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-7" edge="1" parent="1" source="5Wszh4CmjhDldM9S3pPi-23" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.004;entryY=0.089;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;">
           <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="475" y="280" />
-              <mxPoint x="475" y="360" />
-            </Array>
+            <mxPoint x="310" y="559.0759128427532" as="sourcePoint" />
+            <mxPoint x="480.9200000000001" y="560.6750000000001" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="label_team_player" connectable="0" parent="rel_team_player" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="has 1..*">
-          <mxGeometry relative="1" y="-1" as="geometry">
-            <mxPoint y="-10" as="offset" />
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-15" connectable="0" parent="5Wszh4CmjhDldM9S3pPi-7" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="scores" vertex="1">
+          <mxGeometry relative="1" x="-0.1326" y="1" as="geometry">
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rel_team_match_home" edge="1" parent="1" source="class_team" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=0;endArrow=baseDash;endFill=0;" target="class_match">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="590" y="160" />
-              <mxPoint x="590" y="160" />
-              <mxPoint x="590" y="160" />
-            </Array>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-13" edge="1" parent="1" source="class_match" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="class_goal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-14" connectable="0" parent="5Wszh4CmjhDldM9S3pPi-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="produces" vertex="1">
+          <mxGeometry relative="1" x="0.1186" y="-1" as="geometry">
+            <mxPoint x="1" y="-6" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="label_team_match_home" connectable="0" parent="rel_team_match_home" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="plays 0..*">
-          <mxGeometry relative="1" y="-1" as="geometry">
-            <mxPoint y="-10" as="offset" />
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="2" vertex="1">
+          <mxGeometry height="20" width="40" x="450" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="rel_match_goal" edge="1" parent="1" source="class_match" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=1;endArrow=baseDash;endFill=0;" target="class_goal">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="810" y="340" />
-              <mxPoint x="810" y="420" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="0..*" vertex="1">
+          <mxGeometry height="20" width="40" x="200" y="459" as="geometry" />
         </mxCell>
-        <mxCell id="label_match_goal" connectable="0" parent="rel_match_goal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="records 1..*">
-          <mxGeometry relative="1" y="-1" as="geometry">
-            <mxPoint y="-10" as="offset" />
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="*" vertex="1">
+          <mxGeometry height="20" width="40" x="319" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="rel_player_goal" edge="1" parent="1" source="class_player" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=0;endArrow=baseDash;endFill=0;" target="class_goal">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="590" y="500" />
-              <mxPoint x="590" y="500" />
-              <mxPoint x="590" y="500" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-19" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="*" vertex="1">
+          <mxGeometry height="20" width="40" x="710" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="label_player_goal" connectable="0" parent="rel_player_goal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="scores 0..*">
-          <mxGeometry relative="1" y="-1" as="geometry">
-            <mxPoint y="-10" as="offset" />
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-21" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="0..1" vertex="1">
+          <mxGeometry height="20" width="40" x="880" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="rel_team_goal" edge="1" parent="1" source="class_team" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=0;endArrow=baseDash;endFill=0;dashed=1;" target="class_goal">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="140" y="580" />
-              <mxPoint x="890" y="580" />
-              <mxPoint x="890" y="560" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-22" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="1" vertex="1">
+          <mxGeometry height="20" width="40" x="200" y="280" as="geometry" />
         </mxCell>
-        <mxCell id="label_team_goal" connectable="0" parent="rel_team_goal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="for_team 0..*">
-          <mxGeometry relative="1" y="-1" as="geometry">
-            <mxPoint y="-10" as="offset" />
-          </mxGeometry>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-23" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="0..*" vertex="1">
+          <mxGeometry height="20" width="40" x="310" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-24" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="*" vertex="1">
+          <mxGeometry height="20" width="40" x="450" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-25" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="*" vertex="1">
+          <mxGeometry height="20" width="40" x="600" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="5Wszh4CmjhDldM9S3pPi-26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=11;" value="1" vertex="1">
+          <mxGeometry height="20" width="40" x="600" y="330" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
