@@ -5,7 +5,7 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="class_user" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="User" vertex="1">
-          <mxGeometry height="200" width="230" x="40" y="40" as="geometry" />
+          <mxGeometry height="200" width="230" x="880" y="80" as="geometry" />
         </mxCell>
         <mxCell id="user_pk" parent="class_user" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- username: String" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -17,7 +17,7 @@
           <mxGeometry height="40" width="230" y="151" as="geometry" />
         </mxCell>
         <mxCell id="class_team" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;" value="Team" vertex="1">
-          <mxGeometry height="220" width="230" x="720" y="40" as="geometry" />
+          <mxGeometry height="220" width="230" x="80" y="80" as="geometry" />
         </mxCell>
         <mxCell id="team_pk" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- name: String" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -25,11 +25,11 @@
         <mxCell id="team_attrs" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;" value="- country: String&#xa;- countryShortName: String&#xa;- countryFlag: String&#xa;- createdAt: DateTime&#xa;- updatedAt: DateTime" vertex="1">
           <mxGeometry height="110" width="230" y="51" as="geometry" />
         </mxCell>
-        <mxCell id="team_ops" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="+ getPlayers(): Player[]&#xa;+ addPlayer(Player): void" vertex="1">
+        <mxCell id="team_ops" parent="class_team" style="text;align=left;strokeColor=none;fillColor=none;fontSize=10;" value="+ getPlayers(): Player[]" vertex="1">
           <mxGeometry height="40" width="230" y="161" as="geometry" />
         </mxCell>
         <mxCell id="class_match" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor:#e1f5e1;" value="Match" vertex="1">
-          <mxGeometry height="280" width="280" x="360" y="40" as="geometry" />
+          <mxGeometry height="300" width="280" x="480" y="80" as="geometry" />
         </mxCell>
         <mxCell id="match_pk" parent="class_match" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- id: Int" vertex="1">
           <mxGeometry height="25" width="280" y="26" as="geometry" />
@@ -44,7 +44,7 @@
           <mxGeometry height="20" width="280" y="266" as="geometry" />
         </mxCell>
         <mxCell id="class_player" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor:#e1f5e1;" value="Player" vertex="1">
-          <mxGeometry height="220" width="230" x="40" y="320" as="geometry" />
+          <mxGeometry height="250" width="230" x="80" y="480" as="geometry" />
         </mxCell>
         <mxCell id="player_pk" parent="class_player" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- id: Int" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -59,7 +59,7 @@
           <mxGeometry height="40" width="230" y="206" as="geometry" />
         </mxCell>
         <mxCell id="class_goal" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor:#e1f5e1;" value="Goal" vertex="1">
-          <mxGeometry height="160" width="230" x="360" y="400" as="geometry" />
+          <mxGeometry height="160" width="230" x="480" y="480" as="geometry" />
         </mxCell>
         <mxCell id="goal_pk" parent="class_goal" style="text;align=left;strokeColor=none;fillColor=none;fontSize=11;fontStyle=5;" value="- id: Int" vertex="1">
           <mxGeometry height="25" width="230" y="26" as="geometry" />
@@ -142,8 +142,9 @@
         <mxCell id="rel_team_goal" edge="1" parent="1" source="class_team" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=diamondThin;startFill=0;endArrow=baseDash;endFill=0;dashed=1;" target="class_goal">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
+              <mxPoint x="140" y="580" />
               <mxPoint x="890" y="580" />
-              <mxPoint x="590" y="580" />
+              <mxPoint x="890" y="560" />
             </Array>
           </mxGeometry>
         </mxCell>

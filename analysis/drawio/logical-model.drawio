@@ -1,0 +1,148 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Logical ERD" id="erd-logical">
+    <mxGraphModel dx="1371" dy="732" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user_table" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;" value="User" vertex="1">
+          <mxGeometry height="200" width="200" x="920" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="user_pk" parent="user_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;fontStyle=5;" value="PK username: String" vertex="1">
+          <mxGeometry height="25" width="190" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="user_fields" parent="user_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;" value="passwordHash: String&#xa;role: UserRole (DEFAULT USER)&#xa;createdAt: DateTime&#xa;updatedAt: DateTime" vertex="1">
+          <mxGeometry height="140" width="190" y="51" as="geometry" />
+        </mxCell>
+        <mxCell id="team_table" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;" value="Team" vertex="1">
+          <mxGeometry height="200" width="280" x="80" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="team_pk" parent="team_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;fontStyle=5;" value="PK name: String" vertex="1">
+          <mxGeometry height="25" width="280" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="team_fields" parent="team_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;" value="country: String&#xa;countryShortName: String&#xa;countryFlag: String&#xa;createdAt: DateTime&#xa;updatedAt: DateTime&#xa;UNIQUE(name)" vertex="1">
+          <mxGeometry height="129" width="280" y="51" as="geometry" />
+        </mxCell>
+        <mxCell id="match_table" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;" value="Match" vertex="1">
+          <mxGeometry height="280" width="280" x="520" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="match_pk" parent="match_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;fontStyle=5;" value="PK id: Int (autoincrement)" vertex="1">
+          <mxGeometry height="25" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="match_fk" parent="match_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=10;fontStyle=4;" value="FK homeTeamName: String (Team.name)&#xa;FK awayTeamName: String (Team.name)&#xa;FK refereeUsername: String (User.username)" vertex="1">
+          <mxGeometry height="75" width="300" y="51" as="geometry" />
+        </mxCell>
+        <mxCell id="match_fields" parent="match_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;" value="roundOrderNumber: Int&#xa;roundName: String&#xa;homeScore: Int?&#xa;awayScore: Int?&#xa;matchDate: DateTime&#xa;status: MatchStatus (DEFAULT PLANNED)&#xa;createdAt: DateTime&#xa;updatedAt: DateTime" vertex="1">
+          <mxGeometry height="145" width="300" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="player_table" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;" value="Player" vertex="1">
+          <mxGeometry height="200" width="280" x="80" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="player_pk" parent="player_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;fontStyle=5;" value="PK id: Int (autoincrement)" vertex="1">
+          <mxGeometry height="25" width="280" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="player_fk" parent="player_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=10;fontStyle=4;" value="FK teamName: String (Team.name)" vertex="1">
+          <mxGeometry height="25" width="280" y="51" as="geometry" />
+        </mxCell>
+        <mxCell id="player_fields" parent="player_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;" value="firstName: String&#xa;lastName: String&#xa;shirtNumber: Int&#xa;position: String&#xa;createdAt: DateTime&#xa;updatedAt: DateTime&#xa;UNIQUE(teamName, shirtNumber)" vertex="1">
+          <mxGeometry height="114" width="280" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="goal_table" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#f5f5f5;" value="Goal" vertex="1">
+          <mxGeometry height="200" width="280" x="520" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="goal_pk" parent="goal_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;fontStyle=5;" value="PK id: Int (autoincrement)" vertex="1">
+          <mxGeometry height="25" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="goal_fk" parent="goal_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=10;fontStyle=4;" value="FK matchId: Int (Match.id)&#xa;FK playerId: Int (Player.id)&#xa;FK teamName: String (Team.name)" vertex="1">
+          <mxGeometry height="75" width="300" y="51" as="geometry" />
+        </mxCell>
+        <mxCell id="goal_fields" parent="goal_table" style="text;align=left;fillColor=none;strokeColor=none;fontSize=11;" value="createdAt: DateTime" vertex="1">
+          <mxGeometry height="60" width="300" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_user_match" edge="1" parent="1" source="user_table" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;startFill=0;endArrow=ERmandOne;endFill=0;" target="match_table" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="160" />
+              <mxPoint x="850" y="160" />
+            </Array>
+            <mxPoint x="330" y="150" as="sourcePoint" />
+            <mxPoint x="790" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label_user_match" connectable="0" parent="rel_user_match" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="refereeUsername">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_team_player" edge="1" parent="1" source="team_table" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;" target="player_table" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="40" y="200" />
+              <mxPoint x="40" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label_team_player" connectable="0" parent="rel_team_player" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="teamName (FK)">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_team_match_home" edge="1" parent="1" source="team_table" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;startFill=0;endArrow=ERmandOne;endFill=0;" target="match_table" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="160" />
+              <mxPoint x="480" y="160" />
+            </Array>
+            <mxPoint x="700" y="120" as="sourcePoint" />
+            <mxPoint x="790" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label_team_match" connectable="0" parent="rel_team_match_home" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="homeTeamName/awayTeamName">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_match_goal" edge="1" parent="1" source="match_table" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERzeroToMany;endFill=0;" target="goal_table" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="200" />
+              <mxPoint x="880" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label_match_goal" connectable="0" parent="rel_match_goal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="matchId (FK)">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_player_goal" edge="1" parent="1" source="player_table" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;startFill=0;endArrow=ERmandOne;endFill=0;" target="goal_table" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="600" />
+              <mxPoint x="440" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label_player_goal" connectable="0" parent="rel_player_goal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="playerId (FK)">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_team_goal" edge="1" parent="1" source="team_fields" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;startFill=0;endArrow=ERmandOne;endFill=0;entryX=0;entryY=0.387;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.535;exitDx=0;exitDy=0;exitPerimeter=0;" target="goal_fk" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="200" />
+              <mxPoint x="440" y="560" />
+            </Array>
+            <mxPoint x="390" y="180" as="sourcePoint" />
+            <mxPoint x="510" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label_team_goal" connectable="0" parent="rel_team_goal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=4;" value="teamName (FK)">
+          <mxGeometry relative="1" y="-1" as="geometry">
+            <mxPoint x="20" y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
